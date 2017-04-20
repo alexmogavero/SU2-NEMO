@@ -33,6 +33,7 @@
 
 #include "../include/driver_structure.hpp"
 #include "../include/definition_structure.hpp"
+#include "../include/kinetic_solver.hpp"
 
 CDriver::CDriver(char* confFile,
                  unsigned short val_nZone,
@@ -702,7 +703,7 @@ void CDriver::Solver_Preprocessing(CSolver ***solver_container, CGeometry **geom
   adj_euler, adj_ns, adj_turb,
   poisson, wave, heat, fem,
   spalart_allmaras, neg_spalart_allmaras, menter_sst, transition,
-  template_solver, disc_adj;
+  template_solver, disc_adj, kinetic;
   int val_iter = 0;
 
   int rank = MASTER_NODE;
@@ -721,6 +722,7 @@ void CDriver::Solver_Preprocessing(CSolver ***solver_container, CGeometry **geom
   heat             = false;
   transition       = false;
   template_solver  = false;
+  kinetic          = false;
   
   bool compressible   = (config->GetKind_Regime() == COMPRESSIBLE);
   bool incompressible = (config->GetKind_Regime() == INCOMPRESSIBLE);
@@ -775,6 +777,7 @@ void CDriver::Solver_Preprocessing(CSolver ***solver_container, CGeometry **geom
     case DISC_ADJ_EULER: euler = true; disc_adj = true; break;
     case DISC_ADJ_NAVIER_STOKES: ns = true; disc_adj = true; break;
     case DISC_ADJ_RANS: ns = true; turbulent = true; disc_adj = true; break;
+    case KINETIC: kinetic = true; break;
   }
   
   /*--- Assign turbulence model booleans ---*/
@@ -818,6 +821,9 @@ void CDriver::Solver_Preprocessing(CSolver ***solver_container, CGeometry **geom
       if (incompressible) {
         solver_container[iMGlevel][FLOW_SOL] = new CIncNSSolver(geometry[iMGlevel], config, iMGlevel);
       }
+    }
+    if(kinetic){
+      solver_container[iMGlevel][FLOW_SOL] = new CKineticSolver(geometry[iMGlevel], config, iMGlevel);
     }
     if (turbulent) {
       if (spalart_allmaras) {
@@ -886,7 +892,7 @@ void CDriver::Solver_Preprocessing(CSolver ***solver_container, CGeometry **geom
    these restart routines fill the fine grid and interpolate to all MG levels. ---*/
 
   if (restart || restart_flow) {
-    if (euler || ns) {
+    if (euler || ns || kinetic) {
       solver_container[MESH_0][FLOW_SOL]->LoadRestart(geometry, solver_container, config, val_iter, update_geo);
     }
     if (turbulent) {
@@ -971,7 +977,7 @@ void CDriver::Solver_Postprocessing(CSolver ***solver_container, CGeometry **geo
   switch (config->GetKind_Solver()) {
     case TEMPLATE_SOLVER: template_solver = true; break;
     case EULER : euler = true; break;
-    case NAVIER_STOKES: ns = true; break;
+    case NAVIER_STOKES: case KINETIC: ns = true; break;
     case RANS : ns = true; turbulent = true; if (config->GetKind_Trans_Model() == LM) transition = true; break;
     case POISSON_EQUATION: poisson = true; break;
     case WAVE_EQUATION: wave = true; break;
@@ -1067,7 +1073,7 @@ void CDriver::Integration_Preprocessing(CIntegration **integration_container,
   switch (config->GetKind_Solver()) {
     case TEMPLATE_SOLVER: template_solver = true; break;
     case EULER : euler = true; break;
-    case NAVIER_STOKES: ns = true; break;
+    case NAVIER_STOKES: case KINETIC: ns = true; break;
     case RANS : ns = true; turbulent = true; if (config->GetKind_Trans_Model() == LM) transition = true; break;
     case POISSON_EQUATION: poisson = true; break;
     case WAVE_EQUATION: wave = true; break;
@@ -1124,7 +1130,7 @@ void CDriver::Integration_Postprocessing(CIntegration **integration_container,
   switch (config->GetKind_Solver()) {
     case TEMPLATE_SOLVER: template_solver = true; break;
     case EULER : euler = true; break;
-    case NAVIER_STOKES: ns = true; break;
+    case NAVIER_STOKES: case KINETIC: ns = true; break;
     case RANS : ns = true; turbulent = true; if (config->GetKind_Trans_Model() == LM) transition = true; break;
     case POISSON_EQUATION: poisson = true; break;
     case WAVE_EQUATION: wave = true; break;
@@ -1206,7 +1212,7 @@ void CDriver::Numerics_Preprocessing(CNumerics ****numerics_container,
   switch (config->GetKind_Solver()) {
     case TEMPLATE_SOLVER: template_solver = true; break;
     case EULER : case DISC_ADJ_EULER: euler = true; break;
-    case NAVIER_STOKES: case DISC_ADJ_NAVIER_STOKES: ns = true; break;
+    case NAVIER_STOKES: case KINETIC: case DISC_ADJ_NAVIER_STOKES: ns = true; break;
     case RANS : case DISC_ADJ_RANS:  ns = true; turbulent = true; if (config->GetKind_Trans_Model() == LM) transition = true; break;
     case POISSON_EQUATION: poisson = true; break;
     case WAVE_EQUATION: wave = true; break;
@@ -1889,7 +1895,7 @@ void CDriver::Numerics_Postprocessing(CNumerics ****numerics_container,
   switch (config->GetKind_Solver()) {
     case TEMPLATE_SOLVER: template_solver = true; break;
     case EULER : case DISC_ADJ_EULER: euler = true; break;
-    case NAVIER_STOKES: case DISC_ADJ_NAVIER_STOKES: ns = true; break;
+    case NAVIER_STOKES: case KINETIC: case DISC_ADJ_NAVIER_STOKES: ns = true; break;
     case RANS : case DISC_ADJ_RANS:  ns = true; turbulent = true; if (config->GetKind_Trans_Model() == LM) transition = true; break;
     case POISSON_EQUATION: poisson = true; break;
     case WAVE_EQUATION: wave = true; break;
@@ -2246,7 +2252,7 @@ void CDriver::Iteration_Preprocessing() {
 
   switch (config_container[iZone]->GetKind_Solver()) {
 
-    case EULER: case NAVIER_STOKES: case RANS:
+    case EULER: case NAVIER_STOKES: case KINETIC: case RANS:
     if (rank == MASTER_NODE)
       cout << ": Euler/Navier-Stokes/RANS fluid iteration." << endl;
       iteration_container[iZone] = new CFluidIteration(config_container[iZone]);
@@ -2418,7 +2424,7 @@ void CDriver::Interface_Preprocessing() {
 
       switch ( config_container[targetZone]->GetKind_Solver() ) {
 
-        case EULER : case NAVIER_STOKES: case RANS: 
+        case EULER : case NAVIER_STOKES: case KINETIC: case RANS:
           fluid_target  = true;   
 
           break;
@@ -2432,7 +2438,7 @@ void CDriver::Interface_Preprocessing() {
 
       switch ( config_container[donorZone]->GetKind_Solver() ) {
 
-      case EULER : case NAVIER_STOKES: case RANS: 
+      case EULER : case NAVIER_STOKES: case KINETIC: case RANS:
         fluid_donor  = true;   
 
           break;
@@ -2632,6 +2638,7 @@ void CDriver::PreprocessExtIter(unsigned long ExtIter) {
   if ( (!fsi) &&
       ( (config_container[ZONE_0]->GetKind_Solver() ==  EULER) ||
        (config_container[ZONE_0]->GetKind_Solver() ==  NAVIER_STOKES) ||
+       (config_container[ZONE_0]->GetKind_Solver() ==  KINETIC) ||
        (config_container[ZONE_0]->GetKind_Solver() ==  RANS) ) ) {
         for(iZone = 0; iZone < nZone; iZone++) {
           solver_container[iZone][MESH_0][FLOW_SOL]->SetInitialCondition(geometry_container[iZone], solver_container[iZone], config_container[iZone], ExtIter);
@@ -2685,7 +2692,7 @@ bool CDriver::Monitor(unsigned long ExtIter) {
    convergence criteria, and set StopCalc to true, if so. ---*/
   
   switch (config_container[ZONE_0]->GetKind_Solver()) {
-    case EULER: case NAVIER_STOKES: case RANS:
+    case EULER: case NAVIER_STOKES: case KINETIC: case RANS:
       StopCalc = integration_container[ZONE_0][FLOW_SOL]->GetConvergence(); break;
     case WAVE_EQUATION:
       StopCalc = integration_container[ZONE_0][WAVE_SOL]->GetConvergence(); break;
@@ -3088,7 +3095,8 @@ bool CDriver::ComputeVertexForces(unsigned short iMarker, unsigned short iVertex
   bool compressible       = (config_container[ZONE_0]->GetKind_Regime() == COMPRESSIBLE);
   bool incompressible     = (config_container[ZONE_0]->GetKind_Regime() == INCOMPRESSIBLE);
   bool viscous_flow       = ((config_container[ZONE_0]->GetKind_Solver() == NAVIER_STOKES) ||
-                 (config_container[ZONE_0]->GetKind_Solver() == RANS) );
+                 (config_container[ZONE_0]->GetKind_Solver() == RANS) ||
+                 (config_container[ZONE_0]->GetKind_Solver() == KINETIC));
 
   /*--- Parameters for the calculations ---*/
   // Pn: Pressure
@@ -3312,7 +3320,7 @@ void CGeneralDriver::ResetConvergence() {
 
   switch (config_container[ZONE_0]->GetKind_Solver()) {
 
-    case EULER: case NAVIER_STOKES: case RANS:
+    case EULER: case NAVIER_STOKES: case KINETIC: case RANS:
     integration_container[ZONE_0][FLOW_SOL]->SetConvergence(false);
       if (config_container[ZONE_0]->GetKind_Solver() == RANS) integration_container[ZONE_0][TURB_SOL]->SetConvergence(false);
       if(config_container[ZONE_0]->GetKind_Trans_Model() == LM) integration_container[ZONE_0][TRANS_SOL]->SetConvergence(false);
@@ -3547,7 +3555,7 @@ void CFluidDriver::ResetConvergence() {
   for(iZone = 0; iZone < nZone; iZone++) {
     switch (config_container[iZone]->GetKind_Solver()) {
 
-    case EULER: case NAVIER_STOKES: case RANS:
+    case EULER: case NAVIER_STOKES: case KINETIC: case RANS:
       integration_container[iZone][FLOW_SOL]->SetConvergence(false);
       if (config_container[iZone]->GetKind_Solver() == RANS) integration_container[iZone][TURB_SOL]->SetConvergence(false);
       if(config_container[iZone]->GetKind_Trans_Model() == LM) integration_container[iZone][TRANS_SOL]->SetConvergence(false);
@@ -3698,7 +3706,7 @@ void CHBDriver::ResetConvergence() {
   for(iZone = 0; iZone < nZone; iZone++) {
     switch (config_container[iZone]->GetKind_Solver()) {
 
-    case EULER: case NAVIER_STOKES: case RANS:
+    case EULER: case NAVIER_STOKES: case KINETIC: case RANS:
       integration_container[iZone][FLOW_SOL]->SetConvergence(false);
       if (config_container[iZone]->GetKind_Solver() == RANS) integration_container[iZone][TURB_SOL]->SetConvergence(false);
       if(config_container[iZone]->GetKind_Trans_Model() == LM) integration_container[iZone][TRANS_SOL]->SetConvergence(false);

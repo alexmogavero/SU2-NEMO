@@ -515,6 +515,9 @@ void CFluidIteration::Iterate(COutput *output,
     case NAVIER_STOKES: case DISC_ADJ_NAVIER_STOKES:
       config_container[val_iZone]->SetGlobalParam(NAVIER_STOKES, RUNTIME_FLOW_SYS, ExtIter); break;
       
+    case KINETIC:
+      config_container[val_iZone]->SetGlobalParam(KINETIC, RUNTIME_FLOW_SYS, ExtIter); break;
+
     case RANS: case DISC_ADJ_RANS:
       config_container[val_iZone]->SetGlobalParam(RANS, RUNTIME_FLOW_SYS, ExtIter); break;
       

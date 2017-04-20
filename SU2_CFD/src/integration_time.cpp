@@ -54,6 +54,7 @@ void CMultiGridIntegration::MultiGrid_Iteration(CGeometry ***geometry,
                                   (Iteration == 0));
   const bool direct = ((config[iZone]->GetKind_Solver() == EULER)                         ||
                        (config[iZone]->GetKind_Solver() == NAVIER_STOKES)                 ||
+                       (config[iZone]->GetKind_Solver() == KINETIC)                 ||
                        (config[iZone]->GetKind_Solver() == RANS)                          ||
                        (config[iZone]->GetKind_Solver() == DISC_ADJ_EULER)                ||
                        (config[iZone]->GetKind_Solver() == DISC_ADJ_NAVIER_STOKES)        ||

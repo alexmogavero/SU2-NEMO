@@ -122,7 +122,7 @@ void CTransfer_FlowTraction::GetDonor_Variable(CSolver *flow_solution, CGeometry
   // Check the kind of fluid problem
   bool compressible       = (flow_config->GetKind_Regime() == COMPRESSIBLE);
   bool incompressible     = (flow_config->GetKind_Regime() == INCOMPRESSIBLE);
-  bool viscous_flow       = ((flow_config->GetKind_Solver() == NAVIER_STOKES) || (flow_config->GetKind_Solver() == RANS) );
+  bool viscous_flow       = ((flow_config->GetKind_Solver() == NAVIER_STOKES) || (flow_config->GetKind_Solver() == KINETIC) || (flow_config->GetKind_Solver() == RANS) );
 
   // Parameters for the calculations
   // Pn: Pressure

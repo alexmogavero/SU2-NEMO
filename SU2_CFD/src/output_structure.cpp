@@ -168,7 +168,7 @@ void COutput::SetSurfaceCSV_Flow(CConfig *config, CGeometry *geometry,
   
   switch (solver) {
     case EULER : SurfFlow_file <<  "\"Mach_Number\"" << "\n"; break;
-    case NAVIER_STOKES: case RANS:
+    case NAVIER_STOKES: case KINETIC: case RANS:
       if (nDim == 2) SurfFlow_file <<  "\"Skin_Friction_Coefficient_X\", \"Skin_Friction_Coefficient_Y\", \"h\"" << "\n";
       if (nDim == 3) SurfFlow_file <<  "\"Skin_Friction_Coefficient_X\", \"Skin_Friction_Coefficient_Y\", \"Skin_Friction_Coefficient_Z\", \"Heat_Flux\"" << "\n";
       break;
@@ -2024,6 +2024,7 @@ void COutput::MergeSolution(CConfig *config, CGeometry *geometry, CSolver **solv
   bool transition     = (config->GetKind_Trans_Model() == LM);
   bool flow           = (( config->GetKind_Solver() == EULER             ) ||
                          ( config->GetKind_Solver() == NAVIER_STOKES     ) ||
+                         ( config->GetKind_Solver() == KINETIC           ) ||
                          ( config->GetKind_Solver() == RANS              ) ||
                          ( config->GetKind_Solver() == ADJ_EULER         ) ||
                          ( config->GetKind_Solver() == ADJ_NAVIER_STOKES ) ||
@@ -2059,7 +2060,7 @@ void COutput::MergeSolution(CConfig *config, CGeometry *geometry, CSolver **solv
    index for their particular solution container. ---*/
   
   switch (Kind_Solver) {
-    case EULER : case NAVIER_STOKES: FirstIndex = FLOW_SOL; SecondIndex = NONE; ThirdIndex = NONE; break;
+    case EULER : case NAVIER_STOKES: case KINETIC: FirstIndex = FLOW_SOL; SecondIndex = NONE; ThirdIndex = NONE; break;
     case RANS : FirstIndex = FLOW_SOL; SecondIndex = TURB_SOL; if (transition) ThirdIndex=TRANS_SOL; else ThirdIndex = NONE; break;
     case POISSON_EQUATION: FirstIndex = POISSON_SOL; SecondIndex = NONE; ThirdIndex = NONE; break;
     case WAVE_EQUATION: FirstIndex = WAVE_SOL; SecondIndex = NONE; ThirdIndex = NONE; break;
@@ -2098,14 +2099,14 @@ void COutput::MergeSolution(CConfig *config, CGeometry *geometry, CSolver **solv
     
     /*--- Add Pressure, Temperature, Cp, Mach to the restart file ---*/
     
-    if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
+    if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == KINETIC) || (Kind_Solver == RANS)) {
       iVar_PressCp = nVar_Total; nVar_Total += 3;
       iVar_MachMean = nVar_Total; nVar_Total += 1;
     }
     
     /*--- Add Laminar Viscosity, Skin Friction, Heat Flux, & yPlus to the restart file ---*/
     
-    if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
+    if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == KINETIC) ||(Kind_Solver == RANS)) {
       iVar_Lam = nVar_Total;
       nVar_Total += 1;
       iVar_ViscCoeffs = nVar_Total;
@@ -2124,7 +2125,7 @@ void COutput::MergeSolution(CConfig *config, CGeometry *geometry, CSolver **solv
     /*--- Add Sharp edges to the restart file ---*/
     
     if (config->GetWrt_SharpEdges()) {
-      if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
+      if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == KINETIC) || (Kind_Solver == RANS)) {
         iVar_Sharp = nVar_Total; nVar_Total += 1;
       }
     }
@@ -2236,7 +2237,7 @@ void COutput::MergeSolution(CConfig *config, CGeometry *geometry, CSolver **solv
   
   /*--- Auxiliary vectors for surface coefficients ---*/
   
-  if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
+  if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == KINETIC) || (Kind_Solver == RANS)) {
     Aux_Frict_x = new su2double[geometry->GetnPoint()];
     Aux_Frict_y = new su2double[geometry->GetnPoint()];
     Aux_Frict_z = new su2double[geometry->GetnPoint()];
@@ -2477,7 +2478,7 @@ void COutput::MergeSolution(CConfig *config, CGeometry *geometry, CSolver **solv
     
     /*--- Communicate Pressure, Cp, and Mach ---*/
     
-    if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
+    if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == KINETIC) || (Kind_Solver == RANS)) {
       
       /*--- First, loop through the mesh in order to find and store the
        value of the coefficient of pressure at any surface nodes. They
@@ -2544,7 +2545,7 @@ void COutput::MergeSolution(CConfig *config, CGeometry *geometry, CSolver **solv
     
     /*--- Communicate Mach---*/
     
-    if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
+    if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == KINETIC) || (Kind_Solver == RANS)) {
       
       /*--- Loop over this partition to collect the current variable ---*/
       
@@ -2600,7 +2601,7 @@ void COutput::MergeSolution(CConfig *config, CGeometry *geometry, CSolver **solv
     
     /*--- Laminar Viscosity ---*/
     
-    if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
+    if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == KINETIC) || (Kind_Solver == RANS)) {
       
       /*--- Loop over this partition to collect the current variable ---*/
       
@@ -2866,7 +2867,7 @@ void COutput::MergeSolution(CConfig *config, CGeometry *geometry, CSolver **solv
     
     if (config->GetWrt_SharpEdges()) {
       
-      if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
+      if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == KINETIC) || (Kind_Solver == RANS)) {
         
         /*--- Loop over this partition to collect the current variable ---*/
         jPoint = 0;
@@ -3428,7 +3429,7 @@ void COutput::MergeSolution(CConfig *config, CGeometry *geometry, CSolver **solv
   
   delete [] Local_Halo;
   
-  if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
+  if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == KINETIC) || (Kind_Solver == RANS)) {
     delete[] Aux_Frict_x; delete[] Aux_Frict_y; delete[] Aux_Frict_z;
     delete [] Aux_Heat; delete [] Aux_yPlus;
   }
@@ -3755,14 +3756,14 @@ void COutput::SetRestart(CConfig *config, CGeometry *geometry, CSolver **solver,
       }
     }
     
-    if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
+    if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == KINETIC) || (Kind_Solver == RANS)) {
       if (config->GetOutput_FileFormat() == PARAVIEW) {
         restart_file << "\t\"Pressure\"\t\"Temperature\"\t\"Pressure_Coefficient\"\t\"Mach\"";
       } else
         restart_file << "\t\"Pressure\"\t\"Temperature\"\t\"C<sub>p</sub>\"\t\"Mach\"";
     }
     
-    if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
+    if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == KINETIC) || (Kind_Solver == RANS)) {
       if (config->GetOutput_FileFormat() == PARAVIEW) {
         if (nDim == 2) restart_file << "\t\"Laminar_Viscosity\"\t\"Skin_Friction_Coefficient_X\"\t\"Skin_Friction_Coefficient_Y\"\t\"Heat_Flux\"\t\"Y_Plus\"";
         if (nDim == 3) restart_file << "\t\"Laminar_Viscosity\"\t\"Skin_Friction_Coefficient_X\"\t\"Skin_Friction_Coefficient_Y\"\t\"Skin_Friction_Coefficient_Z\"\t\"Heat_Flux\"\t\"Y_Plus\"";
@@ -3780,7 +3781,7 @@ void COutput::SetRestart(CConfig *config, CGeometry *geometry, CSolver **solver,
     }
     
     if (config->GetWrt_SharpEdges()) {
-      if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
+      if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == KINETIC) || (Kind_Solver == RANS)) {
         restart_file << "\t\"Sharp_Edge_Dist\"";
       }
     }
@@ -3973,7 +3974,7 @@ void COutput::SetConvHistory_Header(ofstream *ConvHist_file, CConfig *config) {
 
   bool thermal = false; /* Flag for whether to print heat flux values */
 
-  if (config->GetKind_Solver() == RANS or config->GetKind_Solver()  == NAVIER_STOKES) {
+  if (config->GetKind_Solver() == RANS or config->GetKind_Solver()  == NAVIER_STOKES or config->GetKind_Solver()  == KINETIC) {
     thermal = true;
   }
 
@@ -4074,7 +4075,7 @@ void COutput::SetConvHistory_Header(ofstream *ConvHist_file, CConfig *config) {
   
   switch (config->GetKind_Solver()) {
       
-    case EULER : case NAVIER_STOKES: case RANS :
+    case EULER : case NAVIER_STOKES: case KINETIC: case RANS :
       ConvHist_file[0] << begin << flow_coeff;
       if (thermal) ConvHist_file[0] << heat_coeff;
       if (equiv_area) ConvHist_file[0] << equivalent_area_coeff;
@@ -4159,7 +4160,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
   
   if (output_1d) {
     switch (config[val_iZone]->GetKind_Solver()) {
-      case EULER:                   case NAVIER_STOKES:                   case RANS:
+      case EULER:                   case NAVIER_STOKES: case KINETIC:     case RANS:
       case ADJ_EULER:               case ADJ_NAVIER_STOKES:               case ADJ_RANS:
         OneDimensionalOutput(solver_container[val_iZone][FinestMesh][FLOW_SOL], geometry[val_iZone][FinestMesh], config[val_iZone]);
         break;
@@ -4167,7 +4168,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
   }
   if (output_massflow && !output_1d) {
     switch (config[val_iZone]->GetKind_Solver()) {
-      case EULER:                   case NAVIER_STOKES:                   case RANS:
+      case EULER:                   case NAVIER_STOKES: case KINETIC:                   case RANS:
       case ADJ_EULER:               case ADJ_NAVIER_STOKES:               case ADJ_RANS:
         SetMassFlowRate(solver_container[val_iZone][FinestMesh][FLOW_SOL], geometry[val_iZone][FinestMesh], config[val_iZone]);
         break;
@@ -4180,7 +4181,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
     if (output_comboObj) {
       solver_container[val_iZone][FinestMesh][FLOW_SOL]->SetTotal_ComboObj(0.0);
       switch (config[val_iZone]->GetKind_Solver()) {
-      case EULER:                   case NAVIER_STOKES:                   case RANS:
+      case EULER:                   case NAVIER_STOKES: case KINETIC:                   case RANS:
         solver_container[val_iZone][FinestMesh][FLOW_SOL]->Compute_ComboObj(config[val_iZone]);
         break;
       }
@@ -4220,7 +4221,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
     bool inv_design = (config[val_iZone]->GetInvDesign_Cp() || config[val_iZone]->GetInvDesign_HeatFlux());
     bool transition = (config[val_iZone]->GetKind_Trans_Model() == LM);
     bool thermal = false; /* flag for whether to print heat flux values */
-    if (config[val_iZone]->GetKind_Solver() == RANS or config[val_iZone]->GetKind_Solver()  == NAVIER_STOKES) {
+    if (config[val_iZone]->GetKind_Solver() == RANS or config[val_iZone]->GetKind_Solver()  == NAVIER_STOKES or config[val_iZone]->GetKind_Solver()  == KINETIC) {
       thermal = true;
     }
     bool turbulent = ((config[val_iZone]->GetKind_Solver() == RANS) || (config[val_iZone]->GetKind_Solver() == ADJ_RANS) ||
@@ -4229,7 +4230,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
     bool disc_adj = config[val_iZone]->GetDiscrete_Adjoint();
     bool wave = (config[val_iZone]->GetKind_Solver() == WAVE_EQUATION);
     bool heat = (config[val_iZone]->GetKind_Solver() == HEAT_EQUATION);
-    bool flow = (config[val_iZone]->GetKind_Solver() == EULER) || (config[val_iZone]->GetKind_Solver() == NAVIER_STOKES) ||
+    bool flow = (config[val_iZone]->GetKind_Solver() == EULER) || (config[val_iZone]->GetKind_Solver() == NAVIER_STOKES) || (config[val_iZone]->GetKind_Solver() == KINETIC) ||
     (config[val_iZone]->GetKind_Solver() == RANS) || (config[val_iZone]->GetKind_Solver() == ADJ_EULER) ||
     (config[val_iZone]->GetKind_Solver() == ADJ_NAVIER_STOKES) || (config[val_iZone]->GetKind_Solver() == ADJ_RANS);
     
@@ -4396,7 +4397,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
     /*--- Write information from nodes ---*/
     switch (config[val_iZone]->GetKind_Solver()) {
         
-      case EULER:                   case NAVIER_STOKES:                   case RANS:
+      case EULER:                   case NAVIER_STOKES: case KINETIC:                   case RANS:
       case ADJ_EULER:               case ADJ_NAVIER_STOKES:               case ADJ_RANS:
       case DISC_ADJ_EULER:          case DISC_ADJ_NAVIER_STOKES:          case DISC_ADJ_RANS:
         
@@ -4713,7 +4714,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
         /*--- Write the solution and residual of the history file ---*/
         switch (config[val_iZone]->GetKind_Solver()) {
             
-          case EULER : case NAVIER_STOKES: case RANS:
+          case EULER : case NAVIER_STOKES: case KINETIC: case RANS:
           case ADJ_EULER: case ADJ_NAVIER_STOKES: case ADJ_RANS: case DISC_ADJ_EULER:
           case DISC_ADJ_NAVIER_STOKES: case DISC_ADJ_RANS:
             
@@ -4917,7 +4918,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
         if (!fem) {
           if (!Unsteady && (config[val_iZone]->GetUnsteady_Simulation() != TIME_STEPPING)) {
             switch (config[val_iZone]->GetKind_Solver()) {
-              case EULER : case NAVIER_STOKES: case RANS:
+              case EULER : case NAVIER_STOKES: case KINETIC: case RANS:
               case ADJ_EULER : case ADJ_NAVIER_STOKES: case ADJ_RANS:
                 
                 cout << endl << "---------------------- Local Time Stepping Summary ----------------------" << endl;
@@ -5105,7 +5106,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
         }
         
         switch (config[val_iZone]->GetKind_Solver()) {
-          case EULER :                  case NAVIER_STOKES:
+          case EULER :                  case NAVIER_STOKES:  case KINETIC:
             
             /*--- Visualize the maximum residual ---*/
             iPointMaxResid = solver_container[val_iZone][FinestMesh][FLOW_SOL]->GetPoint_Max(0);
@@ -5354,7 +5355,7 @@ void COutput::SetConvHistory_Body(ofstream *ConvHist_file,
       
       
       switch (config[val_iZone]->GetKind_Solver()) {
-        case EULER : case NAVIER_STOKES:
+        case EULER : case NAVIER_STOKES:  case KINETIC:
           
           if (!DualTime_Iteration) {
             if (compressible) ConvHist_file[0] << begin << direct_coeff << flow_resid;
@@ -5772,7 +5773,7 @@ void COutput::SetForces_Breakdown(CGeometry ***geometry,
   
   unsigned short FinestMesh = config[val_iZone]->GetFinestMesh();
   unsigned short nDim = geometry[val_iZone][FinestMesh]->GetnDim();
-  bool flow = ((config[val_iZone]->GetKind_Solver() == EULER) || (config[val_iZone]->GetKind_Solver() == NAVIER_STOKES) ||
+  bool flow = ((config[val_iZone]->GetKind_Solver() == EULER) || (config[val_iZone]->GetKind_Solver() == NAVIER_STOKES) || (config[val_iZone]->GetKind_Solver() == KINETIC) ||
                (config[val_iZone]->GetKind_Solver() == RANS));
   
   /*--- Output the mean flow solution using only the master node ---*/
@@ -7132,7 +7133,7 @@ void COutput::SetResult_Files(CSolver ****solver_container, CGeometry ***geometr
     
     switch (config[iZone]->GetKind_Solver()) {
         
-      case EULER : case NAVIER_STOKES : case RANS :
+      case EULER : case NAVIER_STOKES : case KINETIC: case RANS :
         
         if (Wrt_Csv) SetSurfaceCSV_Flow(config[iZone], geometry[iZone][MESH_0], solver_container[iZone][MESH_0][FLOW_SOL], iExtIter, iZone);
         break;
@@ -10100,7 +10101,7 @@ void COutput::SetResult_Files_Parallel(CSolver ****solver_container,
     if (rank == MASTER_NODE) cout << endl << "Writing comma-separated values (CSV) surface files." << endl;
     
     switch (config[iZone]->GetKind_Solver()) {
-      case EULER : case NAVIER_STOKES : case RANS :
+      case EULER : case NAVIER_STOKES : case KINETIC: case RANS :
         if (Wrt_Csv) SetSurfaceCSV_Flow(config[iZone], geometry[iZone][MESH_0],
                                         solver_container[iZone][MESH_0][FLOW_SOL], iExtIter, iZone);
         break;
@@ -10121,7 +10122,7 @@ void COutput::SetResult_Files_Parallel(CSolver ****solver_container,
       cout << "Loading solution output data locally on each rank." << endl;
     
     switch (config[iZone]->GetKind_Solver()) {
-      case EULER : case NAVIER_STOKES: case RANS :
+      case EULER : case NAVIER_STOKES: case KINETIC: case RANS :
         LoadLocalData_Flow(config[iZone], geometry[iZone][MESH_0], solver_container[iZone][MESH_0], iZone);
         break;
       case ADJ_EULER : case ADJ_NAVIER_STOKES : case ADJ_RANS :
@@ -10341,7 +10342,7 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
    in this zone for output. ---*/
   
   switch (config->GetKind_Solver()) {
-    case EULER : case NAVIER_STOKES: FirstIndex = FLOW_SOL; SecondIndex = NONE; break;
+    case EULER : case NAVIER_STOKES: case KINETIC: FirstIndex = FLOW_SOL; SecondIndex = NONE; break;
     case RANS : FirstIndex = FLOW_SOL; SecondIndex = TURB_SOL; break;
     default: SecondIndex = NONE; break;
   }
@@ -10489,7 +10490,7 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
     
     /*--- Add Laminar Viscosity, Skin Friction, Heat Flux, & yPlus to the restart file ---*/
     
-    if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
+    if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS) || (Kind_Solver == KINETIC)) {
 			if (config->GetOutput_FileFormat() == PARAVIEW){
 				nVar_Par += 1; Variable_Names.push_back("Laminar_Viscosity");
 				nVar_Par += 2;
@@ -10539,7 +10540,7 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
   
   /*--- Auxiliary vectors for variables defined on surfaces only. ---*/
   
-  if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
+  if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == KINETIC) || (Kind_Solver == RANS)) {
     Aux_Frict_x = new su2double[geometry->GetnPoint()];
     Aux_Frict_y = new su2double[geometry->GetnPoint()];
     Aux_Frict_z = new su2double[geometry->GetnPoint()];
@@ -10714,7 +10715,7 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
           sqrt(config->GetBulk_Modulus()/(solver[FLOW_SOL]->node[iPoint]->GetDensity()*config->GetDensity_Ref())); iVar++;
         }
         
-        if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
+        if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == KINETIC) || (Kind_Solver == RANS)) {
           
           /*--- Load data for the laminar viscosity. ---*/
           
@@ -10759,7 +10760,7 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
   
   /*--- Free memory for auxiliary vectors. ---*/
   
-  if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
+  if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == KINETIC) || (Kind_Solver == RANS)) {
     delete [] Aux_Frict_x;
     delete [] Aux_Frict_y;
     delete [] Aux_Frict_z;

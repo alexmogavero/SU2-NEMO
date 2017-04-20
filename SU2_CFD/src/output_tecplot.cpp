@@ -89,7 +89,7 @@ void COutput::SetTecplotASCII(CConfig *config, CGeometry *geometry, CSolver **so
   
   /*--- Special cases where a number needs to be appended to the file name. ---*/
   
-  if ((Kind_Solver == EULER || Kind_Solver == NAVIER_STOKES || Kind_Solver == RANS ||
+  if ((Kind_Solver == EULER || Kind_Solver == NAVIER_STOKES || Kind_Solver == KINETIC || Kind_Solver == RANS ||
        Kind_Solver == ADJ_EULER || Kind_Solver == ADJ_NAVIER_STOKES || Kind_Solver == ADJ_RANS ||
        Kind_Solver == DISC_ADJ_EULER || Kind_Solver == DISC_ADJ_NAVIER_STOKES || Kind_Solver == DISC_ADJ_RANS) &&
       (val_nZone > 1) ) {
@@ -165,11 +165,11 @@ void COutput::SetTecplotASCII(CConfig *config, CGeometry *geometry, CSolver **so
         }
       }
       
-      if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
+      if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == KINETIC) || (Kind_Solver == RANS)) {
         Tecplot_File << ",\"Pressure\",\"Temperature\",\"C<sub>p</sub>\",\"Mach\"";
       }
       
-      if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
+      if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == KINETIC) || (Kind_Solver == RANS)) {
         if (nDim == 2) Tecplot_File << ", \"<greek>m</greek>\", \"C<sub>f</sub>_x\", \"C<sub>f</sub>_y\", \"h\", \"y<sup>+</sup>\"";
         else Tecplot_File << ", \"<greek>m</greek>\", \"C<sub>f</sub>_x\", \"C<sub>f</sub>_y\", \"C<sub>f</sub>_z\", \"h\", \"y<sup>+</sup>\"";
       }
@@ -179,7 +179,7 @@ void COutput::SetTecplotASCII(CConfig *config, CGeometry *geometry, CSolver **so
       }
       
       if (config->GetWrt_SharpEdges()) {
-        if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
+        if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == KINETIC) || (Kind_Solver == RANS)) {
           Tecplot_File << ", \"Sharp_Edge_Dist\"";
         }
       }
@@ -483,9 +483,9 @@ void COutput::SetTecplotASCII_LowMemory(CConfig *config, CGeometry *geometry, CS
         }
       }
       
-      if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
+      if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == KINETIC) || (Kind_Solver == RANS)) {
         Tecplot_File << ", \"Pressure\",\"Temperature\",\"C<sub>p</sub>\",\"Mach\"";
-        if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
+        if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == KINETIC) || (Kind_Solver == RANS)) {
           if (geometry->GetnDim() == 2) Tecplot_File << ", \"<greek>m</greek>\", \"C<sub>f</sub>_x\", \"C<sub>f</sub>_y\", \"h\", \"y<sup>+</sup>\"";
           else Tecplot_File << ", \"<greek>m</greek>\", \"C<sub>f</sub>_x\", \"C<sub>f</sub>_y\", \"C<sub>f</sub>_z\", \"h\", \"y<sup>+</sup>\"";
           if (Kind_Solver == RANS) { Tecplot_File << ", \"<greek>m</greek><sub>t</sub>\""; }
@@ -993,7 +993,7 @@ void COutput::WriteTecplotASCII_Parallel(CConfig *config, CGeometry *geometry, C
   
   /*--- Special cases where a number needs to be appended to the file name. ---*/
   
-  if ((Kind_Solver == EULER || Kind_Solver == NAVIER_STOKES || Kind_Solver == RANS ||
+  if ((Kind_Solver == EULER || Kind_Solver == NAVIER_STOKES || Kind_Solver == KINETIC || Kind_Solver == RANS ||
        Kind_Solver == ADJ_EULER || Kind_Solver == ADJ_NAVIER_STOKES || Kind_Solver == ADJ_RANS ||
        Kind_Solver == DISC_ADJ_EULER || Kind_Solver == DISC_ADJ_NAVIER_STOKES || Kind_Solver == DISC_ADJ_RANS) &&
       (val_nZone > 1) ) {
@@ -3143,12 +3143,12 @@ string COutput::AssembleVariableNames(CGeometry *geometry, CConfig *config, unsi
       }
     }
     
-    if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
+    if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == KINETIC) || (Kind_Solver == RANS)) {
       variables << "Pressure Temperature Pressure_Coefficient Mach ";
       *NVar += 4;
     }
     
-    if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
+    if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == KINETIC) || (Kind_Solver == RANS)) {
       if (nDim == 2) {
         variables << "Laminar_Viscosity Skin_Friction_Coefficient_x Skin_Friction_Coefficient_y Heat_Flux Y_Plus ";
         *NVar += 5;
@@ -3165,7 +3165,7 @@ string COutput::AssembleVariableNames(CGeometry *geometry, CConfig *config, unsi
     }
     
     if (config->GetWrt_SharpEdges()) {
-      if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
+      if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == KINETIC) || (Kind_Solver == RANS)) {
         variables << "Sharp_Edge_Dist ";
         *NVar += 1;
       }

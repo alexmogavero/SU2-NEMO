@@ -194,7 +194,8 @@ enum ENUM_SOLVER {
   TEMPLATE_SOLVER = 30,                 /*!< \brief Definition of template solver. */
   DISC_ADJ_EULER = 35,
   DISC_ADJ_RANS = 36,
-  DISC_ADJ_NAVIER_STOKES = 37
+  DISC_ADJ_NAVIER_STOKES = 37,
+  KINETIC = 38
 };
 /* BEGIN_CONFIG_ENUMS */
 static const map<string, ENUM_SOLVER> Solver_Map = CCreateMap<string, ENUM_SOLVER>
@@ -214,7 +215,8 @@ static const map<string, ENUM_SOLVER> Solver_Map = CCreateMap<string, ENUM_SOLVE
 ("DISC_ADJ_NAVIERSTOKES", DISC_ADJ_EULER)
 ("FLUID_STRUCTURE_INTERACTION", FLUID_STRUCTURE_INTERACTION)
 
-("TEMPLATE_SOLVER", TEMPLATE_SOLVER);
+("TEMPLATE_SOLVER", TEMPLATE_SOLVER)
+("KINETIC", KINETIC);
 
 
 /*!

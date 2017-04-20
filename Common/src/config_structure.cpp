@@ -2769,7 +2769,7 @@ void CConfig::SetPostprocessing(unsigned short val_software, unsigned short val_
   if (MGCycle == FULLMG_CYCLE) FinestMesh = nMGLevels;
   else FinestMesh = MESH_0;
   
-  if ((Kind_Solver == NAVIER_STOKES) &&
+  if ((Kind_Solver == NAVIER_STOKES || Kind_Solver == KINETIC) &&
       (Kind_Turb_Model != NONE))
     Kind_Solver = RANS;
     
@@ -2950,6 +2950,7 @@ void CConfig::SetPostprocessing(unsigned short val_software, unsigned short val_
   /*--- Set a flag for viscous simulations ---*/
   
   Viscous = (( Kind_Solver == NAVIER_STOKES          ) ||
+             ( Kind_Solver == KINETIC                ) ||
              ( Kind_Solver == ADJ_NAVIER_STOKES      ) ||
              ( Kind_Solver == RANS                   ) ||
              ( Kind_Solver == ADJ_RANS               ) );
@@ -3685,7 +3686,7 @@ void CConfig::SetOutput(unsigned short val_software, unsigned short val_izone) {
         if (Kind_Regime == COMPRESSIBLE) cout << "Compressible Euler equations." << endl;
         if (Kind_Regime == INCOMPRESSIBLE) cout << "Incompressible Euler equations." << endl;
         break;
-      case NAVIER_STOKES: case DISC_ADJ_NAVIER_STOKES:
+      case NAVIER_STOKES: case KINETIC: case DISC_ADJ_NAVIER_STOKES:
         if (Kind_Regime == COMPRESSIBLE) cout << "Compressible Laminar Navier-Stokes' equations." << endl;
         if (Kind_Regime == INCOMPRESSIBLE) cout << "Incompressible Laminar Navier-Stokes' equations." << endl;
         break;
@@ -3733,7 +3734,7 @@ void CConfig::SetOutput(unsigned short val_software, unsigned short val_izone) {
       cout << "Mach number: " << Mach <<"."<< endl;
       cout << "Angle of attack (AoA): " << AoA <<" deg, and angle of sideslip (AoS): " << AoS <<" deg."<< endl;
       if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == ADJ_NAVIER_STOKES) ||
-          (Kind_Solver == RANS) || (Kind_Solver == ADJ_RANS))
+          (Kind_Solver == RANS) || (Kind_Solver == ADJ_RANS) || (Kind_Solver == KINETIC))
         cout << "Reynolds number: " << Reynolds <<". Reference length "  << Length_Reynolds << "." << endl;
       if (Fixed_CL_Mode) cout << "Fixed CL mode, target value: " << Target_CL << "." << endl;
       if (Fixed_CM_Mode) {
@@ -4109,7 +4110,7 @@ void CConfig::SetOutput(unsigned short val_software, unsigned short val_izone) {
 
 		if (SmoothNumGrid) cout << "There are some smoothing iterations on the grid coordinates." << endl;
 
-    if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS) ||
+    if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS) || (Kind_Solver == KINETIC) ||
          (Kind_Solver == DISC_ADJ_EULER) || (Kind_Solver == DISC_ADJ_NAVIER_STOKES) || (Kind_Solver == DISC_ADJ_RANS) ) {
 
       if (Kind_ConvNumScheme_Flow == SPACE_CENTERED) {
@@ -4261,7 +4262,7 @@ void CConfig::SetOutput(unsigned short val_software, unsigned short val_izone) {
       }
     }
 
-    if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS) ||
+    if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS) || (Kind_Solver == KINETIC) ||
         (Kind_Solver == DISC_ADJ_NAVIER_STOKES) || (Kind_Solver == DISC_ADJ_RANS)) {
         cout << "Average of gradients with correction (viscous flow terms)." << endl;
     }
@@ -4323,7 +4324,7 @@ void CConfig::SetOutput(unsigned short val_software, unsigned short val_izone) {
 		}
 	}
 
-    if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS) ||
+    if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS) || (Kind_Solver == KINETIC) ||
         (Kind_Solver == DISC_ADJ_EULER) || (Kind_Solver == DISC_ADJ_NAVIER_STOKES) || (Kind_Solver == DISC_ADJ_RANS)) {
       switch (Kind_TimeIntScheme_Flow) {
         case RUNGE_KUTTA_EXPLICIT:
@@ -5693,7 +5694,7 @@ void CConfig::SetGlobalParam(unsigned short val_solver,
         SetKind_TimeIntScheme(Kind_TimeIntScheme_Flow);
       }
       break;
-    case NAVIER_STOKES:
+    case NAVIER_STOKES: case KINETIC:
       if (val_system == RUNTIME_FLOW_SYS) {
         SetKind_ConvNumScheme(Kind_ConvNumScheme_Flow, Kind_Centered_Flow,
                               Kind_Upwind_Flow, Kind_SlopeLimit_Flow,

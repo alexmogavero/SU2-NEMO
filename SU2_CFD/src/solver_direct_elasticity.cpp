@@ -3101,6 +3101,7 @@ void CFEM_ElasticitySolver::SetFEA_Load(CSolver ***flow_solution, CGeometry **fe
   bool compressible       = (flow_config->GetKind_Regime() == COMPRESSIBLE);
   bool incompressible     = (flow_config->GetKind_Regime() == INCOMPRESSIBLE);
   bool viscous_flow       = ((flow_config->GetKind_Solver() == NAVIER_STOKES) ||
+                             (flow_config->GetKind_Solver() == KINETIC) ||
                              (flow_config->GetKind_Solver() == RANS) );
   
   /*--- Redimensionalize the pressure ---*/

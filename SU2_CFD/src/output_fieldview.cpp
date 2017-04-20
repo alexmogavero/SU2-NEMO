@@ -72,7 +72,7 @@ void COutput::SetFieldViewASCII(CConfig *config, CGeometry *geometry, unsigned s
   
   /*--- Special cases where a number needs to be appended to the file name. ---*/
   
-  if ((Kind_Solver == EULER || Kind_Solver == NAVIER_STOKES || Kind_Solver == RANS ||
+  if ((Kind_Solver == EULER || Kind_Solver == NAVIER_STOKES || Kind_Solver == KINETIC || Kind_Solver == RANS ||
        Kind_Solver == ADJ_EULER || Kind_Solver == ADJ_NAVIER_STOKES || Kind_Solver == ADJ_RANS) &&
       (val_nZone > 1) && (config->GetUnsteady_Simulation() != HARMONIC_BALANCE)) {
     SPRINTF (buffer, "_%d", SU2_TYPE::Int(val_iZone));
@@ -214,11 +214,11 @@ void COutput::SetFieldViewASCII(CConfig *config, CGeometry *geometry, unsigned s
       else FieldView_File << "Grid_Velx\nGrid_Vely\nGrid_Velz" << endl;
     }
     
-    if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
+    if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == KINETIC) || (Kind_Solver == RANS)) {
       FieldView_File << "Pressure\nTemperature\nPressure_Coefficient\nMach" << endl;
     }
     
-    if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
+    if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == KINETIC) || (Kind_Solver == RANS)) {
       FieldView_File << "Laminar_Viscosity\nSkin_Friction_Coefficient\nHeat_Flux\nY_Plus" << endl;
     }
     
@@ -227,7 +227,7 @@ void COutput::SetFieldViewASCII(CConfig *config, CGeometry *geometry, unsigned s
     }
     
     if (config->GetWrt_SharpEdges()) {
-      if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS)) {
+      if ((Kind_Solver == EULER) || (Kind_Solver == NAVIER_STOKES)  || (Kind_Solver == KINETIC) || (Kind_Solver == RANS)) {
         FieldView_File << "Sharp_Edge_Dist" << endl;
       }
     }
@@ -514,7 +514,7 @@ void COutput::SetFieldViewBinary(CConfig *config, CGeometry *geometry, unsigned 
   
   /*--- Special cases where a number needs to be appended to the file name. ---*/
   
-  if ((Kind_Solver == EULER || Kind_Solver == NAVIER_STOKES || Kind_Solver == RANS ||
+  if ((Kind_Solver == EULER || Kind_Solver == NAVIER_STOKES  || (Kind_Solver == KINETIC) || Kind_Solver == RANS ||
        Kind_Solver == ADJ_EULER || Kind_Solver == ADJ_NAVIER_STOKES || Kind_Solver == ADJ_RANS) &&
       (val_nZone > 1) && (config->GetUnsteady_Simulation() != HARMONIC_BALANCE)) {
     SPRINTF (buffer, "_%d", SU2_TYPE::Int(val_iZone));
