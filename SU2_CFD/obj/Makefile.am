@@ -136,7 +136,9 @@ libSU2Core_sources = \
   ../src/variable_direct_wave.cpp \
   ../src/variable_direct_elasticity.cpp \
   ../src/variable_structure.cpp \
-  ../src/variable_template.cpp
+  ../src/variable_template.cpp \
+  ../src/kinetic_solver.cpp \
+  ../include/kinetic_solver.hpp
 
 su2_cfd_sources = \
   ../include/SU2_CFD.hpp \
