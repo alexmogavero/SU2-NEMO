@@ -179,7 +179,8 @@ am__libSU2Core_a_SOURCES_DIST = ../include/definition_structure.hpp \
 	../src/variable_direct_wave.cpp \
 	../src/variable_direct_elasticity.cpp \
 	../src/variable_structure.cpp ../src/variable_template.cpp \
-	../src/kinetic_solver.cpp ../include/kinetic_solver.hpp
+	../src/kinetic_solver.cpp ../include/kinetic_solver.hpp \
+	../src/CKineticVariable.cpp ../include/CKineticVariable.hpp
 am__dirstamp = $(am__leading_dot)dirstamp
 am__objects_1 = ../src/libSU2Core_a-definition_structure.$(OBJEXT) \
 	../src/libSU2Core_a-fluid_model.$(OBJEXT) \
@@ -242,7 +243,8 @@ am__objects_1 = ../src/libSU2Core_a-definition_structure.$(OBJEXT) \
 	../src/libSU2Core_a-variable_direct_elasticity.$(OBJEXT) \
 	../src/libSU2Core_a-variable_structure.$(OBJEXT) \
 	../src/libSU2Core_a-variable_template.$(OBJEXT) \
-	../src/libSU2Core_a-kinetic_solver.$(OBJEXT)
+	../src/libSU2Core_a-kinetic_solver.$(OBJEXT) \
+	../src/libSU2Core_a-CKineticVariable.$(OBJEXT)
 @BUILD_NORMAL_TRUE@am_libSU2Core_a_OBJECTS = $(am__objects_1)
 libSU2Core_a_OBJECTS = $(am_libSU2Core_a_OBJECTS)
 @BUILD_NORMAL_TRUE@am__EXEEXT_1 = ../bin/SU2_CFD$(EXEEXT)
@@ -326,7 +328,8 @@ am_____bin_SU2_CFD_AD_SOURCES_DIST = ../include/SU2_CFD.hpp \
 	../src/variable_direct_wave.cpp \
 	../src/variable_direct_elasticity.cpp \
 	../src/variable_structure.cpp ../src/variable_template.cpp \
-	../src/kinetic_solver.cpp ../include/kinetic_solver.hpp
+	../src/kinetic_solver.cpp ../include/kinetic_solver.hpp \
+	../src/CKineticVariable.cpp ../include/CKineticVariable.hpp
 am__objects_3 = ../src/___bin_SU2_CFD_AD-SU2_CFD.$(OBJEXT)
 am__objects_4 =  \
 	../src/___bin_SU2_CFD_AD-definition_structure.$(OBJEXT) \
@@ -390,7 +393,8 @@ am__objects_4 =  \
 	../src/___bin_SU2_CFD_AD-variable_direct_elasticity.$(OBJEXT) \
 	../src/___bin_SU2_CFD_AD-variable_structure.$(OBJEXT) \
 	../src/___bin_SU2_CFD_AD-variable_template.$(OBJEXT) \
-	../src/___bin_SU2_CFD_AD-kinetic_solver.$(OBJEXT)
+	../src/___bin_SU2_CFD_AD-kinetic_solver.$(OBJEXT) \
+	../src/___bin_SU2_CFD_AD-CKineticVariable.$(OBJEXT)
 @BUILD_REVERSE_TRUE@am____bin_SU2_CFD_AD_OBJECTS = $(am__objects_3) \
 @BUILD_REVERSE_TRUE@	$(am__objects_4)
 ___bin_SU2_CFD_AD_OBJECTS = $(am____bin_SU2_CFD_AD_OBJECTS)
@@ -464,7 +468,8 @@ am_____bin_SU2_CFD_DIRECTDIFF_SOURCES_DIST = ../include/SU2_CFD.hpp \
 	../src/variable_direct_wave.cpp \
 	../src/variable_direct_elasticity.cpp \
 	../src/variable_structure.cpp ../src/variable_template.cpp \
-	../src/kinetic_solver.cpp ../include/kinetic_solver.hpp
+	../src/kinetic_solver.cpp ../include/kinetic_solver.hpp \
+	../src/CKineticVariable.cpp ../include/CKineticVariable.hpp
 am__objects_5 = ../src/___bin_SU2_CFD_DIRECTDIFF-SU2_CFD.$(OBJEXT)
 am__objects_6 = ../src/___bin_SU2_CFD_DIRECTDIFF-definition_structure.$(OBJEXT) \
 	../src/___bin_SU2_CFD_DIRECTDIFF-fluid_model.$(OBJEXT) \
@@ -527,7 +532,8 @@ am__objects_6 = ../src/___bin_SU2_CFD_DIRECTDIFF-definition_structure.$(OBJEXT) 
 	../src/___bin_SU2_CFD_DIRECTDIFF-variable_direct_elasticity.$(OBJEXT) \
 	../src/___bin_SU2_CFD_DIRECTDIFF-variable_structure.$(OBJEXT) \
 	../src/___bin_SU2_CFD_DIRECTDIFF-variable_template.$(OBJEXT) \
-	../src/___bin_SU2_CFD_DIRECTDIFF-kinetic_solver.$(OBJEXT)
+	../src/___bin_SU2_CFD_DIRECTDIFF-kinetic_solver.$(OBJEXT) \
+	../src/___bin_SU2_CFD_DIRECTDIFF-CKineticVariable.$(OBJEXT)
 @BUILD_DIRECTDIFF_TRUE@am____bin_SU2_CFD_DIRECTDIFF_OBJECTS =  \
 @BUILD_DIRECTDIFF_TRUE@	$(am__objects_5) $(am__objects_6)
 ___bin_SU2_CFD_DIRECTDIFF_OBJECTS =  \
@@ -817,7 +823,9 @@ libSU2Core_sources = \
   ../src/variable_structure.cpp \
   ../src/variable_template.cpp \
   ../src/kinetic_solver.cpp \
-  ../include/kinetic_solver.hpp
+  ../include/kinetic_solver.hpp \
+  ../src/CKineticVariable.cpp \
+  ../include/CKineticVariable.hpp
 
 su2_cfd_sources = \
   ../include/SU2_CFD.hpp \
@@ -1025,6 +1033,8 @@ clean-noinstLIBRARIES:
 	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
 ../src/libSU2Core_a-kinetic_solver.$(OBJEXT): ../src/$(am__dirstamp) \
 	../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2Core_a-CKineticVariable.$(OBJEXT):  \
+	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
 libSU2Core.a: $(libSU2Core_a_OBJECTS) $(libSU2Core_a_DEPENDENCIES) $(EXTRA_libSU2Core_a_DEPENDENCIES) 
 	$(AM_V_at)-rm -f libSU2Core.a
 	$(AM_V_AR)$(libSU2Core_a_AR) libSU2Core.a $(libSU2Core_a_OBJECTS) $(libSU2Core_a_LIBADD)
@@ -1203,6 +1213,8 @@ clean-binPROGRAMS:
 	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
 ../src/___bin_SU2_CFD_AD-kinetic_solver.$(OBJEXT):  \
 	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
+../src/___bin_SU2_CFD_AD-CKineticVariable.$(OBJEXT):  \
+	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
 ../bin/SU2_CFD_AD$(EXEEXT): $(___bin_SU2_CFD_AD_OBJECTS) $(___bin_SU2_CFD_AD_DEPENDENCIES) $(EXTRA____bin_SU2_CFD_AD_DEPENDENCIES) ../bin/$(am__dirstamp)
 	@rm -f ../bin/SU2_CFD_AD$(EXEEXT)
 	$(AM_V_CXXLD)$(___bin_SU2_CFD_AD_LINK) $(___bin_SU2_CFD_AD_OBJECTS) $(___bin_SU2_CFD_AD_LDADD) $(LIBS)
@@ -1332,6 +1344,8 @@ clean-binPROGRAMS:
 	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
 ../src/___bin_SU2_CFD_DIRECTDIFF-kinetic_solver.$(OBJEXT):  \
 	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
+../src/___bin_SU2_CFD_DIRECTDIFF-CKineticVariable.$(OBJEXT):  \
+	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
 ../bin/SU2_CFD_DIRECTDIFF$(EXEEXT): $(___bin_SU2_CFD_DIRECTDIFF_OBJECTS) $(___bin_SU2_CFD_DIRECTDIFF_DEPENDENCIES) $(EXTRA____bin_SU2_CFD_DIRECTDIFF_DEPENDENCIES) ../bin/$(am__dirstamp)
 	@rm -f ../bin/SU2_CFD_DIRECTDIFF$(EXEEXT)
 	$(AM_V_CXXLD)$(___bin_SU2_CFD_DIRECTDIFF_LINK) $(___bin_SU2_CFD_DIRECTDIFF_OBJECTS) $(___bin_SU2_CFD_DIRECTDIFF_LDADD) $(LIBS)
@@ -1344,6 +1358,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/___bin_SU2_CFD-SU2_CFD.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/___bin_SU2_CFD_AD-CKineticVariable.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/___bin_SU2_CFD_AD-SU2_CFD.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/___bin_SU2_CFD_AD-definition_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/___bin_SU2_CFD_AD-driver_structure.Po@am__quote@
@@ -1407,6 +1422,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/___bin_SU2_CFD_AD-variable_direct_wave.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/___bin_SU2_CFD_AD-variable_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/___bin_SU2_CFD_AD-variable_template.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/___bin_SU2_CFD_DIRECTDIFF-CKineticVariable.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/___bin_SU2_CFD_DIRECTDIFF-SU2_CFD.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/___bin_SU2_CFD_DIRECTDIFF-definition_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/___bin_SU2_CFD_DIRECTDIFF-driver_structure.Po@am__quote@
@@ -1470,6 +1486,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/___bin_SU2_CFD_DIRECTDIFF-variable_direct_wave.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/___bin_SU2_CFD_DIRECTDIFF-variable_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/___bin_SU2_CFD_DIRECTDIFF-variable_template.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2Core_a-CKineticVariable.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2Core_a-definition_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2Core_a-driver_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2Core_a-fluid_model.Po@am__quote@
@@ -2417,6 +2434,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2Core_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2Core_a-kinetic_solver.obj `if test -f '../src/kinetic_solver.cpp'; then $(CYGPATH_W) '../src/kinetic_solver.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/kinetic_solver.cpp'; fi`
 
+../src/libSU2Core_a-CKineticVariable.o: ../src/CKineticVariable.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2Core_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2Core_a-CKineticVariable.o -MD -MP -MF ../src/$(DEPDIR)/libSU2Core_a-CKineticVariable.Tpo -c -o ../src/libSU2Core_a-CKineticVariable.o `test -f '../src/CKineticVariable.cpp' || echo '$(srcdir)/'`../src/CKineticVariable.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2Core_a-CKineticVariable.Tpo ../src/$(DEPDIR)/libSU2Core_a-CKineticVariable.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/CKineticVariable.cpp' object='../src/libSU2Core_a-CKineticVariable.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2Core_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2Core_a-CKineticVariable.o `test -f '../src/CKineticVariable.cpp' || echo '$(srcdir)/'`../src/CKineticVariable.cpp
+
+../src/libSU2Core_a-CKineticVariable.obj: ../src/CKineticVariable.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2Core_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2Core_a-CKineticVariable.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2Core_a-CKineticVariable.Tpo -c -o ../src/libSU2Core_a-CKineticVariable.obj `if test -f '../src/CKineticVariable.cpp'; then $(CYGPATH_W) '../src/CKineticVariable.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/CKineticVariable.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2Core_a-CKineticVariable.Tpo ../src/$(DEPDIR)/libSU2Core_a-CKineticVariable.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/CKineticVariable.cpp' object='../src/libSU2Core_a-CKineticVariable.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2Core_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2Core_a-CKineticVariable.obj `if test -f '../src/CKineticVariable.cpp'; then $(CYGPATH_W) '../src/CKineticVariable.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/CKineticVariable.cpp'; fi`
+
 ../src/___bin_SU2_CFD-SU2_CFD.o: ../src/SU2_CFD.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(___bin_SU2_CFD_CXXFLAGS) $(CXXFLAGS) -MT ../src/___bin_SU2_CFD-SU2_CFD.o -MD -MP -MF ../src/$(DEPDIR)/___bin_SU2_CFD-SU2_CFD.Tpo -c -o ../src/___bin_SU2_CFD-SU2_CFD.o `test -f '../src/SU2_CFD.cpp' || echo '$(srcdir)/'`../src/SU2_CFD.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/___bin_SU2_CFD-SU2_CFD.Tpo ../src/$(DEPDIR)/___bin_SU2_CFD-SU2_CFD.Po
@@ -3313,6 +3344,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(___bin_SU2_CFD_AD_CXXFLAGS) $(CXXFLAGS) -c -o ../src/___bin_SU2_CFD_AD-kinetic_solver.obj `if test -f '../src/kinetic_solver.cpp'; then $(CYGPATH_W) '../src/kinetic_solver.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/kinetic_solver.cpp'; fi`
 
+../src/___bin_SU2_CFD_AD-CKineticVariable.o: ../src/CKineticVariable.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(___bin_SU2_CFD_AD_CXXFLAGS) $(CXXFLAGS) -MT ../src/___bin_SU2_CFD_AD-CKineticVariable.o -MD -MP -MF ../src/$(DEPDIR)/___bin_SU2_CFD_AD-CKineticVariable.Tpo -c -o ../src/___bin_SU2_CFD_AD-CKineticVariable.o `test -f '../src/CKineticVariable.cpp' || echo '$(srcdir)/'`../src/CKineticVariable.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/___bin_SU2_CFD_AD-CKineticVariable.Tpo ../src/$(DEPDIR)/___bin_SU2_CFD_AD-CKineticVariable.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/CKineticVariable.cpp' object='../src/___bin_SU2_CFD_AD-CKineticVariable.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(___bin_SU2_CFD_AD_CXXFLAGS) $(CXXFLAGS) -c -o ../src/___bin_SU2_CFD_AD-CKineticVariable.o `test -f '../src/CKineticVariable.cpp' || echo '$(srcdir)/'`../src/CKineticVariable.cpp
+
+../src/___bin_SU2_CFD_AD-CKineticVariable.obj: ../src/CKineticVariable.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(___bin_SU2_CFD_AD_CXXFLAGS) $(CXXFLAGS) -MT ../src/___bin_SU2_CFD_AD-CKineticVariable.obj -MD -MP -MF ../src/$(DEPDIR)/___bin_SU2_CFD_AD-CKineticVariable.Tpo -c -o ../src/___bin_SU2_CFD_AD-CKineticVariable.obj `if test -f '../src/CKineticVariable.cpp'; then $(CYGPATH_W) '../src/CKineticVariable.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/CKineticVariable.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/___bin_SU2_CFD_AD-CKineticVariable.Tpo ../src/$(DEPDIR)/___bin_SU2_CFD_AD-CKineticVariable.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/CKineticVariable.cpp' object='../src/___bin_SU2_CFD_AD-CKineticVariable.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(___bin_SU2_CFD_AD_CXXFLAGS) $(CXXFLAGS) -c -o ../src/___bin_SU2_CFD_AD-CKineticVariable.obj `if test -f '../src/CKineticVariable.cpp'; then $(CYGPATH_W) '../src/CKineticVariable.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/CKineticVariable.cpp'; fi`
+
 ../src/___bin_SU2_CFD_DIRECTDIFF-SU2_CFD.o: ../src/SU2_CFD.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(___bin_SU2_CFD_DIRECTDIFF_CXXFLAGS) $(CXXFLAGS) -MT ../src/___bin_SU2_CFD_DIRECTDIFF-SU2_CFD.o -MD -MP -MF ../src/$(DEPDIR)/___bin_SU2_CFD_DIRECTDIFF-SU2_CFD.Tpo -c -o ../src/___bin_SU2_CFD_DIRECTDIFF-SU2_CFD.o `test -f '../src/SU2_CFD.cpp' || echo '$(srcdir)/'`../src/SU2_CFD.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/___bin_SU2_CFD_DIRECTDIFF-SU2_CFD.Tpo ../src/$(DEPDIR)/___bin_SU2_CFD_DIRECTDIFF-SU2_CFD.Po
@@ -4194,6 +4239,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/kinetic_solver.cpp' object='../src/___bin_SU2_CFD_DIRECTDIFF-kinetic_solver.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(___bin_SU2_CFD_DIRECTDIFF_CXXFLAGS) $(CXXFLAGS) -c -o ../src/___bin_SU2_CFD_DIRECTDIFF-kinetic_solver.obj `if test -f '../src/kinetic_solver.cpp'; then $(CYGPATH_W) '../src/kinetic_solver.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/kinetic_solver.cpp'; fi`
+
+../src/___bin_SU2_CFD_DIRECTDIFF-CKineticVariable.o: ../src/CKineticVariable.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(___bin_SU2_CFD_DIRECTDIFF_CXXFLAGS) $(CXXFLAGS) -MT ../src/___bin_SU2_CFD_DIRECTDIFF-CKineticVariable.o -MD -MP -MF ../src/$(DEPDIR)/___bin_SU2_CFD_DIRECTDIFF-CKineticVariable.Tpo -c -o ../src/___bin_SU2_CFD_DIRECTDIFF-CKineticVariable.o `test -f '../src/CKineticVariable.cpp' || echo '$(srcdir)/'`../src/CKineticVariable.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/___bin_SU2_CFD_DIRECTDIFF-CKineticVariable.Tpo ../src/$(DEPDIR)/___bin_SU2_CFD_DIRECTDIFF-CKineticVariable.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/CKineticVariable.cpp' object='../src/___bin_SU2_CFD_DIRECTDIFF-CKineticVariable.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(___bin_SU2_CFD_DIRECTDIFF_CXXFLAGS) $(CXXFLAGS) -c -o ../src/___bin_SU2_CFD_DIRECTDIFF-CKineticVariable.o `test -f '../src/CKineticVariable.cpp' || echo '$(srcdir)/'`../src/CKineticVariable.cpp
+
+../src/___bin_SU2_CFD_DIRECTDIFF-CKineticVariable.obj: ../src/CKineticVariable.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(___bin_SU2_CFD_DIRECTDIFF_CXXFLAGS) $(CXXFLAGS) -MT ../src/___bin_SU2_CFD_DIRECTDIFF-CKineticVariable.obj -MD -MP -MF ../src/$(DEPDIR)/___bin_SU2_CFD_DIRECTDIFF-CKineticVariable.Tpo -c -o ../src/___bin_SU2_CFD_DIRECTDIFF-CKineticVariable.obj `if test -f '../src/CKineticVariable.cpp'; then $(CYGPATH_W) '../src/CKineticVariable.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/CKineticVariable.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/___bin_SU2_CFD_DIRECTDIFF-CKineticVariable.Tpo ../src/$(DEPDIR)/___bin_SU2_CFD_DIRECTDIFF-CKineticVariable.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/CKineticVariable.cpp' object='../src/___bin_SU2_CFD_DIRECTDIFF-CKineticVariable.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(___bin_SU2_CFD_DIRECTDIFF_CXXFLAGS) $(CXXFLAGS) -c -o ../src/___bin_SU2_CFD_DIRECTDIFF-CKineticVariable.obj `if test -f '../src/CKineticVariable.cpp'; then $(CYGPATH_W) '../src/CKineticVariable.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/CKineticVariable.cpp'; fi`
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \

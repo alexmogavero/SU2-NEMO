@@ -138,7 +138,9 @@ libSU2Core_sources = \
   ../src/variable_structure.cpp \
   ../src/variable_template.cpp \
   ../src/kinetic_solver.cpp \
-  ../include/kinetic_solver.hpp
+  ../include/kinetic_solver.hpp \
+  ../src/CKineticVariable.cpp \
+  ../include/CKineticVariable.hpp
 
 su2_cfd_sources = \
   ../include/SU2_CFD.hpp \
