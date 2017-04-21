@@ -44,6 +44,15 @@
  * \version 5.0.0 "Raven"
  */
 class CKineticVariable : public CNSVariable {
+  su2double knudsenLocal; /*!< Local Knudsen number */
+
+  /*!
+   * \brief Calculates the magnitude of a vector.
+   *
+   * @param[in] v - Vector of size nDim
+   * @return norm of order 2 of v
+   */
+  su2double CalcMagnitude(su2double* v)const;
 public:
   /*!
    * \brief Constructor of the class.
@@ -75,4 +84,11 @@ public:
    * \brief Destructor of the class.
    */
   ~CKineticVariable(void);
+
+  /*!
+   * \brief Calculate local Knudsen number.
+   * \details It uses the primitive values and gradients.
+   * That therefore need to be calculated before calling this method.
+   */
+  void CalculateKnudsen();
 };

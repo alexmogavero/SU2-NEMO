@@ -48,3 +48,13 @@ CKineticSolver::CKineticSolver(CGeometry *geometry, CConfig *config, unsigned sh
 
 CKineticSolver::~CKineticSolver(void){
 }
+
+unsigned long CKineticSolver::SetPrimitive_Variables(
+    CSolver **solver_container, CConfig *config, bool Output){
+  CNSSolver::SetPrimitive_Variables(solver_container, config, Output);
+
+  for (unsigned long iPoint = 0; iPoint < nPoint; iPoint ++) {
+    static_cast<CKineticVariable*>(node[iPoint])->CalculateKnudsen();
+  }
+
+}

@@ -61,4 +61,6 @@ public:
    * \brief Destructor of the class.
    */
   ~CKineticSolver(void);
+
+  unsigned long SetPrimitive_Variables(CSolver **solver_container, CConfig *config, bool Output);
 };
