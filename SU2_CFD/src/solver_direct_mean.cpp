@@ -6630,6 +6630,65 @@ void CEulerSolver::SetPrimitive_Limiter(CGeometry *geometry, CConfig *config) {
     
   }
   
+  /*--- Van Leer limiter ---*/
+
+  if (config->GetKind_SlopeLimit_Flow() == VAN_LEER) {
+
+    for (iEdge = 0; iEdge < geometry->GetnEdge(); iEdge++) {
+
+      iPoint     = geometry->edge[iEdge]->GetNode(0);
+      jPoint     = geometry->edge[iEdge]->GetNode(1);
+      Gradient_i = node[iPoint]->GetGradient_Primitive();
+      Gradient_j = node[jPoint]->GetGradient_Primitive();
+      Coord_i    = geometry->node[iPoint]->GetCoord();
+      Coord_j    = geometry->node[jPoint]->GetCoord();
+
+      for (iVar = 0; iVar < nPrimVarGrad; iVar++) {
+
+        /*--- Calculate the interface left gradient, delta- (dm) ---*/
+
+        dm = 0.0;
+        for (iDim = 0; iDim < nDim; iDim++)
+          dm += 0.5*(Coord_j[iDim]-Coord_i[iDim])*Gradient_i[iVar][iDim];
+
+        /*--- Calculate the interface right gradient, delta+ (dp) ---*/
+        
+        if (dm == 0.0) { limiter = 2.0; }
+        else {
+            if ( dm > 0.0 ) dp = node[iPoint]->GetSolution_Max(iVar);
+            else dp = node[iPoint]->GetSolution_Min(iVar);
+
+            limiter = ( dp + abs(dp) )/( dm + abs(dp) );
+        }
+
+        if (limiter < node[iPoint]->GetLimiter_Primitive(iVar)) {
+          node[iPoint]->SetLimiter_Primitive(iVar, limiter);
+        }
+        
+
+        /*-- Repeat for point j on the edge ---*/
+
+        dm = 0.0;
+        for (iDim = 0; iDim < nDim; iDim++)
+          dm += 0.5*(Coord_i[iDim]-Coord_j[iDim])*Gradient_j[iVar][iDim];
+
+        if (dm == 0.0) { limiter = 2.0; }
+        else{
+            if ( dm > 0.0 ) dp = node[jPoint]->GetSolution_Max(iVar);
+            else dp = node[jPoint]->GetSolution_Min(iVar);
+
+            limiter = ( dp + abs(dp) )/( dm + abs(dp) );
+        }
+
+        if (limiter < node[jPoint]->GetLimiter_Primitive(iVar)) {
+          node[jPoint]->SetLimiter_Primitive(iVar, limiter);
+        }
+      }
+
+    }
+
+  }
+  
   /*--- Limiter MPI ---*/
   
   Set_MPI_Primitive_Limiter(geometry, config);
