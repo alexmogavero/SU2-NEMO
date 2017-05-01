@@ -53,3 +53,7 @@ su2double CKineticVariable::CalcMagnitude(su2double* v)const{
   }
   return sqrt(out);
 }
+
+su2double CKineticVariable::GetKnudsen()const{
+	return knudsenLocal;
+}

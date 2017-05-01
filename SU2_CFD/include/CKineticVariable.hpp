@@ -91,4 +91,6 @@ public:
    * That therefore need to be calculated before calling this method.
    */
   void CalculateKnudsen();
+
+  su2double GetKnudsen()const;
 };

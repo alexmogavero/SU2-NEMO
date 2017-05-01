@@ -32,6 +32,7 @@
  */
 
 #include "../include/output_structure.hpp"
+#include "../include/CKineticVariable.hpp"
 
 COutput::COutput(void) {
   
@@ -10516,6 +10517,16 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
 			}
     }
     
+    if (Kind_Solver == NAVIER_STOKES) {
+    	if (config->GetOutput_FileFormat() == PARAVIEW){
+    		nVar_Par += 1;
+    		Variable_Names.push_back("Knudsen");
+    	}else{
+    		nVar_Par += 1;
+    		Variable_Names.push_back("Kn");
+    	}
+    }
+
     /*--- Add Eddy Viscosity. ---*/
     
     if (Kind_Solver == RANS) {
@@ -10746,6 +10757,10 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
           Local_Data[jPoint][iVar] = geometry->node[iPoint]->GetSharpEdge_Distance(); iVar++;
         }
         
+        if (Kind_Solver == KINETIC) {
+		  Local_Data[jPoint][iVar] = static_cast<CKineticVariable*>(solver[FLOW_SOL]->node[iPoint])->GetKnudsen(); iVar++;
+		}
+
         /*--- New variables can be loaded to the Local_Data structure here,
          assuming they were registered above correctly. ---*/
         
