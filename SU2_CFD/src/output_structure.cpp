@@ -10517,7 +10517,7 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
 			}
     }
     
-    if (Kind_Solver == NAVIER_STOKES) {
+    if (Kind_Solver == KINETIC) {
     	if (config->GetOutput_FileFormat() == PARAVIEW){
     		nVar_Par += 1;
     		Variable_Names.push_back("Knudsen");
