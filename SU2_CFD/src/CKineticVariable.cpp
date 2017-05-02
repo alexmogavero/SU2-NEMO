@@ -21,11 +21,14 @@ CKineticVariable::~CKineticVariable(void){
 }
 
 void CKineticVariable::CalculateKnudsen(){
+  //Calculate mean free path
+  su2double lam = GetLaminarViscosity()*sqrt(M_PI*GetDensity()/(2*GetPressure()))/GetDensity();
+
   unsigned short iDens = nDim + 2;
-  su2double knDens = CalcMagnitude(Gradient_Primitive[iDens])/Primitive[iDens];
+  su2double knDens = lam*CalcMagnitude(Gradient_Primitive[iDens])/Primitive[iDens];
 
   unsigned short iTemp = 0;
-  su2double knTemp = CalcMagnitude(Gradient_Primitive[iTemp])/Primitive[iTemp];
+  su2double knTemp = lam*CalcMagnitude(Gradient_Primitive[iTemp])/Primitive[iTemp];
 
   /*Calculates the gradient of the magnitude of U from the gradient of U
    * gradMagU = (1/magU)*(ux*grad(ux) + uy*grad(uy) + uz*grad(uz))
@@ -40,7 +43,7 @@ void CKineticVariable::CalculateKnudsen(){
     }
   }
 
-  su2double knU = CalcMagnitude(gradMagU)/Velocity2;
+  su2double knU = lam*CalcMagnitude(gradMagU)/Velocity2;
 
   knudsenLocal = max(knDens, max(knTemp, knU));
 }
