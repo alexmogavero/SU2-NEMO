@@ -2029,6 +2029,12 @@ public:
   virtual su2double GetDual_Time_Derivative(unsigned short iVar);
   
   virtual su2double GetDual_Time_Derivative_n(unsigned short iVar);
+
+  /*!
+   * \brief Get the local Knudsen number.
+   * @return the local Knudsen number
+   */
+  virtual su2double GetKnudsen()const;
 };
 
 /*!

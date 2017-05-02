@@ -569,6 +569,10 @@ inline void CVariable::SetSolution_New(void) { }
 
 inline void CVariable::AddSolution_New(unsigned short val_var, su2double val_solution) { }
 
+inline su2double CVariable::GetKnudsen()const {
+	throw std::logic_error("Error: method GetKnudsen not implemented.");
+};
+
 inline su2double CEulerVariable::GetSolution_New(unsigned short val_var) { return Solution_New[val_var]; }
 
 inline void CEulerVariable::SetSolution_New(void) {

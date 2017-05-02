@@ -56,5 +56,4 @@ unsigned long CKineticSolver::SetPrimitive_Variables(
   for (unsigned long iPoint = 0; iPoint < nPoint; iPoint ++) {
     static_cast<CKineticVariable*>(node[iPoint])->CalculateKnudsen();
   }
-
 }

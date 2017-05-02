@@ -10758,8 +10758,8 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
         }
         
         if (Kind_Solver == KINETIC) {
-		  Local_Data[jPoint][iVar] = static_cast<CKineticVariable*>(solver[FLOW_SOL]->node[iPoint])->GetKnudsen(); iVar++;
-		}
+          Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetKnudsen(); iVar++;
+        }
 
         /*--- New variables can be loaded to the Local_Data structure here,
          assuming they were registered above correctly. ---*/

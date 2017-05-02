@@ -92,5 +92,9 @@ public:
    */
   void CalculateKnudsen();
 
+  /*!
+   * \brief Get the local Knudsen number.
+   * @return the local Knudsen number
+   */
   su2double GetKnudsen()const;
 };
