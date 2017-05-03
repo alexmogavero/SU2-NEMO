@@ -34,6 +34,7 @@
 #include "../include/driver_structure.hpp"
 #include "../include/definition_structure.hpp"
 #include "../include/kinetic_solver.hpp"
+#include "../include/CGasKineticSchemeBGK.hpp"
 
 CDriver::CDriver(char* confFile,
                  unsigned short val_nZone,
@@ -1309,6 +1310,7 @@ void CDriver::Numerics_Preprocessing(CNumerics ****numerics_container,
           switch (config->GetKind_Centered_Flow()) {
             case NO_CENTERED : cout << "No centered scheme." << endl; break;
             case LAX : numerics_container[MESH_0][FLOW_SOL][CONV_TERM] = new CCentLax_Flow(nDim, nVar_Flow, config); break;
+            case GKS_BGK : numerics_container[MESH_0][FLOW_SOL][CONV_TERM] = new CGasKineticSchemeBGK(nDim, nVar_Flow, config); break;
             case JST : numerics_container[MESH_0][FLOW_SOL][CONV_TERM] = new CCentJST_Flow(nDim, nVar_Flow, config); break;
             case JST_KE : numerics_container[MESH_0][FLOW_SOL][CONV_TERM] = new CCentJST_KE_Flow(nDim, nVar_Flow, config); break;
             default : cout << "Centered scheme not implemented." << endl; exit(EXIT_FAILURE); break;
@@ -1949,7 +1951,7 @@ void CDriver::Numerics_Postprocessing(CNumerics ****numerics_container,
           
           /*--- Compressible flow ---*/
           switch (config->GetKind_Centered_Flow()) {
-            case LAX : case JST :  case JST_KE : delete numerics_container[MESH_0][FLOW_SOL][CONV_TERM]; break;
+            case LAX : case GKS_BGK : case JST :  case JST_KE : delete numerics_container[MESH_0][FLOW_SOL][CONV_TERM]; break;
           }
           for (iMGlevel = 1; iMGlevel <= config->GetnMGLevels(); iMGlevel++)
             delete numerics_container[iMGlevel][FLOW_SOL][CONV_TERM];

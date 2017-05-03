@@ -553,13 +553,15 @@ enum ENUM_CENTERED {
   NO_CENTERED = 0,    /*!< \brief No centered scheme is used. */
   JST = 1,            /*!< \brief Jameson-Smith-Turkel centered numerical method. */
   LAX = 2,            /*!< \brief Lax-Friedrich centered numerical method. */
-  JST_KE = 4          /*!< \brief Kinetic Energy preserving Jameson-Smith-Turkel centered numerical method. */
+  JST_KE = 4,         /*!< \brief Kinetic Energy preserving Jameson-Smith-Turkel centered numerical method. */
+  GKS_BGK = 5         /*!< \brief Gas Kinetic Scheme based on BGK. */
 };
 static const map<string, ENUM_CENTERED> Centered_Map = CCreateMap<string, ENUM_CENTERED>
 ("NONE", NO_CENTERED)
 ("JST", JST)
 ("JST_KE", JST_KE)
-("LAX-FRIEDRICH", LAX);
+("LAX-FRIEDRICH", LAX)
+("GKS_BGK", GKS_BGK);
 
 
 // If you add to ENUM_UPWIND, you must also add the option to ENUM_CONVECTIVE

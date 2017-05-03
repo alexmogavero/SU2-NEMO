@@ -140,7 +140,9 @@ libSU2Core_sources = \
   ../src/kinetic_solver.cpp \
   ../include/kinetic_solver.hpp \
   ../src/CKineticVariable.cpp \
-  ../include/CKineticVariable.hpp
+  ../include/CKineticVariable.hpp \
+  ../src/CGasKineticSchemeBGK.cpp \
+  ../include/CGasKineticSchemeBGK.hpp
 
 su2_cfd_sources = \
   ../include/SU2_CFD.hpp \

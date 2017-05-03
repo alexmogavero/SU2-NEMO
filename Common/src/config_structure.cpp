@@ -4132,6 +4132,10 @@ void CConfig::SetOutput(unsigned short val_software, unsigned short val_izone) {
           cout << "Lax-Friedrich scheme for the flow inviscid terms."<< endl;
           cout << "First order integration." << endl;
         }
+        if (Kind_Centered_Flow == GKS_BGK) {
+          cout << "Gas Kinetic Scheme for the flow inviscid terms."<< endl;
+          cout << "First order integration." << endl;
+        }
       }
 
 			if (Kind_ConvNumScheme_Flow == SPACE_UPWIND) {
