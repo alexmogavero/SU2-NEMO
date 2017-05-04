@@ -26,6 +26,43 @@ private:
   grid_movement; /*!< \brief Modification for grid movement. */
   su2double ProjGridVel;
 
+protected:
+  /*!
+   * \brief define the integration limits
+   */
+  enum IntLimits{
+    ALL,     //!< from \f$-\infty\f$ to \f$+\infty\f$
+    NEGATIVE,//!< from \f$-\infty\f$ to 0
+    POSITIVE //!< from 0 to \f$+\infty\f$
+  };
+
+  su2double* U_I; //!< vector of conserved quantities at the interface
+
+  /*!
+   * \brief calculates the moments of the Maxwellian distribution
+   * \details a generic moment of the Maxwellian is defined by means of the following:
+   *  \f[
+   *    \rho \langle\varphi\rangle = \iint_{-\infty}^{+\infty} \varphi f_0 d\mathbf{u}\mathbf{\xi}
+   *  \f]
+   *  where the moment can be always be:
+   *  \f[
+   *    \rho \langle\varphi\rangle = \rho\langle u^pv^qw^r\mathbf{\xi}^s\rangle =
+   *    \rho\langle u^p\rangle \langle v^q\rangle\langle w^r\rangle \langle\mathbf{\xi}^s\rangle
+   *  \f]
+   *  the integration limits can be between \f$-\infty\f$ and \f$+\infty\f$, from 0
+   *  to \f$+\infty\f$ or from \f$-\infty\f$ to 0
+   * @param exponents - exponents that define the phi function (p,q,r,s)
+   * @param theta - thermodynamic parameter dependent on temperature that define the Maxwellian
+   * @param lim - flag that defines the integration limits
+   * @return
+   */
+  su2double MomentsMaxwellian(std::vector<unsigned short> exponents, su2double theta, IntLimits lim)const;
+
+  /*!
+   * \brief Calculates the conserved quantities at the interface.
+   */
+  void CalculateInterface()const;
+
 public:
 
   /*!
@@ -51,4 +88,11 @@ public:
    */
   void ComputeResidual(su2double *val_residual, su2double **val_Jacobian_i, su2double **val_Jacobian_j,
                        CConfig *config);
+
+  /*!
+   * \brief Compute the flow residual using the GKS BGK method.
+   * \param[out] val_residual - Pointer to the convective residual.
+   * \param[in] config - Definition of the particular problem.
+   */
+  void ComputeResidual(su2double *val_residual, CConfig *config);
 };
