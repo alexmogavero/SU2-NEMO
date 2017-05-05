@@ -39,6 +39,12 @@ protected:
 
   CFluidModel* FluidModel; //!< Thermodynamic model of the fluid
 
+  //TODO define those in the base class
+  CVariable* node_i; //!< Node that stores all the variables on the left size of the edge
+  CVariable* node_j; //!< Node that stores all the variables on the right size of the edge
+
+  CKineticVariable* node_I; //!< Node that stores all the variables at the interface
+
   /*!
    * \brief calculates the moments of the Maxwellian distribution
    * \details a generic moment of the Maxwellian is defined by means of the following:
