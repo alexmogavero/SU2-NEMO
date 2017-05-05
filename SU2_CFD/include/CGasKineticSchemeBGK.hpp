@@ -35,6 +35,14 @@ protected:
     POSITIVE //!< from 0 to \f$+\infty\f$
   };
 
+  /*!
+   * \brief identify the state
+   */
+  enum State{
+    LEFT,     //!< left side of the edge i.e. i
+    RIGHT,    //!< left side of the edge i.e. j
+    INTERFACE //!< left side of the edge i.e. I
+  };
   su2double* U_I; //!< vector of conserved quantities at the interface
 
   CFluidModel* FluidModel; //!< Thermodynamic model of the fluid
@@ -63,7 +71,7 @@ protected:
    * @param lim - flag that defines the integration limits
    * @return
    */
-  su2double MomentsMaxwellian(std::vector<unsigned short> exponents, su2double theta, IntLimits lim)const;
+  su2double MomentsMaxwellian(std::vector<unsigned short> exponents, State state, IntLimits lim)const;
 
   /*!
    * \brief Calculates the conserved quantities at the interface.
