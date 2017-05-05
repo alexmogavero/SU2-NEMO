@@ -47,62 +47,26 @@ CGasKineticSchemeBGK::~CGasKineticSchemeBGK(void) {
 }
 
 void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *config){
-  /*--- Pressure, density, enthalpy, energy, and velocity at points i and j ---*/
-  Pressure_i = V_i[nDim+1];                       Pressure_j = V_j[nDim+1];
-  Density_i = V_i[nDim+2];                        Density_j = V_j[nDim+2];
-  Enthalpy_i = V_i[nDim+3];                       Enthalpy_j = V_j[nDim+3];
-  Energy_i = Enthalpy_i - Pressure_i/Density_i;   Energy_j = Enthalpy_j - Pressure_j/Density_j;
-
-  for (unsigned short iDim = 0; iDim < nDim; iDim++) {
-    Velocity_i[iDim] = V_i[iDim+1];
-    Velocity_j[iDim] = V_j[iDim+1];
-  }
-
-  /*--- Recompute conservative variables ---*/
-  // TODO maybe this step can be bypassed because conserved quantities are calculated already by the solver
-  U_i[0] = Density_i; U_j[0] = Density_j;
-  for (unsigned short iDim = 0; iDim < nDim; iDim++) {
-    U_i[iDim+1] = Density_i*Velocity_i[iDim];
-    U_j[iDim+1] = Density_j*Velocity_j[iDim];
-  }
-  U_i[nDim+1] = Density_i*Energy_i;
-  U_j[nDim+1] = Density_j*Energy_j;
-
+  //TODO implement rotations in order to take into account the cases when the normal is not aligned with u
   CalculateInterface();
-
-  //theta calculation only valid for ideal gas
-  //TODO move it to gas model class
-  su2double theta_i = Density_i/(2*Pressure_i);
-  su2double theta_j = Density_j/(2*Pressure_j);
-
-  su2double Velocity2_I = 0;
-  for(unsigned short iDim = 0; iDim<nDim; iDim++){
-    Velocity2_I += pow(U_I[iDim+1]/U_I[0], 2);
-  }
-  su2double Energy_I = U_I[nVar-1] - 0.5*Velocity2_I;
-  FluidModel->SetTDState_rhoe(U_I[0], Energy_I);
-  su2double Pressure_I = FluidModel->GetPressure();
-  su2double theta_I = U_I[0]/(2*Pressure_I);
 
   //Calculate the mean collision time
   //TODO check if it is ok to calculate it on the interface
-  su2double tauColl = FluidModel->GetLaminarViscosity()/Pressure_I;
+  su2double tauColl = node_I->GetLaminarViscosity()/node_I->GetPressure();
 
-  su2double Flux_i[nVar], Flux_j[nVar], Flux_I[nVar];
-  std::vector<std::vector<unsigned short> > exponents(nVar,std::vector<unsigned short>(nVar-1,0));
-  exponents[0][0] = 1;
-  for(unsigned short iDim=0; iDim<nDim; iDim++){
-    exponents[iDim+1][iDim] = 1;
-    exponents[iDim+1][0] += 1;
-    exponents[nVar-1][iDim] = 2;
-  }
-  exponents[nVar-1][0] += 1;
-  exponents[nVar-1][nVar-2] = 2;
+  std::vector<su2double> Flux_i, Flux_j, Flux_I;
+  Flux_I = PsiMaxwell(INTERFACE, ALL, true);
+  Flux_i = PsiMaxwell(LEFT, POSITIVE, true);
+  Flux_j = PsiMaxwell(RIGHT, NEGATIVE, true);
 
-  for(unsigned short iVar=0; iVar<nVar; iVar++){
-    Flux_I[iVar] = MomentsMaxwellian(exponents[iVar], theta_I, ALL);
-    Flux_i[iVar] = MomentsMaxwellian(exponents[iVar], theta_i, POSITIVE);
-    Flux_j[iVar] = MomentsMaxwellian(exponents[iVar], theta_j, NEGATIVE);
+  su2double Dt = 0.5*(node_i->GetDelta_Time() + node_j->GetDelta_Time());
+  //calculate time integrals
+  su2double int_ij = tauColl - tauColl*exp(-Dt/tauColl); //integral of exp(-Dt/tauColl)
+  su2double int_I = Dt - int_ij;
+
+  su2double Dt_inv = 1/Dt;
+  for(unsigned short iVar; iVar<nVar; iVar++){
+    val_residual[iVar] = Dt_inv*(int_I*Flux_I[iVar] + int_ij*(Flux_i[iVar] + Flux_j[iVar]))*Area;
   }
 }
 
