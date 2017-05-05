@@ -74,6 +74,19 @@ protected:
   su2double MomentsMaxwellian(std::vector<unsigned short> exponents, State state, IntLimits lim)const;
 
   /*!
+   * \brief Calculate the moments of the Maxwellian distribution with function \f$ \varphi=\psi\f$ .
+   * \details \f$\psi\f$ is defined so to calculate the conserved quantities.
+   *  \f[
+   *    \mathbf{w} = \iint_{-\infty}^{+\infty} \mathbf{\psi} f d\mathbf{u}\mathbf{\xi}
+   *  \f]
+   *  the fluxes can be calculated using the flag uPsi.
+   * @param state identify the state for wich the momemnts will be calculated
+   * @param lim defines the integration limits
+   * @param if true moments are calculated for \f$ \varphi=u\psi\f$ instead
+   * @return a vector with a moment for each conserved quantity.
+   */
+  std::vector<su2double> PsiMaxwell(State state, IntLimits lim, bool uPsi=false)const;
+
    * \brief Calculates the conserved quantities at the interface.
    */
   void CalculateInterface()const;

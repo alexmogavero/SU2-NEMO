@@ -101,6 +101,35 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
   }
 }
 
+std::vector<su2double> CGasKineticSchemeBGK::PsiMaxwell(State state, IntLimits lim, bool uPsi)const{
+  std::vector<su2double> out(nVar, 0);
+  std::vector<unsigned short> exponents(nVar-1,0);
+
+  if(uPsi) exponents[0]++;
+  out[0] = MomentsMaxwellian(exponents, state, lim);
+
+  for(unsigned short iDim=0; iDim<nDim; iDim++){
+    exponents.assign(nVar-1, 0);
+    exponents[iDim] = 1;
+    if(uPsi) exponents[0]++;
+    out[iDim+1] = MomentsMaxwellian(exponents, state, lim);
+  }
+
+  for(unsigned short iDim=0; iDim<nDim; iDim++){
+    exponents.assign(nVar-1, 0);
+    exponents[iDim] = 2;
+    if(uPsi) exponents[0]++;
+    out[nVar-1] += MomentsMaxwellian(exponents, state, lim);
+  }
+  exponents.assign(nVar-1, 0);
+  exponents[nVar-2] = 2;
+  if(uPsi) exponents[0]++;
+  out[nVar-1] += MomentsMaxwellian(exponents, state, lim);
+  out[nVar-1] /= 2;
+
+  return out;
+}
+
 void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, su2double **val_Jacobian_i, su2double **val_Jacobian_j,
                                     CConfig *config) {
 
