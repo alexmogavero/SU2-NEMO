@@ -10,7 +10,6 @@
  */
 class CGasKineticSchemeBGK : public CNumerics {
 private:
-  unsigned short iDim, iVar, jVar; /*!< \brief Iteration on dimension and variables. */
   su2double *Diff_U, /*!< \brief Difference of conservative variables. */
   *Velocity_i, *Velocity_j, /*!< \brief Velocity at node 0 and 1. */
   *MeanVelocity, ProjVelocity, ProjVelocity_i, ProjVelocity_j,  /*!< \brief Mean and projected velocities. */
@@ -37,6 +36,8 @@ protected:
   };
 
   su2double* U_I; //!< vector of conserved quantities at the interface
+
+  CFluidModel* FluidModel; //!< Thermodynamic model of the fluid
 
   /*!
    * \brief calculates the moments of the Maxwellian distribution
