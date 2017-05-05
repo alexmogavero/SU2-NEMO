@@ -1,11 +1,13 @@
 #include "../include/CGasKineticSchemeBGK.hpp"
+#include "../include/CKineticVariable.hpp"
 
 CGasKineticSchemeBGK::CGasKineticSchemeBGK(unsigned short val_nDim, unsigned short val_nVar, CConfig *config):
   CNumerics(val_nDim, val_nVar, config),
   FluidModel(NULL),
   node_i(NULL),
   node_j(NULL),
-  node_I(NULL){
+  node_I(NULL),
+  config(config){
 
   Gamma = config->GetGamma();
   Gamma_Minus_One = Gamma - 1.0;
@@ -38,7 +40,10 @@ CGasKineticSchemeBGK::~CGasKineticSchemeBGK(void) {
 
   delete [] U_i;
   delete [] U_j;
-  delete [] U_I;
+
+  if(node_I){
+    delete node_I;
+  }
 }
 
 void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *config){
@@ -98,6 +103,32 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
     Flux_I[iVar] = MomentsMaxwellian(exponents[iVar], theta_I, ALL);
     Flux_i[iVar] = MomentsMaxwellian(exponents[iVar], theta_i, POSITIVE);
     Flux_j[iVar] = MomentsMaxwellian(exponents[iVar], theta_j, NEGATIVE);
+  }
+}
+
+void CGasKineticSchemeBGK::CalculateInterface(){
+  std::vector<su2double> U_L, U_R, U_I;
+
+  U_L = PsiMaxwell(LEFT, POSITIVE);
+  U_R = PsiMaxwell(LEFT, POSITIVE);
+
+  for(std::size_t i=0; i<U_L.size(); i++){
+    U_I[i] =  U_L[i] + U_R[i];
+  }
+
+  su2double vel[nDim];
+  for(unsigned short iDim=0; iDim<nDim; iDim++){
+    vel[iDim] = U_I[iDim+1]/U_I[0];
+  }
+  node_I = new CKineticVariable(U_I.data(), nDim, nVar, config);
+
+  node_I->SetNon_Physical(false);
+
+  bool RightSol = node_I->SetPrimVar(FluidModel);
+  node_I->SetSecondaryVar(FluidModel);
+
+  if (!RightSol) {
+    node_I->SetNon_Physical(true);
   }
 }
 

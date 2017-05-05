@@ -2,6 +2,8 @@
 
 #include "numerics_structure.hpp"
 
+class CKineticVariable;
+
 /*!
  * \class CGasKineticSchemeBGK
  * \brief Class for computing the Kinetic Fluxes using BGK model.
@@ -25,6 +27,8 @@ private:
   grid_movement; /*!< \brief Modification for grid movement. */
   su2double ProjGridVel;
 
+  CConfig* config; //!Configuration object of the whole CFD
+
 protected:
   /*!
    * \brief define the integration limits
@@ -43,7 +47,6 @@ protected:
     RIGHT,    //!< left side of the edge i.e. j
     INTERFACE //!< left side of the edge i.e. I
   };
-  su2double* U_I; //!< vector of conserved quantities at the interface
 
   CFluidModel* FluidModel; //!< Thermodynamic model of the fluid
 
@@ -87,9 +90,11 @@ protected:
    */
   std::vector<su2double> PsiMaxwell(State state, IntLimits lim, bool uPsi=false)const;
 
-   * \brief Calculates the conserved quantities at the interface.
+  /*!
+   * \brief Calculates the state at the interface.
+   * \details create the node `node_I` and calculate its primitive variables.
    */
-  void CalculateInterface()const;
+  void CalculateInterface();
 
 public:
 
