@@ -3,9 +3,6 @@
 
 CGasKineticSchemeBGK::CGasKineticSchemeBGK(unsigned short val_nDim, unsigned short val_nVar, CConfig *config):
   CNumerics(val_nDim, val_nVar, config),
-  FluidModel(NULL),
-  node_i(NULL),
-  node_j(NULL),
   node_I(NULL),
   config(config){
 }

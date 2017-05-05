@@ -67,6 +67,11 @@ protected:
   su2double Prandtl_Lam;        /*!< \brief Laminar Prandtl's number. */
   su2double Prandtl_Turb;    /*!< \brief Turbulent Prandtl's number. */
   
+  CFluidModel* FluidModel; //!< Thermodynamic model of the fluid
+
+  CVariable* node_i; //!< Node that stores all the variables on the left size of the edge
+  CVariable* node_j; //!< Node that stores all the variables on the right size of the edge
+
 public:
   
   su2double
@@ -232,6 +237,19 @@ public:
                             su2double A10, su2double A11, su2double A12,
                             su2double A20, su2double A21, su2double A22);
   
+  /*!
+   * \brief Set the node objects containing all the variables
+   * @param n_i node at point i
+   * @param n_j node at point j
+   */
+  virtual void SetNodes(CVariable* n_i, CVariable* n_j);
+
+  /*!
+   * \brief Set the thermodynamic model
+   * @param fm pointer to the thermodynamic model
+   */
+  void SetFluidModel(CFluidModel* fm);
+
   /*!
    * \brief Set the solution at different times.
    * \param[in] val_u_nM1 Conservative solution at time n-1.
