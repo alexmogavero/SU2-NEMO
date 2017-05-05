@@ -47,10 +47,6 @@ void CGasKineticSchemeBGK::CalculateInterface(){
     U_I[i] =  U_L[i] + U_R[i];
   }
 
-  su2double vel[nDim];
-  for(unsigned short iDim=0; iDim<nDim; iDim++){
-    vel[iDim] = U_I[iDim+1]/U_I[0];
-  }
   node_I = new CKineticVariable(U_I.data(), nDim, nVar, config);
 
   node_I->SetNon_Physical(false);
