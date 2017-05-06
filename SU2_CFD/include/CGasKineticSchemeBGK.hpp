@@ -23,6 +23,20 @@ protected:
     NEGATIVE,//!< from \f$-\infty\f$ to 0
     POSITIVE //!< from 0 to \f$+\infty\f$
   };
+  
+  /*!
+   * \brief define the structure that holds the Maxwellian moments
+   */
+  struct moments_struct{
+    std::vector<std::vector<double>> A;
+    std::vector<std::vector<double>> P;
+    std::vector<std::vector<double>> N;
+    std::vector<double> xi;
+  };
+  
+  moments_struct moments_i; //!< Structure that stores the Maxwellian moments on the left size of the edge
+  moments_struct moments_j; //!< Structure that stores the Maxwellian moments on the right size of the edge
+  moments_struct moments_I; //!< Structure that stores the Maxwellian moments at the interface
 
   /*!
    * \brief identify the state
@@ -55,11 +69,16 @@ protected:
    *  the integration limits can be between \f$-\infty\f$ and \f$+\infty\f$, from 0
    *  to \f$+\infty\f$ or from \f$-\infty\f$ to 0
    * @param exponents - exponents that define the phi function (p,q,r,s)
-   * @param theta - thermodynamic parameter dependent on temperature that define the Maxwellian
+   * @param state - flag that defines the state
    * @param lim - flag that defines the integration limits
    * @return
    */
-  su2double MomentsMaxwellian(std::vector<unsigned short> exponents, State state, IntLimits lim)const;
+  su2double MomentsMaxwellian(std::vector<unsigned short> exponents, State state, IntLimits lim);
+  
+  /*!
+   * \brief Actual function that computes the Maxwellian moments for a node 
+   */
+  void ComputeMaxwellianMoments(CVariable* node, moments_struct*  moments);
 
   /*!
    * \brief Calculate the moments of the Maxwellian distribution with function \f$ \varphi=\psi\f$ .
@@ -73,7 +92,7 @@ protected:
    * @param if true moments are calculated for \f$ \varphi=u\psi\f$ instead
    * @return a vector with a moment for each conserved quantity.
    */
-  std::vector<su2double> PsiMaxwell(State state, IntLimits lim, bool uPsi=false)const;
+  std::vector<su2double> PsiMaxwell(State state, IntLimits lim, bool uPsi=false);
 
   /*!
    * \brief Calculates the state at the interface.

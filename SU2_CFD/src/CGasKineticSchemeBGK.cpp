@@ -1,3 +1,5 @@
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include "../include/CGasKineticSchemeBGK.hpp"
 #include "../include/CKineticVariable.hpp"
 
@@ -66,7 +68,7 @@ void CGasKineticSchemeBGK::CalculateInterface(){
   }
 }
 
-std::vector<su2double> CGasKineticSchemeBGK::PsiMaxwell(State state, IntLimits lim, bool uPsi)const{
+std::vector<su2double> CGasKineticSchemeBGK::PsiMaxwell(State state, IntLimits lim, bool uPsi){
   std::vector<su2double> out(nVar, 0);
   std::vector<unsigned short> exponents(nVar-1,0);
 
@@ -93,4 +95,79 @@ std::vector<su2double> CGasKineticSchemeBGK::PsiMaxwell(State state, IntLimits l
   out[nVar-1] /= 2;
 
   return out;
+}
+
+su2double CGasKineticSchemeBGK::MomentsMaxwellian(std::vector<unsigned short> exponents, State state, IntLimits lim){
+  su2double mp;
+  
+  switch (state){
+    case LEFT:
+      if (moments_i.xi.empty()) CGasKineticSchemeBGK::ComputeMaxwellianMoments(node_i, &moments_i);
+      switch (lim) {
+        case ALL:
+          mp = moments_i.A[0][exponents[0]] * moments_i.A[1][exponents[1]] * moments_i.A[2][exponents[2]] *moments_i.xi[exponents[3]];
+        case NEGATIVE:
+          mp = moments_i.N[0][exponents[0]] * moments_i.N[1][exponents[1]] * moments_i.N[2][exponents[2]] *moments_i.xi[exponents[3]];
+        case POSITIVE:
+          mp = moments_i.P[0][exponents[0]] * moments_i.P[1][exponents[1]] * moments_i.P[2][exponents[2]] *moments_i.xi[exponents[3]];
+      }
+    case RIGHT:
+      if (moments_j.xi.empty()) CGasKineticSchemeBGK::ComputeMaxwellianMoments(node_j, &moments_j);
+      switch (lim) {
+        case ALL:
+          mp = moments_j.A[0][exponents[0]] * moments_j.A[1][exponents[1]] * moments_j.A[2][exponents[2]] *moments_j.xi[exponents[3]];
+        case NEGATIVE:
+          mp = moments_j.N[0][exponents[0]] * moments_j.N[1][exponents[1]] * moments_j.N[2][exponents[2]] *moments_j.xi[exponents[3]];
+        case POSITIVE:
+          mp = moments_j.P[0][exponents[0]] * moments_j.P[1][exponents[1]] * moments_j.P[2][exponents[2]] *moments_j.xi[exponents[3]];
+      }
+    case INTERFACE:
+      if (moments_I.xi.empty()) CGasKineticSchemeBGK::ComputeMaxwellianMoments(node_I, &moments_I);
+      switch (lim) {
+        case ALL:
+          mp = moments_I.A[0][exponents[0]] * moments_I.A[1][exponents[1]] * moments_I.A[2][exponents[2]] *moments_I.xi[exponents[3]];
+        case NEGATIVE:
+          mp = moments_I.N[0][exponents[0]] * moments_I.N[1][exponents[1]] * moments_I.N[2][exponents[2]] *moments_I.xi[exponents[3]];
+        case POSITIVE:
+          mp = moments_I.P[0][exponents[0]] * moments_I.P[1][exponents[1]] * moments_I.P[2][exponents[2]] *moments_I.xi[exponents[3]];
+      }
+  }
+  
+  return mp;
+}
+
+void CGasKineticSchemeBGK::ComputeMaxwellianMoments(CVariable* node, moments_struct*  moments){
+  double K = (5.0 - 3.0*Gamma) / (Gamma - 1.0) + (3.0 - (nDim - 2.0));
+  double l = (K+nDim) * node->GetDensity() / (4.0*((node->GetEnergy()-0.5*node->GetVelocity2()) - 0.5*node->GetDensity()*node->GetVelocity2()));
+  
+  
+  for(unsigned short i = 0; i<nDim ; i++){
+    moments->A[i].resize(9,1.0);
+    moments->P[i].resize(9,1.0);
+    moments->N[i].resize(9,1.0);
+  }
+  
+  moments->xi.resize(7,1.0);  
+
+  for(unsigned short i = 0; i<nDim; i++){
+    su2double U = node->GetVelocity(i);
+    
+    moments->A[i][0] = 1;
+    moments->P[i][0] = 0.5*erfc(-sqrt(l)*U);
+    moments->N[i][0] = 0.5*erfc(sqrt(l)*U);
+    
+    moments->A[i][0] = U;
+    moments->P[i][0] = U*moments->P[i][0] + 0.5*exp(-l*U*U)/sqrt(M_PI*l);
+    moments->N[i][0] = U*moments->N[i][0] - 0.5*exp(-l*U*U)/sqrt(M_PI*l);
+    
+    for(unsigned int n =0; n<9; n++){
+      moments->A[i][n+2] = U*moments->A[i][n+1] + (n+1)/(2*l)*moments->A[i][n];
+      moments->P[i][n+2] = U*moments->P[i][n+1] + (n+1)/(2*l)*moments->P[i][n];
+      moments->N[i][n+2] = U*moments->N[i][n+1] + (n+1)/(2*l)*moments->N[i][n];
+    }
+  }
+  
+  moments->xi[2] = 0.5 * K / l;
+  moments->xi[4] = 0.5 * moments->xi[2] * (K+2)/ l;
+  moments->xi[6] = 0.5 * moments->xi[4] * (K+4)/ l;
 }
