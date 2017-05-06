@@ -5,9 +5,6 @@
 
 CGasKineticSchemeBGK::CGasKineticSchemeBGK(unsigned short val_nDim, unsigned short val_nVar, CConfig *config):
   CNumerics(val_nDim, val_nVar, config),
-  FluidModel(NULL),
-  node_i(NULL),
-  node_j(NULL),
   node_I(NULL),
   config(config){
 }
@@ -52,10 +49,6 @@ void CGasKineticSchemeBGK::CalculateInterface(){
     U_I[i] =  U_L[i] + U_R[i];
   }
 
-  su2double vel[nDim];
-  for(unsigned short iDim=0; iDim<nDim; iDim++){
-    vel[iDim] = U_I[iDim+1]/U_I[0];
-  }
   node_I = new CKineticVariable(U_I.data(), nDim, nVar, config);
 
   node_I->SetNon_Physical(false);

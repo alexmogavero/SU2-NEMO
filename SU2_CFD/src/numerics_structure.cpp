@@ -33,7 +33,10 @@
 
 #include "../include/numerics_structure.hpp"
 
-CNumerics::CNumerics(void) {
+CNumerics::CNumerics(void):
+  FluidModel(NULL),
+  node_i(NULL),
+  node_j(NULL){
 
   Normal      = NULL;
   UnitNormal  = NULL;
@@ -61,7 +64,10 @@ CNumerics::CNumerics(void) {
 }
 
 CNumerics::CNumerics(unsigned short val_nDim, unsigned short val_nVar,
-                     CConfig *config) {
+                     CConfig *config):
+  FluidModel(NULL),
+  node_i(NULL),
+  node_j(NULL){
   
   unsigned short iVar, iDim, jDim;
   
@@ -2521,6 +2527,16 @@ void CNumerics::CreateBasis(su2double *val_Normal) {
   }
 }
 
+void CNumerics::SetNodes(CVariable* n_i, CVariable* n_j){
+  node_i = n_i;
+  node_j = n_j;
+}
+
+void CNumerics::SetFluidModel(CFluidModel* fm){
+  FluidModel = fm;
+}
+
 CSourceNothing::CSourceNothing(unsigned short val_nDim, unsigned short val_nVar, CConfig *config) : CNumerics(val_nDim, val_nVar, config) { }
 
 CSourceNothing::~CSourceNothing(void) { }
+

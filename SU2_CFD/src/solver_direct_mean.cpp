@@ -4483,6 +4483,9 @@ void CEulerSolver::Centered_Residual(CGeometry *geometry, CSolver **solver_conta
     numerics->SetNormal(geometry->edge[iEdge]->GetNormal());
     numerics->SetNeighbor(geometry->node[iPoint]->GetnNeighbor(), geometry->node[jPoint]->GetnNeighbor());
     
+    numerics->SetFluidModel(FluidModel);
+    numerics->SetNodes(node[iPoint], node[jPoint]);
+
     /*--- Set primitive variables w/o reconstruction ---*/
     
     numerics->SetPrimitive(node[iPoint]->GetPrimitive(), node[jPoint]->GetPrimitive());
