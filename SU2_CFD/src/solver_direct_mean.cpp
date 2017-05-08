@@ -4509,7 +4509,11 @@ void CEulerSolver::Centered_Residual(CGeometry *geometry, CSolver **solver_conta
     
     /*--- Compute residuals, and Jacobians ---*/
     
-    numerics->ComputeResidual(Res_Conv, Jacobian_i, Jacobian_j, config);
+    if(implicit){
+      numerics->ComputeResidual(Res_Conv, Jacobian_i, Jacobian_j, config);
+    }else{
+      numerics->ComputeResidual(Res_Conv, config);
+    }
     
     /*--- Update convective and artificial dissipation residuals ---*/
     
