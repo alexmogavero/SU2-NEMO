@@ -98,32 +98,80 @@ su2double CGasKineticSchemeBGK::MomentsMaxwellian(std::vector<unsigned short> ex
       if (moments_i.xi.empty()) CGasKineticSchemeBGK::ComputeMaxwellianMoments(node_i, &moments_i);
       switch (lim) {
         case ALL:
-          mp = moments_i.A[0][exponents[0]] * moments_i.A[1][exponents[1]] * moments_i.A[2][exponents[2]] *moments_i.xi[exponents[3]];
+          mp = 1.0;
+          for (unsigned short i = 0; i<nDim; i++){
+            mp *= moments_i.A[0][exponents[i]];
+          }
+          mp *= moments_i.xi[exponents[nDim]];
+          break;
         case NEGATIVE:
-          mp = moments_i.N[0][exponents[0]] * moments_i.N[1][exponents[1]] * moments_i.N[2][exponents[2]] *moments_i.xi[exponents[3]];
+          mp = 1.0;
+          for (unsigned short i = 0; i<nDim; i++){
+            mp *= moments_i.N[0][exponents[i]];
+          }
+          mp *= moments_i.xi[exponents[nDim]];
+          break;
         case POSITIVE:
-          mp = moments_i.P[0][exponents[0]] * moments_i.P[1][exponents[1]] * moments_i.P[2][exponents[2]] *moments_i.xi[exponents[3]];
+          mp = 1.0;
+          for (unsigned short i = 0; i<nDim; i++){
+            mp *= moments_i.P[0][exponents[i]];
+          }
+          mp *= moments_i.xi[exponents[nDim]];
+          break;
       }
+    break;
     case RIGHT:
       if (moments_j.xi.empty()) CGasKineticSchemeBGK::ComputeMaxwellianMoments(node_j, &moments_j);
       switch (lim) {
         case ALL:
-          mp = moments_j.A[0][exponents[0]] * moments_j.A[1][exponents[1]] * moments_j.A[2][exponents[2]] *moments_j.xi[exponents[3]];
+          mp = 1.0;
+          for (unsigned short i = 0; i<nDim; i++){
+            mp *= moments_j.A[0][exponents[i]];
+          }
+          mp *= moments_j.xi[exponents[nDim]];
+          break;
         case NEGATIVE:
-          mp = moments_j.N[0][exponents[0]] * moments_j.N[1][exponents[1]] * moments_j.N[2][exponents[2]] *moments_j.xi[exponents[3]];
+          mp = 1.0;
+          for (unsigned short i = 0; i<nDim; i++){
+            mp *= moments_j.N[0][exponents[i]];
+          }
+          mp *= moments_j.xi[exponents[nDim]];
+          break;
         case POSITIVE:
-          mp = moments_j.P[0][exponents[0]] * moments_j.P[1][exponents[1]] * moments_j.P[2][exponents[2]] *moments_j.xi[exponents[3]];
+          mp = 1.0;
+          for (unsigned short i = 0; i<nDim; i++){
+            mp *= moments_j.P[0][exponents[i]];
+          }
+          mp *= moments_j.xi[exponents[nDim]];
+          break;
       }
+    break;
     case INTERFACE:
       if (moments_I.xi.empty()) CGasKineticSchemeBGK::ComputeMaxwellianMoments(node_I, &moments_I);
       switch (lim) {
         case ALL:
-          mp = moments_I.A[0][exponents[0]] * moments_I.A[1][exponents[1]] * moments_I.A[2][exponents[2]] *moments_I.xi[exponents[3]];
+          mp = 1.0;
+          for (unsigned short i = 0; i<nDim; i++){
+            mp *= moments_I.A[0][exponents[i]];
+          }
+          mp *= moments_I.xi[exponents[nDim]];
+          break;
         case NEGATIVE:
-          mp = moments_I.N[0][exponents[0]] * moments_I.N[1][exponents[1]] * moments_I.N[2][exponents[2]] *moments_I.xi[exponents[3]];
+          mp = 1.0;
+          for (unsigned short i = 0; i<nDim; i++){
+            mp *= moments_I.N[0][exponents[i]];
+          }
+          mp *= moments_I.xi[exponents[nDim]];
+          break;
         case POSITIVE:
-          mp = moments_I.P[0][exponents[0]] * moments_I.P[1][exponents[1]] * moments_I.P[2][exponents[2]] *moments_I.xi[exponents[3]];
+          mp = 1.0;
+          for (unsigned short i = 0; i<nDim; i++){
+            mp *= moments_I.P[0][exponents[i]];
+          }
+          mp *= moments_I.xi[exponents[nDim]];
+          break;
       }
+    break;
   }
   
   return mp;
@@ -133,6 +181,9 @@ void CGasKineticSchemeBGK::ComputeMaxwellianMoments(CVariable* node, moments_str
   double K = (5.0 - 3.0*Gamma) / (Gamma - 1.0) + (3.0 - (nDim - 2.0));
   double l = (K+nDim) * node->GetDensity() / (4.0*((node->GetEnergy()-0.5*node->GetVelocity2()) - 0.5*node->GetDensity()*node->GetVelocity2()));
   
+  moments->A.resize(nDim);
+  moments->P.resize(nDim);
+  moments->N.resize(nDim);
   
   for(unsigned short i = 0; i<nDim ; i++){
     moments->A[i].resize(9,1.0);
