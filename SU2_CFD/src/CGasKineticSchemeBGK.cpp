@@ -200,11 +200,11 @@ void CGasKineticSchemeBGK::ComputeMaxwellianMoments(CVariable* node, moments_str
     moments->P[i][0] = 0.5*erfc(-sqrt(l)*U);
     moments->N[i][0] = 0.5*erfc(sqrt(l)*U);
     
-    moments->A[i][0] = U;
-    moments->P[i][0] = U*moments->P[i][0] + 0.5*exp(-l*U*U)/sqrt(M_PI*l);
-    moments->N[i][0] = U*moments->N[i][0] - 0.5*exp(-l*U*U)/sqrt(M_PI*l);
+    moments->A[i][1] = U;
+    moments->P[i][1] = U*moments->P[i][0] + 0.5*exp(-l*U*U)/sqrt(M_PI*l);
+    moments->N[i][1] = U*moments->N[i][0] - 0.5*exp(-l*U*U)/sqrt(M_PI*l);
     
-    for(unsigned int n =0; n<9; n++){
+    for(unsigned int n =0; n<7; n++){
       moments->A[i][n+2] = U*moments->A[i][n+1] + (n+1)/(2*l)*moments->A[i][n];
       moments->P[i][n+2] = U*moments->P[i][n+1] + (n+1)/(2*l)*moments->P[i][n];
       moments->N[i][n+2] = U*moments->N[i][n+1] + (n+1)/(2*l)*moments->N[i][n];
