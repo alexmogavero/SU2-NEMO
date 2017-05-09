@@ -45,6 +45,7 @@ void CGasKineticSchemeBGK::CalculateInterface(){
   U_L = PsiMaxwell(LEFT, POSITIVE);
   U_R = PsiMaxwell(LEFT, POSITIVE);
 
+  U_I.resize(nVar);
   for(std::size_t i=0; i<U_L.size(); i++){
     U_I[i] =  U_L[i] + U_R[i];
   }
@@ -54,7 +55,7 @@ void CGasKineticSchemeBGK::CalculateInterface(){
   node_I->SetNon_Physical(false);
 
   bool RightSol = node_I->SetPrimVar(FluidModel);
-  node_I->SetSecondaryVar(FluidModel);
+  //node_I->SetSecondaryVar(FluidModel);
 
   if (!RightSol) {
     node_I->SetNon_Physical(true);
