@@ -10,6 +10,11 @@ CGasKineticSchemeBGK::CGasKineticSchemeBGK(unsigned short val_nDim, unsigned sho
   node_jLoc(NULL),
   rotMatrix(),
   config(config){
+  su2double U[nVar];
+  for(unsigned short i=0; i<nVar; i++){
+    U[i] = 0;
+  }
+  node_I = new CKineticVariable(U, nDim, nVar, config);
 }
 
 CGasKineticSchemeBGK::~CGasKineticSchemeBGK(void) {
@@ -53,6 +58,11 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
     val_residual[iVar] = Dt_inv*(int_I*Flux_I[iVar] + int_ij*(Flux_i[iVar] + Flux_j[iVar]))*Area;
   }
   rotate(val_residual + 1, true);
+
+  delete node_iLoc;
+  delete node_jLoc;
+  node_iLoc = NULL;
+  node_jLoc = NULL;
 }
 
 void CGasKineticSchemeBGK::CalculateInterface(){
@@ -66,7 +76,8 @@ void CGasKineticSchemeBGK::CalculateInterface(){
     U_I[i] =  U_L[i] + U_R[i];
   }
 
-  node_I = new CKineticVariable(U_I.data(), nDim, nVar, config);
+//  node_I = new CKineticVariable(U_I.data(), nDim, nVar, config);
+  node_I->SetSolution(U_I.data());
 
   node_I->SetNon_Physical(false);
 
