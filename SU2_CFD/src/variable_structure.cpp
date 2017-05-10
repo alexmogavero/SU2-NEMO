@@ -133,6 +133,61 @@ CVariable::CVariable(unsigned short val_nDim, unsigned short val_nvar, CConfig *
   
 }
 
+CVariable::CVariable(const CVariable& obj):
+    nVar(obj.nVar),
+    nPrimVar(obj.nPrimVar),
+    nPrimVarGrad(obj.nPrimVarGrad),
+    nSecondaryVar(obj.nSecondaryVar),
+    nSecondaryVarGrad(obj.nSecondaryVarGrad){
+  nDim = obj.nDim;
+
+  Solution = copyArray(obj.Solution, nVar);
+  Solution_Old = copyArray(obj.Solution_Old, nVar);
+  Solution_time_n = copyArray(obj.Solution_time_n, nVar);
+  Solution_time_n1 = copyArray(obj.Solution_time_n1, nVar);
+
+  Gradient = copyArray(obj.Gradient, nVar, nDim);
+
+  Limiter = copyArray(obj.Limiter, nVar);
+  Solution_Max = copyArray(obj.Solution_Max, nVar);
+  Solution_Min = copyArray(obj.Solution_Min, nVar);
+  Grad_AuxVar = copyArray(obj.Grad_AuxVar, nVar);
+  Undivided_Laplacian = copyArray(obj.Undivided_Laplacian, nVar);
+  Res_TruncError = copyArray(obj.Res_TruncError, nVar);;
+  Residual_Old = copyArray(obj.Residual_Old, nVar);
+  Residual_Sum = copyArray(obj.Residual_Sum, nVar);
+}
+
+su2double* CVariable::copyArray(const su2double* arr, unsigned short size){
+  if(!arr){
+    return NULL;
+  }
+
+  su2double* out = NULL;
+  out = new su2double[size];
+
+  for(unsigned short i=0; i<size; i++){
+    out[i] = arr[i];
+  }
+
+  return out;
+}
+
+su2double** CVariable::copyArray(const su2double* const* arr, unsigned short size1, unsigned short size2){
+  if(!arr){
+    return NULL;
+  }
+
+  su2double** out = NULL;
+  out = new su2double*[size1];
+
+  for(unsigned short i=0; i<size1; i++){
+    out[i] = copyArray(arr[i], size2);
+  }
+
+  return out;
+}
+
 CVariable::~CVariable(void) {
   unsigned short iVar;
 

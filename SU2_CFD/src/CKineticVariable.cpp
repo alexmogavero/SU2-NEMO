@@ -17,6 +17,11 @@ CKineticVariable::CKineticVariable(su2double *val_solution, unsigned short val_n
       knudsenLocal(0.0){
 }
 
+CKineticVariable::CKineticVariable(const CKineticVariable& obj):
+  CNSVariable(obj),
+  knudsenLocal(obj.knudsenLocal){
+}
+
 CKineticVariable::~CKineticVariable(void){
 }
 

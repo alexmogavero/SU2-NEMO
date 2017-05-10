@@ -80,10 +80,12 @@ public:
    */
   CKineticVariable(su2double *val_solution, unsigned short val_nDim, unsigned short val_nvar, CConfig *config);
 
+  CKineticVariable(const CKineticVariable& obj);
+
   /*!
    * \brief Destructor of the class.
    */
-  ~CKineticVariable(void);
+  virtual ~CKineticVariable(void);
 
   /*!
    * \brief Calculate local Knudsen number.

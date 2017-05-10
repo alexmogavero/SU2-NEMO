@@ -376,6 +376,29 @@ CEulerVariable::CEulerVariable(su2double *val_solution, unsigned short val_nDim,
   
 }
 
+CEulerVariable::CEulerVariable(const CEulerVariable& obj):
+  CVariable(obj),
+  Velocity2(obj.Velocity2){
+
+
+  HB_Source = copyArray(obj.HB_Source, nVar);
+  Primitive = copyArray(obj.Primitive, nPrimVar);
+  Secondary = copyArray(obj.Secondary, nSecondaryVar);
+
+  Gradient_Primitive = copyArray(obj.Gradient_Primitive, nPrimVarGrad, nDim);
+  Gradient_Secondary = copyArray(obj.Gradient_Secondary, nSecondaryVarGrad, nDim);
+
+  Limiter_Primitive = copyArray(obj.Limiter_Primitive, nPrimVarGrad);
+  Limiter_Secondary = copyArray(obj.Limiter_Secondary, nSecondaryVarGrad);
+
+  WindGust    = copyArray(obj.WindGust, nDim);
+  WindGustDer = copyArray(obj.WindGustDer, nDim+1);
+
+  Undivided_Laplacian = copyArray(obj.Undivided_Laplacian, nVar);
+
+  Solution_New = copyArray(obj.Solution_New, nVar);
+}
+
 CEulerVariable::~CEulerVariable(void) {
     unsigned short iVar;
 
@@ -514,6 +537,15 @@ CNSVariable::CNSVariable(su2double *val_solution, unsigned short val_nDim,
     Viscosity_Inf   = config->GetViscosity_FreeStreamND();
     Prandtl_Lam     = config->GetPrandtl_Lam();
     Prandtl_Turb    = config->GetPrandtl_Turb();
+}
+
+CNSVariable::CNSVariable(const CNSVariable& obj):
+  CEulerVariable(obj),
+  Temperature_Ref(obj.Temperature_Ref),
+  Viscosity_Ref(obj.Viscosity_Ref),
+  Viscosity_Inf(obj.Viscosity_Inf),
+  Prandtl_Lam(obj.Prandtl_Lam),
+  Prandtl_Turb(obj.Prandtl_Turb){
 }
 
 CNSVariable::~CNSVariable(void) { }

@@ -88,6 +88,23 @@ protected:
                                                        note that this variable cannnot be static, it is possible to
                                                        have different number of nVar in the same problem. */
   
+  /*!
+   * \brief helper function to copy a C style array
+   * @param arr array to be copied
+   * @param size size of the array to be copied
+   * @return
+   */
+  static su2double* copyArray(const su2double* arr, unsigned short size);
+
+  /*!
+   * \brief helper function to copy a C style array of arrays
+   * @param arr array to be copied
+   * @param size1 size of the outer array
+   * @param size2 size of the inner array
+   * @return
+   */
+  static su2double** copyArray(const su2double* const* arr, unsigned short size1, unsigned short size2);
+
 public:
   
   /*!
@@ -110,6 +127,12 @@ public:
    */
   CVariable(unsigned short val_nDim, unsigned short val_nvar, CConfig *config);
   
+  /*!
+   * \brief Copy constructor
+   * @param obj - object being copied
+   */
+  CVariable(const CVariable& obj);
+
   /*!
    * \brief Destructor of the class.
    */
@@ -2714,6 +2737,8 @@ public:
    */
   CEulerVariable(su2double *val_solution, unsigned short val_nDim, unsigned short val_nvar, CConfig *config);
   
+  CEulerVariable(const CEulerVariable& obj);
+
   /*!
    * \brief Destructor of the class.
    */
@@ -3370,6 +3395,8 @@ public:
    */
   CNSVariable(su2double *val_solution, unsigned short val_nDim, unsigned short val_nvar, CConfig *config);
   
+  CNSVariable(const CNSVariable& obj);
+
   /*!
    * \brief Destructor of the class.
    */
