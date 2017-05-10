@@ -245,6 +245,8 @@ void CGasKineticSchemeBGK::ComputeMaxwellianMoments(CVariable* node, moments_str
 void CGasKineticSchemeBGK::SetNormal(su2double *val_normal){
   CNumerics::SetNormal(val_normal);
 
+  rotMatrix.clear();
+
   Area = 0;
   for(unsigned short iDim=0; iDim<nDim; iDim++){
     Area += pow(val_normal[iDim], 2);
