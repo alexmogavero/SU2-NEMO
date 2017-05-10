@@ -6,6 +6,9 @@
 CGasKineticSchemeBGK::CGasKineticSchemeBGK(unsigned short val_nDim, unsigned short val_nVar, CConfig *config):
   CNumerics(val_nDim, val_nVar, config),
   node_I(NULL),
+  node_iLoc(NULL),
+  node_jLoc(NULL),
+  rotMatrix(),
   config(config){
 }
 
@@ -13,10 +16,22 @@ CGasKineticSchemeBGK::~CGasKineticSchemeBGK(void) {
   if(node_I){
     delete node_I;
   }
+  if(node_iLoc){
+    delete node_iLoc;
+  }
+  if(node_jLoc){
+    delete node_jLoc;
+  }
 }
 
 void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *config){
-  //TODO implement rotations in order to take into account the cases when the normal is not aligned with u
+  //Rotate Reference Frame
+  node_iLoc = new CKineticVariable(*static_cast<CKineticVariable*>(node_i));
+  rotate(node_iLoc);
+
+  node_jLoc = new CKineticVariable(*static_cast<CKineticVariable*>(node_j));
+  rotate(node_jLoc);
+
   CalculateInterface();
 
   //Calculate the mean collision time
@@ -37,6 +52,7 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
   for(unsigned short iVar; iVar<nVar; iVar++){
     val_residual[iVar] = Dt_inv*(int_I*Flux_I[iVar] + int_ij*(Flux_i[iVar] + Flux_j[iVar]))*Area;
   }
+  rotate(val_residual + 1, true);
 }
 
 void CGasKineticSchemeBGK::CalculateInterface(){
@@ -218,4 +234,76 @@ void CGasKineticSchemeBGK::ComputeMaxwellianMoments(CVariable* node, moments_str
   moments->xi[2] = 0.5 * K / l;
   moments->xi[4] = 0.5 * moments->xi[2] * (K+2)/ l;
   moments->xi[6] = 0.5 * moments->xi[4] * (K+4)/ l;
+}
+
+void CGasKineticSchemeBGK::SetNormal(su2double *val_normal){
+  CNumerics::SetNormal(val_normal);
+
+  Area = 0;
+  for(unsigned short iDim=0; iDim<nDim; iDim++){
+    Area += pow(val_normal[iDim], 2);
+  }
+  Area = sqrt(Area);
+
+  std::vector<su2double> locX(nDim, 0);
+  std::vector<su2double> locY(nDim, 0);
+  std::vector<su2double> locZ(nDim, 0);
+
+  for(unsigned short iDim=0; iDim<nDim; iDim++){
+    locX[iDim] = val_normal[iDim]/Area;
+  }
+
+  if(nDim==2){
+    locY[0] = -locX[1];
+    locY[1] = locX[0];
+  }else if(nDim==3){
+    if(locX[1]==0.0 && locX[2]==0.0){
+      locY[1] = 1.0;
+    }else{
+      //cross product between locX and (1,0,0)
+      locY[1] = locX[2];
+      locY[2] = -locX[1];
+      su2double mag = sqrt(pow(locY[1],2) + pow(locY[2],2));
+      locY[1] /=mag;
+      locY[2] /=mag;
+    }
+    //locZ is cross prod between locX and locY
+    locZ[0] = locX[1]*locY[2] - locX[2]*locY[1];
+    locZ[1] = locX[2]*locY[0] - locX[0]*locY[2];
+    locZ[2] = locX[0]*locY[1] - locX[1]*locY[0];
+  }else{
+    std::logic_error("Error: number of dimensions can be only 2 or 3.");
+  }
+
+  rotMatrix.push_back(locX);
+  rotMatrix.push_back(locY);
+  if(nDim==3){
+    rotMatrix.push_back(locZ);
+  }
+}
+
+void CGasKineticSchemeBGK::rotate(su2double* v, bool inverse)const{
+  su2double vRot[nDim];
+  for(unsigned short i=0; i<nDim; i++){
+    vRot[i] = 0;
+    for(unsigned short j=0; j<nDim; j++){
+      if(inverse){
+        vRot[i] += v[j]*rotMatrix[j][i];
+      }else{
+        vRot[i] += v[j]*rotMatrix[i][j];
+      }
+    }
+  }
+
+  for(unsigned short i=0; i<nDim; i++){
+    v[i] = vRot[i];
+  }
+}
+
+void CGasKineticSchemeBGK::rotate(CVariable* node)const{
+  su2double* v = node->GetSolution();
+  rotate(v++);
+
+  v = node->GetPrimitive();
+  rotate(v++);
 }

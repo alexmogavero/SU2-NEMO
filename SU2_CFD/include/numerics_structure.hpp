@@ -660,7 +660,7 @@ public:
    * \brief Set the value of the normal vector to the face between two points.
    * \param[in] val_normal - Normal vector, the norm of the vector is the area of the face.
    */
-  void SetNormal(su2double *val_normal);
+  virtual void SetNormal(su2double *val_normal);
   
   /*!
    * \brief Set the value of the volume of the control volume.

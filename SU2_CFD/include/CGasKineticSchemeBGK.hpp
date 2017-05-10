@@ -12,7 +12,26 @@ class CKineticVariable;
  */
 class CGasKineticSchemeBGK : public CNumerics {
 private:
-  CConfig* config; //!Configuration object of the whole CFD
+  CConfig* config; //!<Configuration object of the whole CFD
+
+  /*!
+   * \brief Rotation matrix from global to local reference frame
+   * \details rotMatrix[i] is the unit vector of i-th axis
+   */
+  std::vector<std::vector<su2double>> rotMatrix;
+
+  /*!
+   * \brief Rotates a generic vector v using rotMatrix
+   * @param v vector to be rotated
+   * @param inverse true if the vector has to be rotated back to global coordinates
+   */
+  void rotate(su2double* v, bool inverse=false)const;
+
+  /*!
+   * \brief Rotates a node using rotMatrix
+   * @param node node to be rotated
+   */
+  void rotate(CVariable* node)const;
 
 protected:
   /*!
@@ -48,6 +67,8 @@ protected:
   };
 
   CKineticVariable* node_I; //!< Node that stores all the variables at the interface
+  CKineticVariable* node_iLoc; //!<Node at left of interface in the local reference frame
+  CKineticVariable* node_jLoc; //!<Node at right of interface in the local reference frame
 
   /*!
    * \brief calculates the moments of the Maxwellian distribution
@@ -115,4 +136,11 @@ public:
    * \param[in] config - Definition of the particular problem.
    */
   void ComputeResidual(su2double *val_residual, CConfig *config);
+
+  /*!
+   * \brief Extend the default implementation calculating also the area
+   *  and the local reference frame
+   * \param[in] val_normal - Normal vector, the norm of the vector is the area of the face.
+   */
+  virtual void SetNormal(su2double *val_normal);
 };
