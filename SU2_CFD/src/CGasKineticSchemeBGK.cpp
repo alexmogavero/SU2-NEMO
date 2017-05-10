@@ -43,7 +43,7 @@ void CGasKineticSchemeBGK::CalculateInterface(){
   std::vector<su2double> U_L, U_R, U_I;
 
   U_L = PsiMaxwell(LEFT, POSITIVE);
-  U_R = PsiMaxwell(LEFT, POSITIVE);
+  U_R = PsiMaxwell(RIGHT, NEGATIVE);
 
   U_I.resize(nVar);
   for(std::size_t i=0; i<U_L.size(); i++){
@@ -92,7 +92,7 @@ std::vector<su2double> CGasKineticSchemeBGK::PsiMaxwell(State state, IntLimits l
 }
 
 su2double CGasKineticSchemeBGK::MomentsMaxwellian(std::vector<unsigned short> exponents, State state, IntLimits lim){
-  su2double mp;
+  su2double mp, rho;
   
   switch (state){
     case LEFT:
@@ -101,25 +101,26 @@ su2double CGasKineticSchemeBGK::MomentsMaxwellian(std::vector<unsigned short> ex
         case ALL:
           mp = 1.0;
           for (unsigned short i = 0; i<nDim; i++){
-            mp *= moments_i.A[0][exponents[i]];
+            mp *= moments_i.A[i][exponents[i]];
           }
           mp *= moments_i.xi[exponents[nDim]];
           break;
         case NEGATIVE:
           mp = 1.0;
           for (unsigned short i = 0; i<nDim; i++){
-            mp *= moments_i.N[0][exponents[i]];
+            mp *= moments_i.N[i][exponents[i]];
           }
           mp *= moments_i.xi[exponents[nDim]];
           break;
         case POSITIVE:
           mp = 1.0;
           for (unsigned short i = 0; i<nDim; i++){
-            mp *= moments_i.P[0][exponents[i]];
+            mp *= moments_i.P[i][exponents[i]];
           }
           mp *= moments_i.xi[exponents[nDim]];
           break;
       }
+      rho = node_i->GetDensity();
     break;
     case RIGHT:
       if (moments_j.xi.empty()) CGasKineticSchemeBGK::ComputeMaxwellianMoments(node_j, &moments_j);
@@ -127,25 +128,26 @@ su2double CGasKineticSchemeBGK::MomentsMaxwellian(std::vector<unsigned short> ex
         case ALL:
           mp = 1.0;
           for (unsigned short i = 0; i<nDim; i++){
-            mp *= moments_j.A[0][exponents[i]];
+            mp *= moments_j.A[i][exponents[i]];
           }
           mp *= moments_j.xi[exponents[nDim]];
           break;
         case NEGATIVE:
           mp = 1.0;
           for (unsigned short i = 0; i<nDim; i++){
-            mp *= moments_j.N[0][exponents[i]];
+            mp *= moments_j.N[i][exponents[i]];
           }
           mp *= moments_j.xi[exponents[nDim]];
           break;
         case POSITIVE:
           mp = 1.0;
           for (unsigned short i = 0; i<nDim; i++){
-            mp *= moments_j.P[0][exponents[i]];
+            mp *= moments_j.P[i][exponents[i]];
           }
           mp *= moments_j.xi[exponents[nDim]];
           break;
       }
+      rho = node_j->GetDensity();
     break;
     case INTERFACE:
       if (moments_I.xi.empty()) CGasKineticSchemeBGK::ComputeMaxwellianMoments(node_I, &moments_I);
@@ -153,34 +155,35 @@ su2double CGasKineticSchemeBGK::MomentsMaxwellian(std::vector<unsigned short> ex
         case ALL:
           mp = 1.0;
           for (unsigned short i = 0; i<nDim; i++){
-            mp *= moments_I.A[0][exponents[i]];
+            mp *= moments_I.A[i][exponents[i]];
           }
           mp *= moments_I.xi[exponents[nDim]];
           break;
         case NEGATIVE:
           mp = 1.0;
           for (unsigned short i = 0; i<nDim; i++){
-            mp *= moments_I.N[0][exponents[i]];
+            mp *= moments_I.N[i][exponents[i]];
           }
           mp *= moments_I.xi[exponents[nDim]];
           break;
         case POSITIVE:
           mp = 1.0;
           for (unsigned short i = 0; i<nDim; i++){
-            mp *= moments_I.P[0][exponents[i]];
+            mp *= moments_I.P[i][exponents[i]];
           }
           mp *= moments_I.xi[exponents[nDim]];
           break;
       }
+      rho = node_I->GetDensity();
     break;
   }
   
-  return mp;
+  return mp*rho;
 }
 
 void CGasKineticSchemeBGK::ComputeMaxwellianMoments(CVariable* node, moments_struct*  moments){
   double K = (5.0 - 3.0*Gamma) / (Gamma - 1.0) + (3.0 - (nDim - 2.0));
-  double l = (K+nDim) * node->GetDensity() / (4.0*((node->GetEnergy()-0.5*node->GetVelocity2()) - 0.5*node->GetDensity()*node->GetVelocity2()));
+  double l = (K+nDim) / (4.0*(node->GetEnergy() - 0.5*node->GetVelocity2()));
   
   moments->A.resize(nDim);
   moments->P.resize(nDim);
