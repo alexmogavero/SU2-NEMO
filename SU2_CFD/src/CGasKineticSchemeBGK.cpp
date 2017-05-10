@@ -123,15 +123,17 @@ su2double CGasKineticSchemeBGK::MomentsMaxwellian(std::vector<unsigned short> ex
           break;
         case NEGATIVE:
           mp = 1.0;
-          for (unsigned short i = 0; i<nDim; i++){
-            mp *= moments_i.N[i][exponents[i]];
+          mp *= moments_i.N[0][exponents[0]];
+          for (unsigned short i = 1; i<nDim; i++){
+            mp *= moments_i.A[i][exponents[i]];
           }
           mp *= moments_i.xi[exponents[nDim]];
           break;
         case POSITIVE:
           mp = 1.0;
-          for (unsigned short i = 0; i<nDim; i++){
-            mp *= moments_i.P[i][exponents[i]];
+          mp *= moments_i.P[0][exponents[0]];
+          for (unsigned short i = 1; i<nDim; i++){
+            mp *= moments_i.A[i][exponents[i]];
           }
           mp *= moments_i.xi[exponents[nDim]];
           break;
@@ -150,15 +152,17 @@ su2double CGasKineticSchemeBGK::MomentsMaxwellian(std::vector<unsigned short> ex
           break;
         case NEGATIVE:
           mp = 1.0;
-          for (unsigned short i = 0; i<nDim; i++){
-            mp *= moments_j.N[i][exponents[i]];
+          mp *= moments_j.N[0][exponents[0]];
+          for (unsigned short i = 1; i<nDim; i++){
+            mp *= moments_j.A[i][exponents[i]];
           }
           mp *= moments_j.xi[exponents[nDim]];
           break;
         case POSITIVE:
           mp = 1.0;
-          for (unsigned short i = 0; i<nDim; i++){
-            mp *= moments_j.P[i][exponents[i]];
+          mp *= moments_j.P[0][exponents[0]];
+          for (unsigned short i = 1; i<nDim; i++){
+            mp *= moments_j.A[i][exponents[i]];
           }
           mp *= moments_j.xi[exponents[nDim]];
           break;
@@ -177,15 +181,17 @@ su2double CGasKineticSchemeBGK::MomentsMaxwellian(std::vector<unsigned short> ex
           break;
         case NEGATIVE:
           mp = 1.0;
-          for (unsigned short i = 0; i<nDim; i++){
-            mp *= moments_I.N[i][exponents[i]];
+          mp *= moments_I.N[0][exponents[0]];
+          for (unsigned short i = 1; i<nDim; i++){
+            mp *= moments_I.A[i][exponents[i]];
           }
           mp *= moments_I.xi[exponents[nDim]];
           break;
         case POSITIVE:
           mp = 1.0;
-          for (unsigned short i = 0; i<nDim; i++){
-            mp *= moments_I.P[i][exponents[i]];
+          mp *= moments_I.P[0][exponents[0]];
+          for (unsigned short i = 1; i<nDim; i++){
+            mp *= moments_I.A[i][exponents[i]];
           }
           mp *= moments_I.xi[exponents[nDim]];
           break;
