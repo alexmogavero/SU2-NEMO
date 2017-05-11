@@ -115,6 +115,12 @@ protected:
    */
   void CalculateInterface();
 
+  /*!
+   * \brief Reset the status of the object in order to start a new computation
+   * \details clear the auxiliary variables variables
+   */
+  void Clear();
+
 public:
 
   /*!

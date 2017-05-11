@@ -30,6 +30,8 @@ CGasKineticSchemeBGK::~CGasKineticSchemeBGK(void) {
 }
 
 void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *config){
+  Clear();
+
   //Rotate Reference Frame
   node_iLoc = new CKineticVariable(*static_cast<CKineticVariable*>(node_i));
   rotate(node_iLoc);
@@ -58,11 +60,6 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
     val_residual[iVar] = Dt_inv*(int_I*Flux_I[iVar] + int_ij*(Flux_i[iVar] + Flux_j[iVar]))*Area;
   }
   rotate(val_residual + 1, true);
-
-  delete node_iLoc;
-  delete node_jLoc;
-  node_iLoc = NULL;
-  node_jLoc = NULL;
 }
 
 void CGasKineticSchemeBGK::CalculateInterface(){
@@ -325,4 +322,19 @@ void CGasKineticSchemeBGK::rotate(CVariable* node)const{
 
   v = node->GetPrimitive();
   rotate(++v);
+}
+
+void CGasKineticSchemeBGK::Clear(){
+  if(node_iLoc) delete node_iLoc;
+  if(node_jLoc) delete node_jLoc;
+  node_iLoc = NULL;
+  node_jLoc = NULL;
+
+  moments_struct* mom[3] = {&moments_i, &moments_j, &moments_I};
+  for(unsigned short i=0; i<3; i++){
+    mom[i]->A.clear();
+    mom[i]->P.clear();
+    mom[i]->N.clear();
+    mom[i]->xi.clear();
+  }
 }
