@@ -212,7 +212,7 @@ su2double CGasKineticSchemeBGK::MomentsMaxwellian(std::vector<unsigned short> ex
 }
 
 void CGasKineticSchemeBGK::ComputeMaxwellianMoments(CVariable* node, moments_struct*  moments){
-  double K = (5.0 - 3.0*Gamma) / (Gamma - 1.0) + (3.0 - (nDim - 2.0));
+  double K = (5.0 - 3.0*Gamma) / (Gamma - 1.0) + (3.0 - nDim);
   double l = (K+nDim) / (4.0*(node->GetEnergy() - 0.5*node->GetVelocity2()));
   
   moments->A.resize(nDim);
