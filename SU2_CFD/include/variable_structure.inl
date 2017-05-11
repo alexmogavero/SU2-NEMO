@@ -32,6 +32,7 @@
  */
 
 #pragma once
+#include <stdexcept>
 
 inline bool CVariable::SetDensity(void) { return 0; }
 

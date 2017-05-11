@@ -18,7 +18,7 @@ private:
    * \brief Rotation matrix from global to local reference frame
    * \details rotMatrix[i] is the unit vector of i-th axis
    */
-  std::vector<std::vector<su2double>> rotMatrix;
+  std::vector<std::vector<su2double> > rotMatrix;
 
   /*!
    * \brief Rotates a generic vector v using rotMatrix
@@ -47,9 +47,9 @@ protected:
    * \brief define the structure that holds the Maxwellian moments
    */
   struct moments_struct{
-    std::vector<std::vector<double>> A;
-    std::vector<std::vector<double>> P;
-    std::vector<std::vector<double>> N;
+    std::vector<std::vector<double> > A;
+    std::vector<std::vector<double> > P;
+    std::vector<std::vector<double> > N;
     std::vector<double> xi;
   };
   
