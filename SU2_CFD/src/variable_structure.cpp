@@ -152,7 +152,7 @@ CVariable::CVariable(const CVariable& obj):
   Solution_Max = copyArray(obj.Solution_Max, nVar);
   Solution_Min = copyArray(obj.Solution_Min, nVar);
   Grad_AuxVar = copyArray(obj.Grad_AuxVar, nVar);
-  Undivided_Laplacian = copyArray(obj.Undivided_Laplacian, nVar);
+  //Undivided_Laplacian = copyArray(obj.Undivided_Laplacian, nVar); // Need to break pointer dependence btwn CNumerics and CVariable - see destructor
   Res_TruncError = copyArray(obj.Res_TruncError, nVar);;
   Residual_Old = copyArray(obj.Residual_Old, nVar);
   Residual_Sum = copyArray(obj.Residual_Sum, nVar);
