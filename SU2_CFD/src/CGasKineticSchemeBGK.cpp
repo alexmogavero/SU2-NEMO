@@ -123,7 +123,7 @@ su2double CGasKineticSchemeBGK::MomentsMaxwellian(std::vector<unsigned short> ex
   
   switch (state){
     case LEFT:
-      if (moments_i.xi.empty()) CGasKineticSchemeBGK::ComputeMaxwellianMoments(node_i, &moments_i);
+      if (moments_i.xi.empty()) CGasKineticSchemeBGK::ComputeMaxwellianMoments(node_iLoc, &moments_i);
       switch (lim) {
         case ALL:
           mp = 1.0;
@@ -149,10 +149,10 @@ su2double CGasKineticSchemeBGK::MomentsMaxwellian(std::vector<unsigned short> ex
           mp *= moments_i.xi[exponents[nDim]];
           break;
       }
-      rho = node_i->GetDensity();
+      rho = node_iLoc->GetDensity();
     break;
     case RIGHT:
-      if (moments_j.xi.empty()) CGasKineticSchemeBGK::ComputeMaxwellianMoments(node_j, &moments_j);
+      if (moments_j.xi.empty()) CGasKineticSchemeBGK::ComputeMaxwellianMoments(node_jLoc, &moments_j);
       switch (lim) {
         case ALL:
           mp = 1.0;
@@ -178,7 +178,7 @@ su2double CGasKineticSchemeBGK::MomentsMaxwellian(std::vector<unsigned short> ex
           mp *= moments_j.xi[exponents[nDim]];
           break;
       }
-      rho = node_j->GetDensity();
+      rho = node_jLoc->GetDensity();
     break;
     case INTERFACE:
       if (moments_I.xi.empty()) CGasKineticSchemeBGK::ComputeMaxwellianMoments(node_I, &moments_I);
