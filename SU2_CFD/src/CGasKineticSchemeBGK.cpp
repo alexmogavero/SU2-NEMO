@@ -321,8 +321,8 @@ void CGasKineticSchemeBGK::rotate(su2double* v, bool inverse)const{
 
 void CGasKineticSchemeBGK::rotate(CVariable* node)const{
   su2double* v = node->GetSolution();
-  rotate(v++);
+  rotate(++v);
 
   v = node->GetPrimitive();
-  rotate(v++);
+  rotate(++v);
 }
