@@ -139,6 +139,12 @@ public:
   virtual ~CVariable(void);
   
   /*!
+   * \brief Duplicate the variable
+   * @return a pointer to the copy of the duplicated object
+   */
+  virtual CVariable* duplicate()const;
+
+  /*!
    * \brief Set the value of the solution.
    * \param[in] val_solution - Solution of the problem.
    */
@@ -2744,6 +2750,8 @@ public:
    */
   virtual ~CEulerVariable(void);
 
+  virtual CVariable* duplicate()const;
+
   /*!
    * \brief Get the new solution of the problem (Classical RK4).
    * \param[in] val_var - Index of the variable.
@@ -3402,6 +3410,8 @@ public:
    */
   ~CNSVariable(void);
   
+  virtual CVariable* duplicate()const;
+
   /*!
    * \brief Set the laminar viscosity.
    */

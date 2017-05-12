@@ -33,10 +33,10 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
   Clear();
 
   //Rotate Reference Frame
-  node_iLoc = new CKineticVariable(*static_cast<CKineticVariable*>(node_i));
+  node_iLoc = node_i->duplicate();
   rotate(node_iLoc);
 
-  node_jLoc = new CKineticVariable(*static_cast<CKineticVariable*>(node_j));
+  node_jLoc = node_j->duplicate();
   rotate(node_jLoc);
 
   CalculateInterface();

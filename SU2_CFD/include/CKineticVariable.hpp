@@ -87,6 +87,8 @@ public:
    */
   virtual ~CKineticVariable(void);
 
+  virtual CVariable* duplicate()const;
+
   /*!
    * \brief Calculate local Knudsen number.
    * \details It uses the primitive values and gradients.

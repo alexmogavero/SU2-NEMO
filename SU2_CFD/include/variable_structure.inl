@@ -34,6 +34,8 @@
 #pragma once
 #include <stdexcept>
 
+inline CVariable* CVariable::duplicate()const{ return new CVariable(*this); }
+
 inline bool CVariable::SetDensity(void) { return 0; }
 
 inline void CVariable::SetDensity(su2double val_density){ }
@@ -574,6 +576,8 @@ inline su2double CVariable::GetKnudsen()const {
 	throw std::logic_error("Error: method GetKnudsen not implemented.");
 };
 
+inline CVariable* CEulerVariable::duplicate()const{ return new CEulerVariable(*this); }
+
 inline su2double CEulerVariable::GetSolution_New(unsigned short val_var) { return Solution_New[val_var]; }
 
 inline void CEulerVariable::SetSolution_New(void) {
@@ -724,6 +728,8 @@ inline void CEulerVariable::SetWindGustDer( su2double* val_WindGustDer) {
     WindGustDer[iDim] = val_WindGustDer[iDim];}
 
 inline su2double* CEulerVariable::GetWindGustDer() { return WindGustDer;}
+
+inline CVariable* CNSVariable::duplicate()const{ return new CNSVariable(*this); }
 
 inline su2double CNSVariable::GetEddyViscosity(void) { return Primitive[nDim+6]; }
 

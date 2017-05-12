@@ -67,8 +67,8 @@ protected:
   };
 
   CKineticVariable* node_I; //!< Node that stores all the variables at the interface
-  CKineticVariable* node_iLoc; //!<Node at left of interface in the local reference frame
-  CKineticVariable* node_jLoc; //!<Node at right of interface in the local reference frame
+  CVariable* node_iLoc; //!<Node at left of interface in the local reference frame
+  CVariable* node_jLoc; //!<Node at right of interface in the local reference frame
 
   /*!
    * \brief calculates the moments of the Maxwellian distribution

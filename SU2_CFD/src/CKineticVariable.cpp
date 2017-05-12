@@ -25,6 +25,10 @@ CKineticVariable::CKineticVariable(const CKineticVariable& obj):
 CKineticVariable::~CKineticVariable(void){
 }
 
+inline CVariable* CKineticVariable::duplicate()const{
+  return new CKineticVariable(*this);
+}
+
 void CKineticVariable::CalculateKnudsen(){
   //Calculate mean free path
   su2double lam = GetLaminarViscosity()*sqrt(M_PI*GetDensity()/(2*GetPressure()))/GetDensity();
