@@ -56,7 +56,7 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
   su2double int_I = Dt - int_ij;
 
   su2double Dt_inv = 1/Dt;
-  for(unsigned short iVar; iVar<nVar; iVar++){
+  for(unsigned short iVar=0; iVar<nVar; iVar++){
     val_residual[iVar] = Dt_inv*(int_I*Flux_I[iVar] + int_ij*(Flux_i[iVar] + Flux_j[iVar]))*Area;
   }
   rotate(val_residual + 1, true);
