@@ -85,7 +85,7 @@ inline void CFEM_Elasticity::Compute_Stress_Tensor(CElement *element_container, 
 
 inline void CFEM_NonlinearElasticity::Compute_Stress_Tensor(CElement *element_container, CConfig *config) { }
 
-inline void CNumerics::ComputeResidual(su2double *val_residual, CConfig *config) { }
+inline void CNumerics::ComputeResidual(su2double *val_residual, CConfig *config) {throw std::logic_error("Error: method not implemented"); }
 
 inline void CNumerics::ComputeResidual(su2double *val_residual_i, su2double *val_residual_j) { }
 
@@ -94,7 +94,7 @@ inline void CNumerics::ComputeResidual(su2double *val_residual_i, su2double *val
 inline void CNumerics::ComputeResidual(su2double **val_Jacobian_i, su2double **val_Jacobian_j, CConfig *config) { }
 
 inline void CNumerics::ComputeResidual(su2double *val_residual, su2double **val_Jacobian_i, su2double **val_Jacobian_j, 
-                                   CConfig *config) { }
+                                   CConfig *config) {throw std::logic_error("Error: method not implemented"); }
 
 inline void CNumerics::ComputeResidual(su2double *val_residual, su2double **val_Jacobian_i, su2double **val_Jacobian_j,
                                    su2double **val_JacobianMeanFlow_i, su2double **val_JacobianMeanFlow_j, CConfig *config) { }
