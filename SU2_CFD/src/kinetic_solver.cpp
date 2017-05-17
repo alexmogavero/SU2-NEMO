@@ -57,3 +57,7 @@ unsigned long CKineticSolver::SetPrimitive_Variables(
     static_cast<CKineticVariable*>(node[iPoint])->CalculateKnudsen();
   }
 }
+
+void CKineticSolver::Viscous_Residual(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics,
+                                   CConfig *config, unsigned short iMesh, unsigned short iRKStep){
+}
