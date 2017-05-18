@@ -110,6 +110,25 @@ protected:
   std::vector<su2double> PsiMaxwell(State state, IntLimits lim, bool uPsi=false);
 
   /*!
+   * \brief Calculate the moments of the Maxwellian distribution with function \f$ \varphi=\mathbf{\psi} \otimes \mathbf{\psi}\f$ .
+   * \details \f$\psi\f$ is defined so to calculate the conserved quantities.
+   *  \f[
+   *    \mathbf{w} = \iint_{-\infty}^{+\infty} \mathbf{\psi} f d\mathbf{u}\mathbf{\xi}
+   *  \f]
+   * @param state identify the state for wich the momemnts will be calculated
+   * @return a matrix of size nVar x nVar.
+   */
+  std::vector<std::vector<su2double> > PsiPsiMaxwell(State state);
+
+  /*!
+   * \brief calculate time/space derivatives of the distribution function
+   * @param state define the state for which the derivative are needed.
+   * @return a vector of size nDim+1 where the first nDim components are space derivatives
+   *  and the last one is time derivative
+   */
+  std::vector<su2double> Derivatives(State state);
+
+  /*!
    * \brief Calculates the state at the interface.
    * \details create the node `node_I` and calculate its primitive variables.
    */
