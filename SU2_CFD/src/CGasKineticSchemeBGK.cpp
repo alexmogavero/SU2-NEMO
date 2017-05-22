@@ -86,33 +86,40 @@ void CGasKineticSchemeBGK::CalculateInterface(){
   }
 }
 
-std::vector<su2double> CGasKineticSchemeBGK::PsiMaxwell(State state, IntLimits lim, bool uPsi){
+std::vector<su2double> CGasKineticSchemeBGK::PsiMaxwell(State state, IntLimits lim,
+    std::vector<unsigned short> multipFactor){
   std::vector<su2double> out(nVar, 0);
-  std::vector<unsigned short> exponents(nVar-1,0);
 
-  if(uPsi) exponents[0]++;
+  if(multipFactor.size()!=nVar-1) throw std::logic_error("Error: multipFactor must be of size nVar-1");
+
+  std::vector<unsigned short> exponents(multipFactor);
+
   out[0] = MomentsMaxwellian(exponents, state, lim);
 
   for(unsigned short iDim=0; iDim<nDim; iDim++){
-    exponents.assign(nVar-1, 0);
-    exponents[iDim] = 1;
-    if(uPsi) exponents[0]++;
+    exponents = multipFactor;
+    exponents[iDim] += 1;
     out[iDim+1] = MomentsMaxwellian(exponents, state, lim);
   }
 
   for(unsigned short iDim=0; iDim<nDim; iDim++){
-    exponents.assign(nVar-1, 0);
-    exponents[iDim] = 2;
-    if(uPsi) exponents[0]++;
+    exponents = multipFactor;
+    exponents[iDim] += 2;
     out[nVar-1] += MomentsMaxwellian(exponents, state, lim);
   }
-  exponents.assign(nVar-1, 0);
-  exponents[nVar-2] = 2;
-  if(uPsi) exponents[0]++;
+  exponents = multipFactor;
+  exponents[nVar-2] += 2;
   out[nVar-1] += MomentsMaxwellian(exponents, state, lim);
   out[nVar-1] /= 2;
 
   return out;
+}
+
+std::vector<su2double> CGasKineticSchemeBGK::PsiMaxwell(State state, IntLimits lim, bool uPsi){
+  std::vector<unsigned short> mFactor(nVar-1, 0);
+  if(uPsi) mFactor[0]++;
+
+  return PsiMaxwell(state, lim, mFactor);
 }
 
 std::vector<std::vector<su2double> > CGasKineticSchemeBGK::PsiPsiMaxwell(State state){

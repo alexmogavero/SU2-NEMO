@@ -110,6 +110,21 @@ protected:
   std::vector<su2double> PsiMaxwell(State state, IntLimits lim, bool uPsi=false);
 
   /*!
+   * \brief Calculate the moments of the Maxwellian distribution with function \f$ \varphi=K\psi\f$ .
+   * \details \f$\psi\f$ is defined so to calculate the conserved quantities.
+   *  \f[
+   *    \mathbf{w} = \iint_{-\infty}^{+\infty} \mathbf{\psi} f d\mathbf{u}\mathbf{\xi}
+   *  \f]
+   *  K is a multiplicative factor depending on the degree of freedoms
+   *  and is defined in terms of the exponents as defined in method MomentsMaxwellian
+   * @param state identify the state for wich the momemnts will be calculated
+   * @param lim defines the integration limits
+   * @param multipFactor exponents that define K
+   * @return a vector with a moment for each conserved quantity.
+   */
+  std::vector<su2double> PsiMaxwell(State state, IntLimits lim, std::vector<unsigned short> multipFactor);
+
+  /*!
    * \brief Calculate the moments of the Maxwellian distribution with function \f$ \varphi=\mathbf{\psi} \otimes \mathbf{\psi}\f$ .
    * \details \f$\psi\f$ is defined so to calculate the conserved quantities.
    *  \f[
