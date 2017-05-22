@@ -115,6 +115,72 @@ std::vector<su2double> CGasKineticSchemeBGK::PsiMaxwell(State state, IntLimits l
   return out;
 }
 
+std::vector<std::vector<su2double> > CGasKineticSchemeBGK::PsiPsiMaxwell(State state){
+  std::vector<std::vector<su2double> > out(nVar, std::vector<su2double>(nVar, 0));
+  std::vector<unsigned short> exponents(nVar-1, 0);
+
+  out[0] = PsiMaxwell(state, ALL, false); //1*psi
+  out[1] = PsiMaxwell(state, ALL, true); //u*psi
+
+  //v*psi, w*psi
+  for(unsigned short i=1; i<nDim; i++){
+    for(unsigned short j=1; j<nDim; j++){
+      exponents.assign(nVar-1, 0);
+      exponents[i]++;
+      exponents[j]++;
+      out[i+1][j+1] = MomentsMaxwellian(exponents, state, ALL);
+    }
+
+    for(unsigned short iDim=0; iDim<nDim; iDim++){
+      exponents.assign(nVar-1, 0);
+      exponents[iDim] = 2;
+      exponents[i]++;
+      out[i+1][nVar-1] += MomentsMaxwellian(exponents, state, ALL);
+    }
+    exponents.assign(nVar-1, 0);
+    exponents[nVar-2] = 2;
+    exponents[i]++;
+    out[i+1][nVar-1] += MomentsMaxwellian(exponents, state, ALL);
+    out[i+1][nVar-1] /= 2;
+  }
+
+  /*xi*psi that actually is only the component xi*xi
+    the formula for 3D is:
+      (1/4)*(u^4 + v^4 + w^4 + 2*u^2*v^2 + 2*u^2*w^2 + 2*v^2*w^2 +
+        2*u^2*xi^2 + 2*v^2*xi^2 + 2*w^2*xi^2 + xi^4) */
+  for(unsigned short i=0; i<nDim; i++){
+    exponents.assign(nVar-1, 0);
+    exponents[i] = 4;
+    out[nVar-1][nVar-1] += MomentsMaxwellian(exponents, state, ALL);
+
+    for(unsigned short j=i+1; j<nDim; j++){
+      exponents.assign(nVar-1, 0);
+      exponents[i] = 2;
+      exponents[j] = 2;
+      out[nVar-1][nVar-1] += 2*MomentsMaxwellian(exponents, state, ALL);
+    }
+
+    exponents.assign(nVar-1, 0);
+    exponents[i] = 2;
+    exponents[nVar-2] = 2;
+    out[nVar-1][nVar-1] += 2*MomentsMaxwellian(exponents, state, ALL);
+  }
+
+  exponents.assign(nVar-1, 0);
+  exponents[nVar-2] = 4;
+  out[nVar-1][nVar-1] += MomentsMaxwellian(exponents, state, ALL);
+  out[nVar-1][nVar-1] /= 4;
+
+  //Build the symmetrical part of the matrix
+  for(unsigned short i=2; i<nVar; i++){
+    for(unsigned short j=0; j<i; j++){
+      out[i][j] = out[j][i];
+    }
+  }
+
+  return out;
+}
+
 su2double CGasKineticSchemeBGK::MomentsMaxwellian(std::vector<unsigned short> exponents, State state, IntLimits lim){
   su2double mp, rho;
   
