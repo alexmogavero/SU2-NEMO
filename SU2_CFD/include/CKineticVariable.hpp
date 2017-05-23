@@ -101,4 +101,14 @@ public:
    * @return the local Knudsen number
    */
   su2double GetKnudsen()const;
+
+  using CNSVariable::SetPrimVar;
+
+  /*!
+   * \brief Makes sure CNSVariable::SetPrimVar is called instead of CEulerVariable::SetPrimVar
+   * \details the additional parameters required for CNSVariable::SetPrimVar are set to 0
+   * @param FluidModel
+   * @return
+   */
+  bool SetPrimVar(CFluidModel *FluidModel);
 };

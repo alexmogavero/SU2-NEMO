@@ -69,3 +69,7 @@ su2double CKineticVariable::CalcMagnitude(su2double* v)const{
 su2double CKineticVariable::GetKnudsen()const{
 	return knudsenLocal;
 }
+
+bool CKineticVariable::SetPrimVar(CFluidModel *FluidModel){
+  return SetPrimVar(0, 0, FluidModel);
+}
