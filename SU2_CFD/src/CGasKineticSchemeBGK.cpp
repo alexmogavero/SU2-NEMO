@@ -59,6 +59,30 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
   for(unsigned short iVar=0; iVar<nVar; iVar++){
     val_residual[iVar] = Dt_inv*(int_I*Flux_I[iVar] + int_ij*(Flux_i[iVar] + Flux_j[iVar]))*Area;
   }
+
+  if(config->GetViscous()){
+    std::vector<std::vector<su2double> > vFlux_i, vFlux_j; //u*u*Psi, u*v*Psi, u*w*Psi
+    for(unsigned short i=0; i<nDim; i++){
+      std::vector<unsigned short> exponents(nVar-1, 0);
+      exponents[0]++;
+      exponents[i]++;
+      vFlux_i.push_back(PsiMaxwell(LEFT, POSITIVE, exponents));
+      vFlux_j.push_back(PsiMaxwell(RIGHT, NEGATIVE, exponents));
+    }
+
+    std::vector<su2double> der_i(nDim+1, 1); //TODO calculate derivatives
+    std::vector<su2double> der_j(nDim+1, 1); //TODO calculate derivatives
+
+    for(unsigned short iVar=0; iVar<nVar; iVar++){
+      val_residual[iVar] += Dt_inv*tauColl*int_ij*(der_i[0]*Flux_i[iVar] + der_j[0]*Flux_j[iVar])*Area;
+
+      for(unsigned short iDim=0; iDim<nDim; iDim++){
+        val_residual[iVar] += Dt_inv*tauColl*int_ij*(der_i[iDim+1]*vFlux_i[iDim][iVar] +
+            der_j[iDim+1]*vFlux_j[iDim][iVar])*Area;
+      }
+    }
+  }
+
   rotate(val_residual + 1, true);
 }
 
