@@ -164,6 +164,12 @@ su2_cfd_cxx_flags += @MUTATIONPP_CXX@
 su2_cfd_ldadd += @MUTATIONPP_LD@
 # endif
 
+# if BUILD_LAPACK
+su2_cfd_cxx_flags += @LAPACK_CXX@
+su2_cfd_ldadd += @LAPACK_LD@
+libSU2Core_cxx_flags += @LAPACK_CXX@
+# if endif
+
 # if BUILD_JSONCPP
 su2_cfd_cxx_flags += @JSONCPP_CXX@
 su2_cfd_ldadd += @JSONCPP_LD@

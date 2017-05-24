@@ -424,7 +424,11 @@ AC_SUBST([JSONCPP_LD])
 ##########################
 
 # check for lib
-LAPACKlib=liblapacke.a
+LAPACKElib=liblapacke.a
+LAPACKlib=liblapack.a
+BLASlib=libblas.a
+gfortranlib=libgfortran.a
+quadmathlib=libquadmath.a
 LAPACKheader=lapacke.h
 have_LAPACK="no"
 
@@ -434,6 +438,42 @@ AC_CHECK_FILE([$with_LAPACK_lib/$LAPACKlib],[have_LAPACK="yes"],[have_LAPACK="no
 if test "$have_LAPACK" == "no"
 then
 AC_MSG_ERROR([LAPACK requested but library file not found.])
+fi
+fi
+
+if test "$with_LAPACK_lib" != "no"
+then
+AC_CHECK_FILE([$with_LAPACK_lib/$LAPACKElib],[have_LAPACK="yes"],[have_LAPACK="no"])
+if test "$have_LAPACK" == "no"
+then
+AC_MSG_ERROR([LAPACKE requested but library file not found.])
+fi
+fi
+
+if test "$with_LAPACK_lib" != "no"
+then
+AC_CHECK_FILE([$with_LAPACK_lib/$BLASlib],[have_LAPACK="yes"],[have_LAPACK="no"])
+if test "$have_LAPACK" == "no"
+then
+AC_MSG_ERROR([BLAS requested but library file not found.])
+fi
+fi
+
+if test "$with_gfortran_lib" != "no"
+then
+AC_CHECK_FILE([$with_gfortran_lib/$gfortranlib],[have_LAPACK="yes"],[have_LAPACK="no"])
+if test "$have_LAPACK" == "no"
+then
+AC_MSG_ERROR([gfortran requested but library file not found.])
+fi
+fi
+
+if test "$with_gfortran_lib" != "no"
+then
+AC_CHECK_FILE([$with_gfortran_lib/$quadmathlib],[have_LAPACK="yes"],[have_LAPACK="no"])
+if test "$have_LAPACK" == "no"
+then
+AC_MSG_ERROR([quadmath requested but library file not found.])
 fi
 fi
 
@@ -456,7 +496,11 @@ if test "$have_LAPACK" != "no"
 then
 AM_CONDITIONAL(BUILD_LAPACK,true)
 LAPACK_CXX="-DHAVE_LAPACK -I"$with_LAPACK_include""
-LAPACK_LD="$with_LAPACK_lib"/$LAPACKlib
+LAPACK_LD="$with_LAPACK_lib"/$LAPACKElib
+LAPACK_LD+="  $with_LAPACK_lib"/$LAPACKlib
+LAPACK_LD+="  $with_LAPACK_lib"/$BLASlib
+LAPACK_LD+="  $with_gfortran_lib"/$gfortranlib
+LAPACK_LD+="  $with_gfortran_lib"/$quadmathlib
 else
 AM_CONDITIONAL(BUILD_LAPACK,false)
 LAPACK_CXX=
