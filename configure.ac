@@ -110,6 +110,9 @@ AC_ARG_WITH(LAPACK-lib,
 AC_ARG_WITH(LAPACK-include,
     AS_HELP_STRING([--with-LAPACK-include[=ARG]], [LAPACK include directory, ARG = path to lapacke.h]),
     [with_LAPACK_include=$withval], [with_LAPACK_include="no"])
+AC_ARG_WITH(gfortran-lib,
+        AS_HELP_STRING([--with-gfortran-lib[=ARG]], [gfortran library directory, ARG = path to libgfortran.a]),
+        [with_gfotran_lib=$withval], [with_gfotran_lib="no"])
 AC_ARG_ENABLE(CFD,
    	AS_HELP_STRING([--disable-CFD], [build the SU2_CFD executable (default = yes)]),
 	[build_CFD=$enableval], [build_CFD="yes"])
@@ -434,47 +437,37 @@ have_LAPACK="no"
 
 if test "$with_LAPACK_lib" != "no"
 then
+
 AC_CHECK_FILE([$with_LAPACK_lib/$LAPACKlib],[have_LAPACK="yes"],[have_LAPACK="no"])
 if test "$have_LAPACK" == "no"
 then
 AC_MSG_ERROR([LAPACK requested but library file not found.])
 fi
-fi
 
-if test "$with_LAPACK_lib" != "no"
-then
 AC_CHECK_FILE([$with_LAPACK_lib/$LAPACKElib],[have_LAPACK="yes"],[have_LAPACK="no"])
 if test "$have_LAPACK" == "no"
 then
 AC_MSG_ERROR([LAPACKE requested but library file not found.])
 fi
-fi
 
-if test "$with_LAPACK_lib" != "no"
-then
 AC_CHECK_FILE([$with_LAPACK_lib/$BLASlib],[have_LAPACK="yes"],[have_LAPACK="no"])
 if test "$have_LAPACK" == "no"
 then
 AC_MSG_ERROR([BLAS requested but library file not found.])
 fi
-fi
 
-if test "$with_gfortran_lib" != "no"
-then
 AC_CHECK_FILE([$with_gfortran_lib/$gfortranlib],[have_LAPACK="yes"],[have_LAPACK="no"])
 if test "$have_LAPACK" == "no"
 then
 AC_MSG_ERROR([gfortran requested but library file not found.])
 fi
-fi
 
-if test "$with_gfortran_lib" != "no"
-then
 AC_CHECK_FILE([$with_gfortran_lib/$quadmathlib],[have_LAPACK="yes"],[have_LAPACK="no"])
 if test "$have_LAPACK" == "no"
 then
 AC_MSG_ERROR([quadmath requested but library file not found.])
 fi
+
 fi
 
 # check for header
