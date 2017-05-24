@@ -133,7 +133,7 @@ protected:
    * @param state identify the state for wich the momemnts will be calculated
    * @return a matrix of size nVar x nVar.
    */
-  std::vector<std::vector<su2double> > PsiPsiMaxwell(State state);
+  std::vector<su2double> PsiPsiMaxwell(State state);
 
   /*!
    * \brief calculate time/space derivatives of the distribution function

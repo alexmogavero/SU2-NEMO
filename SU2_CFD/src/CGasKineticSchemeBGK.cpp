@@ -1,5 +1,6 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include "lapacke.h"
 #include "../include/CGasKineticSchemeBGK.hpp"
 #include "../include/CKineticVariable.hpp"
 
@@ -72,6 +73,9 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
 
     std::vector<su2double> der_i(nDim+1, 1); //TODO calculate derivatives
     std::vector<su2double> der_j(nDim+1, 1); //TODO calculate derivatives
+    
+    std::vector<su2double> deritest;
+    deritest = Derivatives(LEFT);
 
     for(unsigned short iVar=0; iVar<nVar; iVar++){
       val_residual[iVar] += Dt_inv*tauColl*int_ij*(der_i[0]*Flux_i[iVar] + der_j[0]*Flux_j[iVar])*Area;
@@ -146,12 +150,19 @@ std::vector<su2double> CGasKineticSchemeBGK::PsiMaxwell(State state, IntLimits l
   return PsiMaxwell(state, lim, mFactor);
 }
 
-std::vector<std::vector<su2double> > CGasKineticSchemeBGK::PsiPsiMaxwell(State state){
-  std::vector<std::vector<su2double> > out(nVar, std::vector<su2double>(nVar, 0));
+std::vector<su2double> CGasKineticSchemeBGK::PsiPsiMaxwell(State state){
+  std::vector<su2double> out(nVar*nVar, 0);
   std::vector<unsigned short> exponents(nVar-1, 0);
-
-  out[0] = PsiMaxwell(state, ALL, false); //1*psi
-  out[1] = PsiMaxwell(state, ALL, true); //u*psi
+  
+  std::vector<su2double> tmprow = PsiMaxwell(state, ALL, false); //1*psi
+  for(unsigned short i=1; i<nVar; i++){
+    out[i] = tmprow[i];
+  }
+  
+  tmprow = PsiMaxwell(state, ALL, true); //u*psi
+  for(unsigned short i=1; i<nVar; i++){
+    out[nVar+i] = tmprow[i];
+  }
 
   //v*psi, w*psi
   for(unsigned short i=1; i<nDim; i++){
@@ -159,20 +170,20 @@ std::vector<std::vector<su2double> > CGasKineticSchemeBGK::PsiPsiMaxwell(State s
       exponents.assign(nVar-1, 0);
       exponents[i]++;
       exponents[j]++;
-      out[i+1][j+1] = MomentsMaxwellian(exponents, state, ALL);
+      out[i+1 + nVar*(j+1)] = MomentsMaxwellian(exponents, state, ALL);
     }
 
     for(unsigned short iDim=0; iDim<nDim; iDim++){
       exponents.assign(nVar-1, 0);
       exponents[iDim] = 2;
       exponents[i]++;
-      out[i+1][nVar-1] += MomentsMaxwellian(exponents, state, ALL);
+      out[i+1 + nVar*(nVar-1)] += MomentsMaxwellian(exponents, state, ALL);
     }
     exponents.assign(nVar-1, 0);
     exponents[nVar-2] = 2;
     exponents[i]++;
-    out[i+1][nVar-1] += MomentsMaxwellian(exponents, state, ALL);
-    out[i+1][nVar-1] /= 2;
+    out[i+1 + nVar*(nVar-1)] += MomentsMaxwellian(exponents, state, ALL);
+    out[i+1 + nVar*(nVar-1)] /= 2;
   }
 
   /*xi*psi that actually is only the component xi*xi
@@ -182,34 +193,66 @@ std::vector<std::vector<su2double> > CGasKineticSchemeBGK::PsiPsiMaxwell(State s
   for(unsigned short i=0; i<nDim; i++){
     exponents.assign(nVar-1, 0);
     exponents[i] = 4;
-    out[nVar-1][nVar-1] += MomentsMaxwellian(exponents, state, ALL);
+    out[nVar-1 + nVar*(nVar-1)] += MomentsMaxwellian(exponents, state, ALL);
 
     for(unsigned short j=i+1; j<nDim; j++){
       exponents.assign(nVar-1, 0);
       exponents[i] = 2;
       exponents[j] = 2;
-      out[nVar-1][nVar-1] += 2*MomentsMaxwellian(exponents, state, ALL);
+      out[nVar-1 + nVar*(nVar-1)] += 2*MomentsMaxwellian(exponents, state, ALL);
     }
 
     exponents.assign(nVar-1, 0);
     exponents[i] = 2;
     exponents[nVar-2] = 2;
-    out[nVar-1][nVar-1] += 2*MomentsMaxwellian(exponents, state, ALL);
+    out[nVar-1 + nVar*(nVar-1)] += 2*MomentsMaxwellian(exponents, state, ALL);
   }
 
   exponents.assign(nVar-1, 0);
   exponents[nVar-2] = 4;
-  out[nVar-1][nVar-1] += MomentsMaxwellian(exponents, state, ALL);
-  out[nVar-1][nVar-1] /= 4;
+  out[nVar-1 + nVar*(nVar-1)] += MomentsMaxwellian(exponents, state, ALL);
+  out[nVar-1 + nVar*(nVar-1)] /= 4;
 
   //Build the symmetrical part of the matrix
   for(unsigned short i=2; i<nVar; i++){
     for(unsigned short j=0; j<i; j++){
-      out[i][j] = out[j][i];
+      out[i + nVar*j] = out[j + nVar*i];
     }
   }
 
   return out;
+}
+
+std::vector<su2double> CGasKineticSchemeBGK::Derivatives(State state){
+  
+  std::vector<su2double> M;
+  M = PsiPsiMaxwell(state);
+  
+  CVariable* node;
+  
+  std::vector<su2double> b(nVar, 0);  //nVar?
+  
+  switch (state){
+    case LEFT:
+      node = node_i;
+      break;
+    case RIGHT:
+      node = node_j;
+      break;
+    case INTERFACE:
+      node = node_I;
+      break;
+  }  
+  
+  for (unsigned int i=0; i++; i<nVar){
+    b[i] = node->GetGradient(i, 0);
+  }
+  
+  int ipiv[nVar];
+  
+  LAPACKE_dsysv(LAPACK_COL_MAJOR, 'U', nVar, 1, M.data(), nVar, ipiv, b.data(), nVar);	
+  
+  return b;
 }
 
 su2double CGasKineticSchemeBGK::MomentsMaxwellian(std::vector<unsigned short> exponents, State state, IntLimits lim){
