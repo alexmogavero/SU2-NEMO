@@ -842,13 +842,16 @@ su2_cfd_sources = \
   ../include/SU2_CFD.hpp \
   ../src/SU2_CFD.cpp
 
-libSU2Core_cxx_flags = -fPIC @su2_externals_INCLUDES@
+libSU2Core_cxx_flags = -fPIC @su2_externals_INCLUDES@ @LAPACK_CXX@
 libSU2Core_libadd = 
 
 # always link to built dependencies from ./externals
 
 # if BUILD_MUTATIONPP
 # endif
+
+# if BUILD_LAPACK
+# if endif
 
 # if BUILD_JSONCPP
 # endif
@@ -861,9 +864,10 @@ libSU2Core_libadd =
 
 # if BUILD_ZLIB
 su2_cfd_cxx_flags = @su2_externals_INCLUDES@ @MUTATIONPP_CXX@ \
-	@JSONCPP_CXX@ @HDF5_CXX@ @SZIP_CXX@ @ZLIB_CXX@ $(am__empty)
-su2_cfd_ldadd = @su2_externals_LIBS@ @MUTATIONPP_LD@ @JSONCPP_LD@ \
-	@HDF5_LD@ @SZIP_LD@ @ZLIB_LD@ $(am__empty)
+	@LAPACK_CXX@ @JSONCPP_CXX@ @HDF5_CXX@ @SZIP_CXX@ @ZLIB_CXX@ \
+	$(am__empty)
+su2_cfd_ldadd = @su2_externals_LIBS@ @MUTATIONPP_LD@ @LAPACK_LD@ \
+	@JSONCPP_LD@ @HDF5_LD@ @SZIP_LD@ @ZLIB_LD@ $(am__empty)
 # endif
 @BUILD_NORMAL_TRUE@libSU2Core_a_SOURCES = $(libSU2Core_sources)
 @BUILD_NORMAL_TRUE@libSU2Core_a_CXXFLAGS = $(libSU2Core_cxx_flags)

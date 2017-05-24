@@ -781,6 +781,7 @@ infodir
 docdir
 oldincludedir
 includedir
+runstatedir
 localstatedir
 sharedstatedir
 sysconfdir
@@ -820,6 +821,7 @@ with_Jsoncpp_lib
 with_Jsoncpp_include
 with_LAPACK_lib
 with_LAPACK_include
+with_gfortran_lib
 enable_CFD
 enable_DOT
 enable_MSH
@@ -890,6 +892,7 @@ datadir='${datarootdir}'
 sysconfdir='${prefix}/etc'
 sharedstatedir='${prefix}/com'
 localstatedir='${prefix}/var'
+runstatedir='${localstatedir}/run'
 includedir='${prefix}/include'
 oldincludedir='/usr/include'
 docdir='${datarootdir}/doc/${PACKAGE_TARNAME}'
@@ -1142,6 +1145,15 @@ do
   | -silent | --silent | --silen | --sile | --sil)
     silent=yes ;;
 
+  -runstatedir | --runstatedir | --runstatedi | --runstated \
+  | --runstate | --runstat | --runsta | --runst | --runs \
+  | --run | --ru | --r)
+    ac_prev=runstatedir ;;
+  -runstatedir=* | --runstatedir=* | --runstatedi=* | --runstated=* \
+  | --runstate=* | --runstat=* | --runsta=* | --runst=* | --runs=* \
+  | --run=* | --ru=* | --r=*)
+    runstatedir=$ac_optarg ;;
+
   -sbindir | --sbindir | --sbindi | --sbind | --sbin | --sbi | --sb)
     ac_prev=sbindir ;;
   -sbindir=* | --sbindir=* | --sbindi=* | --sbind=* | --sbin=* \
@@ -1279,7 +1291,7 @@ fi
 for ac_var in	exec_prefix prefix bindir sbindir libexecdir datarootdir \
 		datadir sysconfdir sharedstatedir localstatedir includedir \
 		oldincludedir docdir infodir htmldir dvidir pdfdir psdir \
-		libdir localedir mandir
+		libdir localedir mandir runstatedir
 do
   eval ac_val=\$$ac_var
   # Remove trailing slashes.
@@ -1432,6 +1444,7 @@ Fine tuning of the installation directories:
   --sysconfdir=DIR        read-only single-machine data [PREFIX/etc]
   --sharedstatedir=DIR    modifiable architecture-independent data [PREFIX/com]
   --localstatedir=DIR     modifiable single-machine data [PREFIX/var]
+  --runstatedir=DIR       modifiable per-process data [LOCALSTATEDIR/run]
   --libdir=DIR            object code libraries [EPREFIX/lib]
   --includedir=DIR        C header files [PREFIX/include]
   --oldincludedir=DIR     C header files for non-gcc [/usr/include]
@@ -1524,6 +1537,8 @@ Optional Packages:
   --with-LAPACK-lib=ARG   LAPACK library directory, ARG = path to liblapacke.a
   --with-LAPACK-include=ARG
                           LAPACK include directory, ARG = path to lapacke.h
+  --with-gfortran-lib=ARG gfortran library directory, ARG = path to
+                          libgfortran.a
 
   --with-metis-cppflags="-D_FILE_OFFSET_BITS=64 -DNDEBUG -DNDEBUG2 -DHAVE_EXECINFO_H -DHAVE_GETLINE"
                           Specific METIS C Preprocessor flags to use
@@ -5691,6 +5706,14 @@ else
   with_LAPACK_include="no"
 fi
 
+
+# Check whether --with-gfortran-lib was given.
+if test "${with_gfortran_lib+set}" = set; then :
+  withval=$with_gfortran_lib; with_gfotran_lib=$withval
+else
+  with_gfotran_lib="no"
+fi
+
 # Check whether --enable-CFD was given.
 if test "${enable_CFD+set}" = set; then :
   enableval=$enable_CFD; build_CFD=$enableval
@@ -6625,12 +6648,17 @@ fi
 ##########################
 
 # check for lib
-LAPACKlib=liblapacke.a
+LAPACKElib=liblapacke.a
+LAPACKlib=liblapack.a
+BLASlib=libblas.a
+gfortranlib=libgfortran.a
+quadmathlib=libquadmath.a
 LAPACKheader=lapacke.h
 have_LAPACK="no"
 
 if test "$with_LAPACK_lib" != "no"
 then
+
 as_ac_File=`$as_echo "ac_cv_file_$with_LAPACK_lib/$LAPACKlib" | $as_tr_sh`
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $with_LAPACK_lib/$LAPACKlib" >&5
 $as_echo_n "checking for $with_LAPACK_lib/$LAPACKlib... " >&6; }
@@ -6658,6 +6686,119 @@ if test "$have_LAPACK" == "no"
 then
 as_fn_error $? "LAPACK requested but library file not found." "$LINENO" 5
 fi
+
+as_ac_File=`$as_echo "ac_cv_file_$with_LAPACK_lib/$LAPACKElib" | $as_tr_sh`
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $with_LAPACK_lib/$LAPACKElib" >&5
+$as_echo_n "checking for $with_LAPACK_lib/$LAPACKElib... " >&6; }
+if eval \${$as_ac_File+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "$with_LAPACK_lib/$LAPACKElib"; then
+  eval "$as_ac_File=yes"
+else
+  eval "$as_ac_File=no"
+fi
+fi
+eval ac_res=\$$as_ac_File
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+if eval test \"x\$"$as_ac_File"\" = x"yes"; then :
+  have_LAPACK="yes"
+else
+  have_LAPACK="no"
+fi
+
+if test "$have_LAPACK" == "no"
+then
+as_fn_error $? "LAPACKE requested but library file not found." "$LINENO" 5
+fi
+
+as_ac_File=`$as_echo "ac_cv_file_$with_LAPACK_lib/$BLASlib" | $as_tr_sh`
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $with_LAPACK_lib/$BLASlib" >&5
+$as_echo_n "checking for $with_LAPACK_lib/$BLASlib... " >&6; }
+if eval \${$as_ac_File+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "$with_LAPACK_lib/$BLASlib"; then
+  eval "$as_ac_File=yes"
+else
+  eval "$as_ac_File=no"
+fi
+fi
+eval ac_res=\$$as_ac_File
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+if eval test \"x\$"$as_ac_File"\" = x"yes"; then :
+  have_LAPACK="yes"
+else
+  have_LAPACK="no"
+fi
+
+if test "$have_LAPACK" == "no"
+then
+as_fn_error $? "BLAS requested but library file not found." "$LINENO" 5
+fi
+
+as_ac_File=`$as_echo "ac_cv_file_$with_gfortran_lib/$gfortranlib" | $as_tr_sh`
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $with_gfortran_lib/$gfortranlib" >&5
+$as_echo_n "checking for $with_gfortran_lib/$gfortranlib... " >&6; }
+if eval \${$as_ac_File+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "$with_gfortran_lib/$gfortranlib"; then
+  eval "$as_ac_File=yes"
+else
+  eval "$as_ac_File=no"
+fi
+fi
+eval ac_res=\$$as_ac_File
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+if eval test \"x\$"$as_ac_File"\" = x"yes"; then :
+  have_LAPACK="yes"
+else
+  have_LAPACK="no"
+fi
+
+if test "$have_LAPACK" == "no"
+then
+as_fn_error $? "gfortran requested but library file not found." "$LINENO" 5
+fi
+
+as_ac_File=`$as_echo "ac_cv_file_$with_gfortran_lib/$quadmathlib" | $as_tr_sh`
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $with_gfortran_lib/$quadmathlib" >&5
+$as_echo_n "checking for $with_gfortran_lib/$quadmathlib... " >&6; }
+if eval \${$as_ac_File+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "$with_gfortran_lib/$quadmathlib"; then
+  eval "$as_ac_File=yes"
+else
+  eval "$as_ac_File=no"
+fi
+fi
+eval ac_res=\$$as_ac_File
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+if eval test \"x\$"$as_ac_File"\" = x"yes"; then :
+  have_LAPACK="yes"
+else
+  have_LAPACK="no"
+fi
+
+if test "$have_LAPACK" == "no"
+then
+as_fn_error $? "quadmath requested but library file not found." "$LINENO" 5
+fi
+
 fi
 
 # check for header
@@ -6708,7 +6849,11 @@ else
 fi
 
 LAPACK_CXX="-DHAVE_LAPACK -I"$with_LAPACK_include""
-LAPACK_LD="$with_LAPACK_lib"/$LAPACKlib
+LAPACK_LD="$with_LAPACK_lib"/$LAPACKElib
+LAPACK_LD+="  $with_LAPACK_lib"/$LAPACKlib
+LAPACK_LD+="  $with_LAPACK_lib"/$BLASlib
+LAPACK_LD+="  $with_gfortran_lib"/$gfortranlib
+LAPACK_LD+="  $with_gfortran_lib"/$quadmathlib
 else
  if false; then
   BUILD_LAPACK_TRUE=
