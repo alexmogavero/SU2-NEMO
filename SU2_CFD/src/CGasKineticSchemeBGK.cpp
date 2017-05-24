@@ -444,9 +444,9 @@ void CGasKineticSchemeBGK::rotate(su2double* v, bool inverse)const{
     vRot[i] = 0;
     for(unsigned short j=0; j<nDim; j++){
       if(inverse){
-        vRot[i] += v[j]*rotMatrix[j][i];
+        vRot[i] += v[j]*rotMatrix[j][i]; // vRot = transp(R)*v
       }else{
-        vRot[i] += v[j]*rotMatrix[i][j];
+        vRot[i] += v[j]*rotMatrix[i][j]; // vRot = R*v
       }
     }
   }
@@ -456,12 +456,34 @@ void CGasKineticSchemeBGK::rotate(su2double* v, bool inverse)const{
   }
 }
 
+void CGasKineticSchemeBGK::rotate(su2double** t)const{
+  su2double vRot[nDim][nDim]; //rotated and transposed vector
+  for(unsigned short i=0; i<nDim; i++){
+    for(unsigned short j=0; j<nDim; j++){
+      vRot[i][j] = t[j][i];
+    }
+    rotate(vRot[i]);
+  }
+
+  for(unsigned short i=0; i<nDim; i++){
+    for(unsigned short j=0; j<nDim; j++){
+      t[i][j] = vRot[j][i];
+    }
+  }
+}
+
 void CGasKineticSchemeBGK::rotate(CVariable* node)const{
   su2double* v = node->GetSolution();
   rotate(++v);
 
   v = node->GetPrimitive();
   rotate(++v);
+
+  su2double** t = node->GetGradient();
+  for(unsigned short iVar=0; iVar<nVar; iVar++){
+    rotate(t[iVar]);
+  }
+  rotate(++t);
 }
 
 void CGasKineticSchemeBGK::Clear(){

@@ -28,6 +28,12 @@ private:
   void rotate(su2double* v, bool inverse=false)const;
 
   /*!
+   * \brief Rotates a generic tensor t using rotMatrix
+   * @param t tensor to be rotated
+   */
+  void rotate(su2double** t)const;
+
+  /*!
    * \brief Rotates a node using rotMatrix
    * @param node node to be rotated
    */
