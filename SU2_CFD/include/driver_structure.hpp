@@ -48,7 +48,7 @@
 
 using namespace std;
 
-/*! 
+/*!
  * \class CDriver
  * \brief Parent class for driving an iteration of a single or multi-zone problem.
  * \author T. Economon
@@ -59,16 +59,18 @@ protected:
   char* config_file_name;                       /*!< \brief Configuration file name of the problem.*/
   char runtime_file_name[MAX_STRING_SIZE];
   su2double StartTime,                          /*!< \brief Start point of the timer for performance benchmarking.*/
-            StopTime,                           /*!< \brief Stop point of the timer for performance benchmarking.*/
-            UsedTime;                           /*!< \brief Elapsed time between Start and Stop point of the timer.*/
+  StopTime,                           /*!< \brief Stop point of the timer for performance benchmarking.*/
+  UsedTimePreproc,                           /*!< \brief Elapsed time between Start and Stop point of the timer for tracking preprocessing phase.*/
+  UsedTimeCompute,                           /*!< \brief Elapsed time between Start and Stop point of the timer for tracking compute phase.*/
+  UsedTime;                           /*!< \brief Elapsed time between Start and Stop point of the timer.*/
   unsigned long ExtIter;                        /*!< \brief External iteration.*/
   ofstream ConvHist_file;                       /*!< \brief Convergence history file.*/
   unsigned short iMesh,                         /*!< \brief Iterator on mesh levels.*/
-                iZone,                          /*!< \brief Iterator on zones.*/
-                nZone,                          /*!< \brief Total number of zones in the problem. */
-                nDim;                           /*!< \brief Number of dimensions.*/
+  iZone,                          /*!< \brief Iterator on zones.*/
+  nZone,                          /*!< \brief Total number of zones in the problem. */
+  nDim;                           /*!< \brief Number of dimensions.*/
   bool StopCalc,                                /*!< \brief Stop computation flag.*/
-       fsi;                                     /*!< \brief FSI simulation flag.*/
+  fsi;                                     /*!< \brief FSI simulation flag.*/
   CIteration **iteration_container;             /*!< \brief Container vector with all the iteration methods. */
   COutput *output;                              /*!< \brief Pointer to the COutput class. */
   CIntegration ***integration_container;        /*!< \brief Container vector with all the integration methods. */
@@ -113,7 +115,12 @@ public:
    * \brief Construction of the edge-based data structure and the multigrid structure.
    */
   void Geometrical_Preprocessing();
-
+  
+  /*!
+   * \brief Do the geometrical preprocessing for the DG FEM solver.
+   */
+  void Geometrical_Preprocessing_DGFEM();
+  
   /*!
    * \brief Definition of the physics iteration class or within a single zone.
    * \param[in] iteration_container - Pointer to the iteration container to be instantiated.
@@ -121,7 +128,7 @@ public:
    * \param[in] iZone - Index of the zone.
    */
   void Iteration_Preprocessing();
-
+  
   /*!
    * \brief Definition and allocation of all solution classes.
    * \param[in] solver_container - Container vector with all the solutions.
@@ -129,7 +136,7 @@ public:
    * \param[in] config - Definition of the particular problem.
    */
   void Solver_Preprocessing(CSolver ***solver_container, CGeometry **geometry, CConfig *config);
-
+  
   /*!
    * \brief Definition and allocation of all solution classes.
    * \param[in] solver_container - Container vector with all the solutions.
@@ -137,7 +144,7 @@ public:
    * \param[in] config - Definition of the particular problem.
    */
   void Solver_Postprocessing(CSolver ***solver_container, CGeometry **geometry, CConfig *config);
-
+  
   /*!
    * \brief Definition and allocation of all integration classes.
    * \param[in] integration_container - Container vector with all the integration methods.
@@ -145,7 +152,7 @@ public:
    * \param[in] config - Definition of the particular problem.
    */
   void Integration_Preprocessing(CIntegration **integration_container, CGeometry **geometry, CConfig *config);
-
+  
   /*!
    * \brief Definition and allocation of all integration classes.
    * \param[in] integration_container - Container vector with all the integration methods.
@@ -153,7 +160,7 @@ public:
    * \param[in] config - Definition of the particular problem.
    */
   void Integration_Postprocessing(CIntegration **integration_container, CGeometry **geometry, CConfig *config);
-
+  
   /*!
    * \brief Definition and allocation of all interface classes.
    */
@@ -181,7 +188,7 @@ public:
    * \brief Deallocation routine
    */
   void Postprocessing();
-
+  
   /*!
    * \brief A virtual member.
    * \param[in] donorZone - zone in which the displacements will be predicted.
@@ -235,7 +242,7 @@ public:
    * \brief Launch the computation for all zones and all physics.
    */
   void StartSolver();
-
+  
   /*!
    * \brief A virtual member.
    */
@@ -245,17 +252,17 @@ public:
    * \brief Perform some pre-processing before an iteration of the physics.
    */
   void PreprocessExtIter(unsigned long ExtIter);
-
+  
   /*!
    * \brief Monitor the computation.
    */
   bool Monitor(unsigned long ExtIter);
-
+  
   /*!
    * \brief Output the solution in solution file.
    */
   void Output(unsigned long ExtIter);
-
+  
   /*!
    * \brief Perform a dynamic mesh deformation, including grid velocity computation and update of the multigrid structure.
    */
@@ -265,7 +272,7 @@ public:
    * \brief Perform a static mesh deformation, without considering grid velocity.
    */
   virtual void StaticMeshUpdate() { };
-
+  
   /*!
    * \brief Perform a mesh deformation as initial condition.
    */
@@ -466,7 +473,7 @@ public:
    * \return Norm of the VarCoord.
    */
   su2double SetVertexVarCoord(unsigned short iMarker, unsigned short iVertex);
-
+  
 };
 
 /*!
@@ -694,21 +701,21 @@ public:
    * \param[in] targetZone - zone which receives the predicted traction.
    */
   void Predict_Tractions(unsigned short donorZone, unsigned short targetZone);
-
+  
   /*!
    * \brief Transfer the displacements computed on the structural solver into the fluid solver.
    * \param[in] donorZone - zone in which the displacements will be transferred.
    * \param[in] targetZone - zone which receives the tractions transferred.
    */
   void Transfer_Displacements(unsigned short donorZone, unsigned short targetZone);
-
+  
   /*!
    * \brief Transfer the tractions computed on the fluid solver into the structural solver.
    * \param[in] donorZone - zone from which the tractions will be transferred.
    * \param[in] targetZone - zone which receives the tractions transferred.
    */
   void Transfer_Tractions(unsigned short donorZone, unsigned short targetZone);
-
+  
   /*!
    * \brief Apply a relaxation method into the computed displacements.
    * \param[in] donorZone - origin of the information.
@@ -716,7 +723,7 @@ public:
    * \param[in] iFSIIter - Fluid-Structure Interaction subiteration.
    */
   void Relaxation_Displacements(unsigned short donorZone, unsigned short targetZone, unsigned long iFSIIter);
-
+  
   /*!
    * \brief Apply a relaxation method into the computed tractions.
    * \param[in] donorZone - origin of the information.
@@ -724,7 +731,7 @@ public:
    * \param[in] iFSIIter - Fluid-Structure Interaction subiteration.
    */
   void Relaxation_Tractions(unsigned short donorZone, unsigned short targetZone, unsigned long iFSIIter);
-
+  
   /*!
    * \brief Enforce the coupling condition at the end of the time step
    * \param[in] zoneFlow - zone of the flow equations.

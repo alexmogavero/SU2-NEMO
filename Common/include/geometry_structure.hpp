@@ -55,12 +55,167 @@ extern "C" {
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <climits>
 
 #include "primal_grid_structure.hpp"
 #include "dual_grid_structure.hpp"
 #include "config_structure.hpp"
+#include "fem_standard_element.hpp"
+#include "dense_matrix_product.hpp"
 
 using namespace std;
+
+/*! 
+ * \class unsignedLong2T
+ * \brief Help class used to store two unsigned longs as one entity.
+ * \version 5.0.0 "Cardinal"
+ */
+class unsignedLong2T {
+public:
+  unsigned long long0;  /*!< \brief First long to store in this class. */
+  unsigned long long1;  /*!< \brief Second long to store in this class. */
+
+  /* Constructors and destructors. */
+  unsignedLong2T();
+  ~unsignedLong2T();
+
+  unsignedLong2T(const unsigned long a, const unsigned long b);
+
+  unsignedLong2T(const unsignedLong2T &other);
+
+  /* Operators. */
+  unsignedLong2T& operator=(const unsignedLong2T &other);
+
+  bool operator<(const unsignedLong2T &other) const;
+
+  bool operator==(const unsignedLong2T &other) const;
+
+private:
+  /* Copy function. */
+  void Copy(const unsignedLong2T &other);
+};
+
+/*! 
+ * \class FaceOfElementClass
+ * \brief Class used in the partitioning of the FEM grid as well as the building of
+          the faces of DG. It stores a face of an element.
+ * \version 4.1.0 "Cardinal"
+ */
+class FaceOfElementClass {
+public:
+  unsigned short nCornerPoints;          /*!< \brief Number of corner points of the face. */
+  unsigned long  cornerPoints[4];        /*!< \brief Global ID's of ther corner points. */
+  unsigned long  elemID0, elemID1;       /*!< \brief Element ID's to the left and right. */
+  unsigned short nPolyGrid0, nPolyGrid1; /*!< \brief Polynomial degrees of the grid of the elements
+                                                     to the left and right. */
+  unsigned short nPolySol0,  nPolySol1;  /*!< \brief Polynomial degrees of the solution of the elements
+                                                     to the left and right. */
+  unsigned short nDOFsElem0, nDOFsElem1; /*!< \brief Number of DOFs of the elements to the left and right. */
+  unsigned short elemType0,  elemType1;  /*!< \brief Type of the elements to the left and right. */
+  unsigned short faceID0, faceID1;       /*!< \brief The local face ID in the corresponding elements
+                                                     to the left and right of the face. */
+  unsigned short periodicIndex;          /*!< \brief Periodic indicator of the face. A value of 0 means no
+                                                     periodic face. A value larger than 0 gives the index of
+                                                     the periodic boundary + 1. */
+  short faceIndicator;                   /*!< \brief The corresponding boundary marker if this face is on a
+                                                     boundary. For an internal face the value is -1,
+                                                     while an invalidated face has the value -2. */
+  bool JacFaceIsConsideredConstant;      /*!< \brief Whether or not the Jacobian of the transformation
+                                                     to the standard element is considered constant. */
+  bool elem0IsOwner;                     /*!< \brief Whether or not the neighboring element 0 is the owner
+                                                     of the face. If false, element 1 is the owner. */
+
+  /* Standard constructor and destructor. */
+  FaceOfElementClass();
+  ~FaceOfElementClass(){}
+
+  /* Copy constructor and assignment operator. */
+  FaceOfElementClass(const FaceOfElementClass &other);
+
+  FaceOfElementClass& operator=(const FaceOfElementClass &other);
+
+  /* Less than operator. Needed for the sorting and searching. */
+  bool operator<(const FaceOfElementClass &other) const;
+
+  /* Equal operator. Needed for removing double entities. */
+  bool operator ==(const FaceOfElementClass &other) const;
+
+  /*--- Member function, which creates a unique numbering for the corner points.
+        A sort in increasing order is OK for this purpose.                       ---*/
+  void CreateUniqueNumbering(void);
+
+  /*--- Member function, which creates a unique numbering for the corner points
+        while the orientation is taken into account. ---*/
+  void CreateUniqueNumberingWithOrientation(void);
+
+private:
+  /*--- Copy function, which copies the data of the given object into the current object. ---*/
+  void Copy(const FaceOfElementClass &other);
+};
+
+/*! 
+ * \class BoundaryFaceClass
+ * \brief Help class used in the partitioning of the FEM grid.
+ *        It stores a boundary element.
+ * \version 5.0.0 "Raven"
+ */
+class BoundaryFaceClass {
+ public:
+  unsigned short VTK_Type, nPolyGrid, nDOFsGrid;
+  unsigned long  globalBoundElemID, domainElementID;
+  vector<unsigned long>  Nodes;
+
+  /* Standard constructor and destructor. Nothing to be done. */
+  BoundaryFaceClass(){}
+  ~BoundaryFaceClass(){}
+
+  /* Copy constructor and assignment operator. */
+  BoundaryFaceClass(const BoundaryFaceClass &other);
+
+  BoundaryFaceClass& operator=(const BoundaryFaceClass &other);
+
+private:
+  /*--- Copy function, which copies the data of the given object into the current object. ---*/
+  void Copy(const BoundaryFaceClass &other);
+};
+
+/*! 
+ * \class MatchingFaceClass
+ * \brief Help class used to determine whether or not (periodic) faces match.
+ * \version 4.1.0 "Cardinal"
+ */
+class MatchingFaceClass {
+ public:
+  unsigned short nCornerPoints;          /*!< \brief Number of corner points of the face. */
+  unsigned short nDim;                   /*!< \brief Number of spatial dimensions. */
+  unsigned short nPoly;                  /*!< \brief Polynomial degree of the face. */
+  unsigned short nDOFsElem;              /*!< \brief Number of DOFs of the relevant adjacent element. */
+  unsigned short elemType;               /*!< \brief Type of the adjacent element. */
+  unsigned long  elemID;                 /*!< \brief The relevant adjacent element ID. */
+  su2double cornerCoor[4][3];            /*!< \brief Coordinates of the corner points of the face. */
+  su2double tolForMatching;              /*!< \brief Tolerance for this face for matching points. */
+
+  /* Standard constructor. */
+  MatchingFaceClass();
+
+  /* Destructor, nothing to be done. */
+  ~MatchingFaceClass(){}
+
+  /* Copy constructor and assignment operator. */
+  MatchingFaceClass(const MatchingFaceClass &other);
+
+  MatchingFaceClass& operator=(const MatchingFaceClass &other);
+
+  /* Less than operator. Needed for the sorting and searching. */
+  bool operator<(const MatchingFaceClass &other) const;
+
+  /*--- Member function, which sorts the coordinates of the face. ---*/
+  void SortFaceCoordinates(void);
+
+private:
+  /*--- Copy function, which copies the data of the given object into the current object. ---*/
+  void Copy(const MatchingFaceClass &other);
+};
 
 /*! 
  * \class CGeometry
@@ -118,6 +273,7 @@ public:
 	CPoint** node;			/*!< \brief Node vector (dual grid information). */
 	CEdge** edge;			/*!< \brief Edge vector (dual grid information). */
 	CVertex*** vertex;		/*!< \brief Boundary Vertex vector (dual grid information). */
+
 	unsigned long *nVertex;	/*!< \brief Number of vertex for each marker. */
 	unsigned short nCommLevel;		/*!< \brief Number of non-blocking communication levels. */
 	vector<unsigned long> PeriodicPoint[MAX_NUMBER_PERIODIC][2];			/*!< \brief PeriodicPoint[Periodic bc] and return the point that
@@ -357,7 +513,7 @@ public:
 	/*! 
 	 * \brief A virtual member.
 	 */
-	void SetFaces(void);
+	virtual void SetFaces(void);
 
 	/*! 
 	 * \brief A virtual member.
@@ -474,6 +630,12 @@ public:
    * \param[in] config - Definition of the particular problem.
    */
   virtual void SetColorGrid_Parallel(CConfig *config);
+
+  /*!
+   * \brief A virtual member.
+   * \param[in] config - Definition of the particular problem.
+   */
+  virtual void SetColorFEMGrid_Parallel(CConfig *config);
   
   /*!
 	 * \brief A virtual member.
@@ -721,7 +883,13 @@ public:
 	 * \returns Total number of nodes in a simulation across all processors (excluding halos).
 	 */
 	virtual unsigned long GetGlobal_nPointDomain();
-  
+
+  /*!
+   * \brief A virtual member.
+	 * \param[in] val_global_npoint - Global number of points in the mesh (excluding halos).
+   */
+  virtual void SetGlobal_nPointDomain(unsigned long val_global_npoint);
+
   /*!
 	 * \brief A virtual member.
 	 * \returns Total number of elements in a simulation across all processors.
@@ -1049,6 +1217,17 @@ public:
    */
   void Read_CGNS_Format_Parallel(CConfig *config, string val_mesh_filename, unsigned short val_iZone, unsigned short val_nZone);
 
+  /*!
+   * \brief Reads for the FEM solver the geometry of the grid and adjust the boundary
+   *        conditions with the configuration file in parallel (for parmetis).
+   * \param[in] config - Definition of the particular problem.
+   * \param[in] val_mesh_filename - Name of the file with the grid information.
+   * \param[in] val_format - Format of the file with the grid information.
+   * \param[in] val_iZone - Domain to be read from the grid file.
+   * \param[in] val_nZone - Total number of domains in the grid file.
+   */
+  void Read_SU2_Format_Parallel_FEM(CConfig *config, string val_mesh_filename, unsigned short val_iZone, unsigned short val_nZone);
+
 	/*! 
 	 * \brief Find repeated nodes between two elements to identify the common face.
 	 * \param[in] first_elem - Identification of the first element.
@@ -1207,7 +1386,60 @@ public:
    * \param[in] config - Definition of the particular problem.
    */
   void SetColorGrid_Parallel(CConfig *config);
-  
+
+  /*!
+   * \brief Set the domains for FEM grid partitioning using ParMETIS.
+   * \param[in] config - Definition of the particular problem.
+   */
+  void SetColorFEMGrid_Parallel(CConfig *config);
+
+  /*!
+   * \brief Compute the weights of the FEM graph for ParMETIS.
+   * \param[in]  config                       - Definition of the particular problem.
+   * \param[in]  localFaces                   - Vector, which contains the element faces of this rank.
+   * \param[in]  xadj_l                       - Number of neighbors per element, ParMETIS storage format.
+   * \param[in]  adjacency_l                  - Neighbors of the element, ParMETIS storage format.
+   * \param[in]  mapExternalElemIDToTimeLevel - Map from the external element ID's to their time level.
+   * \param[out] vwgt                         - Weights of the vertices of the graph, i.e. the elements.
+   * \param[out] adjwgt                       - Weights of the edges of the graph.
+   */
+  void ComputeFEMGraphWeights(
+              CConfig                                 *config,
+              const vector<FaceOfElementClass>         &localFaces,
+              const vector<unsigned long>              &xadj_l,
+              const vector<unsigned long>              &adjacency_l,
+              const map<unsigned long, unsigned short> &mapExternalElemIDToTimeLevel,
+                    vector<su2double>                  &vwgt,
+                    vector<su2double>                  &adjwgt);
+
+  /*!
+   * \brief Determine whether or not the Jacobians of the elements and faces
+            are constant and a length scale of the elements. 
+   * \param[in]  config - Definition of the particular problem.
+   */
+  void DetermineFEMConstantJacobiansAndLenScale(CConfig *config);
+
+  /*!
+   * \brief Determine the neighboring information for periodic faces of a FEM grid.
+   * \param[in]     config      - Definition of the particular problem.
+   * \param[in,out] localFaces  - Vector, which contains the element faces of this rank.
+   */
+  void DeterminePeriodicFacesFEMGrid(CConfig                    *config,
+                                     vector<FaceOfElementClass> &localFaces);
+
+  /*!
+   * \brief Determine the time level of the elements when time accurate
+            local time stepping is employed.
+   * \param[in]  config                       - Definition of the particular problem.
+   * \param[in]  localFaces                   - Vector, which contains the element
+                                                faces of this rank.
+   * \param[out] mapExternalElemIDToTimeLevel - Map from the external element ID's to
+                                                their time level.
+   */
+  void DetermineTimeLevelElements(CConfig                            *config,
+                                  const vector<FaceOfElementClass>   &localFaces,
+                                  map<unsigned long, unsigned short> &mapExternalElemIDToTimeLevel);
+
 	/*!
 	 * \brief Set the rotational velocity at each node.
 	 * \param[in] config - Definition of the particular problem.

@@ -353,7 +353,13 @@ private:
   long Unst_RestartIter;			/*!< \brief Iteration number to restart an unsteady simulation (Dual time Method). */
   long Unst_AdjointIter;			/*!< \brief Iteration number to begin the reverse time integration in the direct solver for the unsteady adjoint. */
   long Iter_Avg_Objective;			/*!< \brief Iteration the number of time steps to be averaged, counting from the back */
-  long Dyn_RestartIter;			/*!< \brief Iteration number to restart a dynamic structural analysis. */
+  long Dyn_RestartIter;                         /*!< \brief Iteration number to restart a dynamic structural analysis. */
+  unsigned short nLevels_TimeAccurateLTS; /*!< \brief Number of time levels for time accurate local time stepping. */
+  unsigned short nTimeDOFsADER_DG;        /*!< \brief Number of time DOFs used in the predictor step of ADER-DG. */
+  su2double *TimeDOFsADER_DG;             /*!< \brief The location of the ADER-DG time DOFs on the interval [-1,1]. */
+  unsigned short nTimeIntegrationADER_DG; /*!< \brief Number of time integration points ADER-DG. */ 
+  su2double *TimeIntegrationADER_DG;      /*!< \brief The location of the ADER-DG time integration points on the interval [-1,1]. */
+  su2double *WeightsIntegrationADER_DG;   /*!< \brief The weights of the ADER-DG time integration points on the interval [-1,1]. */
   unsigned short nRKStep;			/*!< \brief Number of steps of the explicit Runge-Kutta method. */
   su2double *RK_Alpha_Step;			/*!< \brief Runge-Kutta beta coefficients. */
   unsigned short nMGLevels;		/*!< \brief Number of multigrid levels (coarse levels). */
@@ -408,40 +414,46 @@ private:
   Kind_AdjTurb_Linear_Prec,		/*!< \brief Preconditioner of the turbulent adjoint linear solver. */
   Kind_DiscAdj_Linear_Solver, /*!< \brief Linear solver for the discrete adjoint system. */
   Kind_DiscAdj_Linear_Prec,  /*!< \brief Preconditioner of the discrete adjoint linear solver. */
-  Kind_SlopeLimit,				/*!< \brief Global slope limiter. */
-  Kind_SlopeLimit_Flow,		/*!< \brief Slope limiter for flow equations.*/
-  Kind_SlopeLimit_Turb,		/*!< \brief Slope limiter for the turbulence equation.*/
-  Kind_SlopeLimit_AdjTurb,	/*!< \brief Slope limiter for the adjoint turbulent equation.*/
-  Kind_SlopeLimit_AdjFlow,	/*!< \brief Slope limiter for the adjoint equation.*/
-  Kind_TimeNumScheme,			/*!< \brief Global explicit or implicit time integration. */
-  Kind_TimeIntScheme_Flow,	/*!< \brief Time integration for the flow equations. */
-  Kind_TimeIntScheme_AdjFlow,		/*!< \brief Time integration for the adjoint flow equations. */
-  Kind_TimeIntScheme_Turb,	/*!< \brief Time integration for the turbulence model. */
-  Kind_TimeIntScheme_AdjTurb,	/*!< \brief Time integration for the adjoint turbulence model. */
-  Kind_TimeIntScheme_Wave,	/*!< \brief Time integration for the wave equations. */
-  Kind_TimeIntScheme_Heat,	/*!< \brief Time integration for the wave equations. */
-  Kind_TimeIntScheme_Poisson,	/*!< \brief Time integration for the wave equations. */
-  Kind_TimeIntScheme_FEA,	/*!< \brief Time integration for the FEA equations. */
-  Kind_SpaceIteScheme_FEA,	/*!< \brief Iterative scheme for nonlinear structural analysis. */
-  Kind_ConvNumScheme,			/*!< \brief Global definition of the convective term. */
-  Kind_ConvNumScheme_Flow,	/*!< \brief Centered or upwind scheme for the flow equations. */
-  Kind_ConvNumScheme_Heat,	/*!< \brief Centered or upwind scheme for the flow equations. */
-  Kind_ConvNumScheme_AdjFlow,		/*!< \brief Centered or upwind scheme for the adjoint flow equations. */
-  Kind_ConvNumScheme_Turb,	/*!< \brief Centered or upwind scheme for the turbulence model. */
-  Kind_ConvNumScheme_AdjTurb,	/*!< \brief Centered or upwind scheme for the adjoint turbulence model. */
-  Kind_ConvNumScheme_Template,	/*!< \brief Centered or upwind scheme for the level set equation. */
-  Kind_Centered,				/*!< \brief Centered scheme. */
-  Kind_Centered_Flow,			/*!< \brief Centered scheme for the flow equations. */
-  Kind_Centered_AdjFlow,			/*!< \brief Centered scheme for the adjoint flow equations. */
-  Kind_Centered_Turb,			/*!< \brief Centered scheme for the turbulence model. */
-  Kind_Centered_AdjTurb,		/*!< \brief Centered scheme for the adjoint turbulence model. */
-  Kind_Centered_Template,		/*!< \brief Centered scheme for the template model. */
-  Kind_Upwind,				/*!< \brief Upwind scheme. */
-  Kind_Upwind_Flow,			/*!< \brief Upwind scheme for the flow equations. */
-  Kind_Upwind_AdjFlow,			/*!< \brief Upwind scheme for the adjoint flow equations. */
-  Kind_Upwind_Turb,			/*!< \brief Upwind scheme for the turbulence model. */
-  Kind_Upwind_AdjTurb,		/*!< \brief Upwind scheme for the adjoint turbulence model. */
-  Kind_Upwind_Template,			/*!< \brief Upwind scheme for the template model. */
+	Kind_SlopeLimit,				/*!< \brief Global slope limiter. */
+	Kind_SlopeLimit_Flow,		/*!< \brief Slope limiter for flow equations.*/
+	Kind_SlopeLimit_Turb,		/*!< \brief Slope limiter for the turbulence equation.*/
+	Kind_SlopeLimit_AdjTurb,	/*!< \brief Slope limiter for the adjoint turbulent equation.*/
+	Kind_SlopeLimit_AdjFlow,	/*!< \brief Slope limiter for the adjoint equation.*/
+	Kind_TimeNumScheme,			/*!< \brief Global explicit or implicit time integration. */
+	Kind_TimeIntScheme_Flow,	/*!< \brief Time integration for the flow equations. */
+  Kind_TimeIntScheme_FEM_Flow,	/*!< \brief Time integration for the flow equations. */
+  Kind_ADER_Predictor,          /*!< \brief Predictor step of the ADER-DG time integration scheme. */
+	Kind_TimeIntScheme_AdjFlow,		/*!< \brief Time integration for the adjoint flow equations. */
+	Kind_TimeIntScheme_Turb,	/*!< \brief Time integration for the turbulence model. */
+	Kind_TimeIntScheme_AdjTurb,	/*!< \brief Time integration for the adjoint turbulence model. */
+	Kind_TimeIntScheme_Wave,	/*!< \brief Time integration for the wave equations. */
+	Kind_TimeIntScheme_Heat,	/*!< \brief Time integration for the wave equations. */
+	Kind_TimeIntScheme_Poisson,	/*!< \brief Time integration for the wave equations. */
+	Kind_TimeIntScheme_FEA,	/*!< \brief Time integration for the FEA equations. */
+	Kind_SpaceIteScheme_FEA,	/*!< \brief Iterative scheme for nonlinear structural analysis. */
+	Kind_ConvNumScheme,			/*!< \brief Global definition of the convective term. */
+	Kind_ConvNumScheme_Flow,	/*!< \brief Centered or upwind scheme for the flow equations. */
+  Kind_ConvNumScheme_FEM_Flow,	/*!< \brief Finite element scheme for the flow equations. */
+	Kind_ConvNumScheme_Heat,	/*!< \brief Centered or upwind scheme for the flow equations. */
+	Kind_ConvNumScheme_AdjFlow,		/*!< \brief Centered or upwind scheme for the adjoint flow equations. */
+	Kind_ConvNumScheme_Turb,	/*!< \brief Centered or upwind scheme for the turbulence model. */
+	Kind_ConvNumScheme_AdjTurb,	/*!< \brief Centered or upwind scheme for the adjoint turbulence model. */
+	Kind_ConvNumScheme_Template,	/*!< \brief Centered or upwind scheme for the level set equation. */
+	Kind_Centered,				/*!< \brief Centered scheme. */
+	Kind_Centered_Flow,			/*!< \brief Centered scheme for the flow equations. */
+	Kind_Centered_AdjFlow,			/*!< \brief Centered scheme for the adjoint flow equations. */
+	Kind_Centered_Turb,			/*!< \brief Centered scheme for the turbulence model. */
+	Kind_Centered_AdjTurb,		/*!< \brief Centered scheme for the adjoint turbulence model. */
+	Kind_Centered_Template,		/*!< \brief Centered scheme for the template model. */
+	Kind_Upwind,				/*!< \brief Upwind scheme. */
+	Kind_Upwind_Flow,			/*!< \brief Upwind scheme for the flow equations. */
+	Kind_Upwind_AdjFlow,			/*!< \brief Upwind scheme for the adjoint flow equations. */
+	Kind_Upwind_Turb,			/*!< \brief Upwind scheme for the turbulence model. */
+	Kind_Upwind_AdjTurb,		/*!< \brief Upwind scheme for the adjoint turbulence model. */
+	Kind_Upwind_Template,			/*!< \brief Upwind scheme for the template model. */
+  Kind_FEM,			/*!< \brief Finite element scheme for the flow equations. */
+  Kind_FEM_Flow,			/*!< \brief Finite element scheme for the flow equations. */
+  Kind_FEM_DG_Shock, /*!< \brief Shock capturing method for the FEM DG solver. */
   Kind_Solver_Fluid_FSI,		/*!< \brief Kind of solver for the fluid in FSI applications. */
   Kind_Solver_Struc_FSI,		/*!< \brief Kind of solver for the structure in FSI applications. */
   Kind_BGS_RelaxMethod,				/*!< \brief Kind of relaxation method for Block Gauss Seidel method in FSI problems. */
@@ -450,13 +462,15 @@ private:
   SpatialOrder_Flow,		/*!< \brief Order of the spatial numerical integration.*/
   SpatialOrder_Turb,		/*!< \brief Order of the spatial numerical integration.*/
   SpatialOrder_AdjFlow,		/*!< \brief Order of the spatial numerical integration.*/
-  SpatialOrder_AdjTurb;		/*!< \brief Order of the spatial numerical integration.*/
+  SpatialOrder_AdjTurb;		/*!< \brief Order of the spatial numerical integration.*/  
+  bool EulerPersson;        /*!< \brief Boolean to determine whether the simulation is FSI or not. */
   bool FSI_Problem;			/*!< \brief Boolean to determine whether the simulation is FSI or not. */
   bool AD_Mode;         /*!< \brief Algorithmic Differentiation support. */
   unsigned short Kind_Material_Compress,	/*!< \brief Determines if the material is compressible or incompressible (structural analysis). */
   Kind_Material,			/*!< \brief Determines the material model to be used (structural analysis). */
   Kind_Struct_Solver;		/*!< \brief Determines the geometric condition (small or large deformations) for structural analysis. */
   unsigned short Kind_Turb_Model;			/*!< \brief Turbulent model definition. */
+  unsigned short Kind_SGS_Model;                        /*!< \brief LES SGS model definition. */
   unsigned short Kind_Trans_Model,			/*!< \brief Transition model definition. */
   Kind_ActDisk, Kind_Engine_Inflow, Kind_Inlet, *Kind_Data_Riemann, *Kind_Data_NRBC;           /*!< \brief Kind of inlet boundary treatment. */
   su2double Linear_Solver_Error;		/*!< \brief Min error of the linear solver for the implicit formulation. */
@@ -632,7 +646,8 @@ private:
   New_SU2_FileName,       		/*!< \brief Output SU2 mesh file converted from CGNS format. */
   SurfSens_FileName,			/*!< \brief Output file for the sensitivity on the surface (discrete adjoint). */
   VolSens_FileName;			/*!< \brief Output file for the sensitivity in the volume (discrete adjoint). */
-  bool Low_MemoryOutput,      /*!< \brief Write a volume solution file */
+	bool Low_MemoryOutput,      /*!< \brief Write a volume solution file */
+  Wrt_Output,                /*!< \brief Write any output files */
   Wrt_Vol_Sol,                /*!< \brief Write a volume solution file */
   Wrt_Srf_Sol,                /*!< \brief Write a surface solution file */
   Wrt_Csv_Sol,                /*!< \brief Write a surface comma-separated values solution file */
@@ -827,8 +842,13 @@ private:
   *default_ffd_axis,          /*!< \brief Default FFD axis for the COption class. */
   *default_inc_crit,          /*!< \brief Default incremental criteria array for the COption class. */
   *default_body_force;        /*!< \brief Default body force vector for the COption class. */
-  bool Body_Force;            /*!< \brief Flag to know if a body force is included in the formulation. */
-  su2double *Body_Force_Vector;  /*!< \brief Values of the prescribed body force vector. */
+  unsigned short Riemann_Solver_FEM;        /*!< \brief Riemann solver chosen for the DG method. */
+  su2double Quadrature_Factor_Straight;     /*!< \brief Factor applied during quadrature of elements with a constant Jacobian. */
+  su2double Quadrature_Factor_Curved;       /*!< \brief Factor applied during quadrature of elements with a non-constant Jacobian. */
+  su2double Quadrature_Factor_Time_ADER_DG; /*!< \brief Factor applied during quadrature in time for ADER-DG. */
+  su2double Theta_Interior_Penalty_DGFEM;   /*!< \brief Factor for the symmetrizing terms in the DG discretization of the viscous fluxes. */
+  bool Body_Force;  			                  /*!< \brief Flag to know if a body force is incuded in the formulation. */
+  su2double *Body_Force_Vector;             /*!< \brief Values of the prescribed body force vector. */
 
   /*--- all_options is a map containing all of the options. This is used during config file parsing
    to track the options which have not been set (so the default values can be used). Without this map
@@ -986,6 +1006,13 @@ private:
     assert(option_map.find(name) == option_map.end());
     all_options.insert(pair<string, bool>(name, true));
     COptionBase* val = new COptionConvect(name, space_field, centered_field, upwind_field);
+    option_map.insert(pair<string, COptionBase *>(name, val));
+  }
+
+  void addConvectFEMOption(const string name, unsigned short & space_field, unsigned short & fem_field) {
+    assert(option_map.find(name) == option_map.end());
+    all_options.insert(pair<string, bool>(name, true));
+    COptionBase* val = new COptionFEMConvect(name, space_field, fem_field);
     option_map.insert(pair<string, COptionBase *>(name, val));
   }
   
@@ -1815,9 +1842,11 @@ public:
    * \param[in] val_kind_centered - If centered scheme, kind of centered scheme (JST, etc.).
    * \param[in] val_kind_upwind - If upwind scheme, kind of upwind scheme (Roe, etc.).
    * \param[in] val_kind_slopelimit - If upwind scheme, kind of slope limit.
+   * \param[in] val_kind_fem - If FEM, what kind of FEM discretization.
    */
   void SetKind_ConvNumScheme(unsigned short val_kind_convnumscheme, unsigned short val_kind_centered,
-                             unsigned short val_kind_upwind, unsigned short val_kind_slopelimit, unsigned short val_order_spatial_int);
+                             unsigned short val_kind_upwind,        unsigned short val_kind_slopelimit,
+                             unsigned short val_order_spatial_inti, unsigned short val_kind_fem);
   
   /*!
    * \brief Get the value of limiter coefficient.
@@ -2157,8 +2186,8 @@ public:
    * \return 0 or 1 depending of we are dealing with a V or W cycle.
    */
   unsigned short GetMGCycle(void);
-  
-  /*!
+
+	/*!
    * \brief Get the king of evaluation in the geometrical module.
    * \return 0 or 1 depending of we are dealing with a V or W cycle.
    */
@@ -2275,6 +2304,48 @@ public:
    * \return Number of Runge-Kutta steps.
    */
   unsigned short GetnRKStep(void);
+
+  /*!
+   * \brief Get the number of time levels for time accurate local time stepping.
+   * \return Number of time levels.
+   */
+  unsigned short GetnLevels_TimeAccurateLTS(void);
+
+  /*!
+   * \brief Set the number of time levels for time accurate local time stepping.
+   * \param[in] val_nLevels - The number of time levels to be set.
+   */
+  void SetnLevels_TimeAccurateLTS(unsigned short val_nLevels);
+
+  /*!
+   * \brief Get the number time DOFs for ADER-DG.
+   * \return Number of time DOFs used in ADER-DG.
+   */
+  unsigned short GetnTimeDOFsADER_DG(void);
+
+  /*!
+   * \brief Get the location of the time DOFs for ADER-DG on the interval [-1..1].
+   * \return The location of the time DOFs used in ADER-DG.
+   */
+  su2double *GetTimeDOFsADER_DG(void);
+
+  /*!
+   * \brief Get the number time integration points for ADER-DG.
+   * \return Number of time integration points used in ADER-DG.
+   */
+  unsigned short GetnTimeIntegrationADER_DG(void);
+
+  /*!
+   * \brief Get the location of the time integration points for ADER-DG on the interval [-1..1].
+   * \return The location of the time integration points used in ADER-DG.
+   */
+  su2double *GetTimeIntegrationADER_DG(void);
+
+  /*!
+   * \brief Get the weights of the time integration points for ADER-DG.
+   * \return The weights of the time integration points used in ADER-DG.
+   */
+  su2double *GetWeightsIntegrationADER_DG(void);
   
   /*!
    * \brief Get the total number of boundary markers.
@@ -2512,6 +2583,12 @@ public:
    * \return 	<code>TRUE</code> means that a low fidelity simulation will be performed.
    */
   bool GetLowFidelitySim(void);
+
+  /*!
+   * \brief Get information about writing output files.
+   * \return <code>TRUE</code> means that output files will be written.
+   */
+  bool GetWrt_Output(void);
   
   /*!
    * \brief Get information about writing a volume solution file.
@@ -3277,6 +3354,12 @@ public:
    * \return Kind of the transion model.
    */
   unsigned short GetKind_Trans_Model(void);
+
+  /*!
+   * \brief Get the kind of the subgrid scale model.
+   * \return Kind of the subgrid scale model.
+   */
+  unsigned short GetKind_SGS_Model(void);
   
   /*!
    * \brief Get the kind of adaptation technique.
@@ -3370,6 +3453,13 @@ public:
    * \return Kind of integration scheme for the flow equations.
    */
   unsigned short GetKind_TimeIntScheme_Flow(void);
+
+  /*!
+   * \brief Get the kind of scheme (aliased or non-aliased) to be used in the
+   *        predictor step of ADER-DG.
+   * \return Kind of scheme used in the predictor step of ADER-DG.
+   */
+  unsigned short GetKind_ADER_Predictor(void);
   
   /*!
    * \brief Get the kind of integration scheme (explicit or implicit)
@@ -3441,6 +3531,15 @@ public:
    * \return Kind of convective numerical scheme for the flow equations.
    */
   unsigned short GetKind_ConvNumScheme_Flow(void);
+
+  /*!
+   * \brief Get the kind of convective numerical scheme for the flow
+   *        equations (finite element).
+   * \note This value is obtained from the config file, and it is constant
+   *       during the computation.
+   * \return Kind of convective numerical scheme for the flow equations.
+   */
+  unsigned short GetKind_ConvNumScheme_FEM_Flow(void);
   
   /*!
    * \brief Get the kind of convective numerical scheme for the template
@@ -3474,7 +3573,23 @@ public:
    * \return Kind of upwind convective numerical scheme for the flow equations.
    */
   unsigned short GetKind_Upwind_Flow(void);
-  
+
+  /*!
+   * \brief Get the kind of finite element convective numerical scheme for the flow equations.
+   * \note This value is obtained from the config file, and it is constant
+   *       during the computation.
+   * \return Kind of finite element convective numerical scheme for the flow equations.
+   */
+  unsigned short GetKind_FEM_Flow(void);
+
+  /*!
+   * \brief Get the kind of shock capturing method in FEM DG solver.
+   * \note This value is obtained from the config file, and it is constant
+   *       during the computation.
+   * \return Kind of shock capturing method in FEM DG solver.
+   */
+  unsigned short GetKind_FEM_DG_Shock(void);
+
   /*!
    * \brief Get the method for limiting the spatial gradients.
    * \return Method for limiting the spatial gradients.
@@ -6597,6 +6712,44 @@ public:
   su2double GetSpline(vector<su2double> &xa, vector<su2double> &ya, vector<su2double> &y2a, unsigned long n, su2double x);
   
   /*!
+   * \brief Start the timer for profiling subroutines.
+   * \param[in] val_start_time - the value of the start time.
+   */
+  void Tick(double *val_start_time);
+  
+  /*!
+   * \brief Stop the timer for profiling subroutines and store results.
+   * \param[in] val_start_time - the value of the start time.
+   * \param[in] val_function_name - string for the name of the profiled subroutine.
+   * \param[in] val_group_id - string for the name of the profiled subroutine.
+   */
+  void Tock(double val_start_time, string val_function_name, int val_group_id);
+  
+  /*!
+   * \brief Write a CSV file containing the results of the profiling.
+   */
+  void SetProfilingCSV(void);
+  
+  /*!
+   * \brief Start the timer for profiling subroutines.
+   * \param[in] val_start_time - the value of the start time.
+   */
+  void GEMM_Tick(double *val_start_time);
+  
+  /*!
+   * \brief Stop the timer for profiling subroutines and store results.
+   * \param[in] val_start_time - the value of the start time.
+   * \param[in] val_function_name - string for the name of the profiled subroutine.
+   * \param[in] val_group_id - string for the name of the profiled subroutine.
+   */
+  void GEMM_Tock(double val_start_time, string val_function_name, int M, int N, int K);
+  
+  /*!
+   * \brief Write a CSV file containing the results of the profiling.
+   */
+  void GEMMProfilingCSV(void);
+  
+  /*!
    * \brief Get the verbosity level of the console output.
    * \return Verbosity level for the console output.
    */
@@ -6620,7 +6773,7 @@ public:
    * \return The value for checking
    */
   bool CheckFSI_MPI(void);
-  
+
   /*!
    * \brief Get the number of fluid subiterations roblems.
    * \return Number of FSI subiters.
@@ -6768,7 +6921,19 @@ public:
    * \return 	Order of predictor
    */
   unsigned short GetPredictorOrder(void);
-  
+
+  /*!
+   * \brief Get boolean for using Persson's shock capturing in Euler flow
+   * \return Boolean for using Persson's shock capturing in Euler flow
+   */
+  bool GetEulerPersson(void);
+
+  /*!
+   * \brief Set boolean for using Persson's shock capturing in Euler flow
+   * \param[in] val_EulerPersson - Boolean for using Persson's shock capturing in Euler flow
+   */
+  void SetEulerPersson(bool val_EulerPersson);
+
   /*!
    * \brief Check if the simulation we are running is a FSI simulation
    * \return Value of the physical time in an unsteady simulation.
@@ -6798,12 +6963,45 @@ public:
    * \return Value of the relaxation method
    */
   unsigned short GetRelaxation_Method_FSI(void);
-  
+
+  /*!
+   * \brief Get the kind of Riemann solver for the DG method (FEM flow solver).
+   * \note This value is obtained from the config file, and it is constant
+   *       during the computation.
+   * \return Kind of Riemann solver for the DG method (FEM flow solver).
+   */
+  unsigned short GetRiemann_Solver_FEM(void);
+
+  /*!
+   * \brief Get the factor applied during quadrature of straight elements.
+   * \return The specified straight element quadrature factor.
+   */
+  su2double GetQuadrature_Factor_Straight(void);
+
+  /*!
+   * \brief Get the factor applied during quadrature of curved elements.
+   * \return The specified curved element quadrature factor.
+   */
+  su2double GetQuadrature_Factor_Curved(void);
+
+  /*!
+   * \brief Get the factor applied during time quadrature for ADER-DG.
+   * \return The specified ADER-DG time quadrature factor.
+   */
+  su2double GetQuadrature_Factor_Time_ADER_DG(void);
+
+  /*!
+   * \brief Function to make available the multiplication factor theta of the
+            symmetrizing terms in the DG discretization of the viscous terms.
+   * \return The specified factor for the DG discretization.
+   */
+  su2double GetTheta_Interior_Penalty_DGFEM(void);
+
   /*!
    * \brief Get the interpolation method used for matching between zones.
    */
   inline unsigned short GetKindInterpolation(void);
-  
+
   /*!
    * \brief Get the AD support.
    */

@@ -91,6 +91,7 @@ libSU2Core_sources = \
   ../src/numerics_direct_poisson.cpp \
   ../src/numerics_direct_heat.cpp \
   ../src/numerics_direct_mean.cpp \
+  ../src/numerics_direct_mean_fem.cpp \
   ../src/numerics_direct_mean_inc.cpp \
   ../src/numerics_direct_transition.cpp \
   ../src/numerics_direct_turbulent.cpp \
@@ -113,6 +114,7 @@ libSU2Core_sources = \
   ../src/solver_direct_poisson.cpp \
   ../src/solver_direct_heat.cpp \
   ../src/solver_direct_mean.cpp \
+  ../src/solver_direct_mean_fem.cpp \
   ../src/solver_direct_mean_inc.cpp \
   ../src/solver_direct_transition.cpp \
   ../src/solver_direct_turbulent.cpp \
@@ -188,6 +190,11 @@ su2_cfd_ldadd += @SZIP_LD@
 # if BUILD_ZLIB
 su2_cfd_cxx_flags += @ZLIB_CXX@
 su2_cfd_ldadd += @ZLIB_LD@
+# endif
+
+# if BUILD_GELITE
+su2_cfd_cxx_flags += @GELITE_CXX@
+su2_cfd_ldadd += @GELITE_LD@
 # endif
 
 if BUILD_NORMAL

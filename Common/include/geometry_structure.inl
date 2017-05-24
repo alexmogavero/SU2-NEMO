@@ -33,6 +33,30 @@
  
 #pragma once
 
+inline unsignedLong2T::unsignedLong2T(){long0 = long1 = 0;}
+
+inline unsignedLong2T::unsignedLong2T(const unsigned long a, const unsigned long b){long0 = a; long1 = b;}
+
+inline unsignedLong2T::~unsignedLong2T(){}
+
+inline unsignedLong2T::unsignedLong2T(const unsignedLong2T &other){Copy(other);}
+
+inline unsignedLong2T& unsignedLong2T::operator=(const unsignedLong2T &other){Copy(other); return (*this);}
+
+inline FaceOfElementClass::FaceOfElementClass(const FaceOfElementClass &other){Copy(other);}
+
+inline FaceOfElementClass& FaceOfElementClass::operator=(const FaceOfElementClass &other){Copy(other); return (*this);}
+
+inline void FaceOfElementClass::CreateUniqueNumbering(void){sort(cornerPoints, cornerPoints+nCornerPoints);}
+
+inline  BoundaryFaceClass::BoundaryFaceClass(const BoundaryFaceClass &other){Copy(other);}
+
+inline BoundaryFaceClass& BoundaryFaceClass::operator=(const BoundaryFaceClass &other){Copy(other); return (*this);}
+
+inline MatchingFaceClass::MatchingFaceClass(const MatchingFaceClass &other){Copy(other);}
+
+inline MatchingFaceClass& MatchingFaceClass::operator=(const MatchingFaceClass &other){Copy(other); return (*this);}
+
 inline void CGeometry::SetGlobal_to_Local_Point(void) { }
 
 inline long CGeometry::GetGlobal_to_Local_Point(unsigned long val_ipoint) { return 0; }
@@ -40,6 +64,8 @@ inline long CGeometry::GetGlobal_to_Local_Point(unsigned long val_ipoint) { retu
 inline unsigned short CGeometry::GetGlobal_to_Local_Marker(unsigned short val_imarker) { return 0; }
 
 inline unsigned long CGeometry::GetGlobal_nPoint(void) { return 0; }
+
+inline void CGeometry::SetGlobal_nPointDomain(unsigned long val_global_npoint) { }
 
 inline unsigned long CGeometry::GetGlobal_nPointDomain(void) { return 0; }
 
@@ -82,6 +108,8 @@ inline void CGeometry::Check_BoundElem_Orientation(CConfig *config) { }
 inline void CGeometry::SetColorGrid(CConfig *config) { }
 
 inline void CGeometry::SetColorGrid_Parallel(CConfig *config) { }
+
+inline void CGeometry::SetColorFEMGrid_Parallel(CConfig *config) { }
 
 inline void CGeometry::DivideConnectivity(CConfig *config, unsigned short Elem_Type) { }
 

@@ -183,6 +183,10 @@ enum ENUM_SOLVER {
   EULER = 1,							/*!< \brief Definition of the Euler's solver. */
   NAVIER_STOKES = 2,					/*!< \brief Definition of the Navier-Stokes' solver. */
   RANS = 3,								/*!< \brief Definition of the Reynolds-averaged Navier-Stokes' (RANS) solver. */
+  FEM_EULER = 38,							/*!< \brief Definition of the finite element Euler's solver. */
+  FEM_NAVIER_STOKES = 39,					/*!< \brief Definition of the finite element Navier-Stokes' solver. */
+  FEM_RANS = 40,								/*!< \brief Definition of the finite element Reynolds-averaged Navier-Stokes' (RANS) solver. */
+  FEM_LES = 41,       /*!< \brief Definition of the finite element Large Eddy Simulation Navier-Stokes' (LES) solver. */
   POISSON_EQUATION = 4,       			/*!< \brief Definition of the poisson potential solver. */
   WAVE_EQUATION = 10,					/*!< \brief Definition of the wave solver. */
   HEAT_EQUATION = 29,					/*!< \brief Definition of the heat solver. */
@@ -203,6 +207,10 @@ static const map<string, ENUM_SOLVER> Solver_Map = CCreateMap<string, ENUM_SOLVE
 ("EULER", EULER)
 ("NAVIER_STOKES", NAVIER_STOKES)
 ("RANS", RANS)
+("FEM_EULER", FEM_EULER)
+("FEM_NAVIER_STOKES", FEM_NAVIER_STOKES)
+("FEM_RANS", FEM_RANS)
+("FEM_LES", FEM_LES)
 ("POISSON_EQUATION", POISSON_EQUATION)
 ("ADJ_EULER", ADJ_EULER)
 ("ADJ_NAVIER_STOKES", ADJ_NAVIER_STOKES)
@@ -333,42 +341,41 @@ static const map<string, ENUM_MEASUREMENTS> Measurements_Map = CCreateMap<string
 ("US", US);
 
 /*!
- * \brief different types of systems
+ * \brief different types of PDE systems
  */
 enum RUNTIME_TYPE {
-  RUNTIME_FLOW_SYS = 2,			/*!< \brief One-physics case, the code is solving the flow equations(Euler and Navier-Stokes). */
-  RUNTIME_TURB_SYS = 3,			/*!< \brief One-physics case, the code is solving the turbulence model. */
-  RUNTIME_POISSON_SYS = 4,			/*!< \brief One-physics case, the code is solving the poissonal potential equation. */
-  RUNTIME_ADJPOT_SYS = 5,		/*!< \brief One-physics case, the code is solving the adjoint potential flow equation. */
+  RUNTIME_FLOW_SYS = 2,			  /*!< \brief One-physics case, the code is solving the flow equations (Euler and Navier-Stokes). */
+  RUNTIME_TURB_SYS = 3,			  /*!< \brief One-physics case, the code is solving the turbulence model. */
+  RUNTIME_POISSON_SYS = 4,    /*!< \brief One-physics case, the code is solving the poissonal potential equation. */
+  RUNTIME_ADJPOT_SYS = 5,		  /*!< \brief One-physics case, the code is solving the adjoint potential flow equation. */
   RUNTIME_ADJFLOW_SYS = 6,		/*!< \brief One-physics case, the code is solving the adjoint equations is being solved (Euler and Navier-Stokes). */
   RUNTIME_ADJTURB_SYS = 7,		/*!< \brief One-physics case, the code is solving the adjoint turbulence model. */
-  RUNTIME_WAVE_SYS = 8,		/*!< \brief One-physics case, the code is solving the wave equation. */
-  RUNTIME_MULTIGRID_SYS = 14,   	/*!< \brief Full Approximation Storage Multigrid system of equations. */
-  RUNTIME_FEA_SYS = 20,		/*!< \brief One-physics case, the code is solving the FEA equation. */
-  RUNTIME_HEAT_SYS = 21,		/*!< \brief One-physics case, the code is solving the heat equation. */
+  RUNTIME_WAVE_SYS = 8,		    /*!< \brief One-physics case, the code is solving the wave equation. */
+  RUNTIME_MULTIGRID_SYS = 14, /*!< \brief Full Approximation Storage Multigrid system of equations. */
+  RUNTIME_FEA_SYS = 20,		    /*!< \brief One-physics case, the code is solving the FEA equation. */
+  RUNTIME_HEAT_SYS = 21,		  /*!< \brief One-physics case, the code is solving the heat equation. */
   RUNTIME_TRANS_SYS = 22,			/*!< \brief One-physics case, the code is solving the turbulence model. */
 };
 
-const int FLOW_SOL = 0;		/*!< \brief Position of the mean flow solution in the solver container array. */
+/*--- Container positions for different Physics packages (solver classes). ---*/
+const int FLOW_SOL = 0;		  /*!< \brief Position of the mean flow solution in the solver container array. */
 const int ADJFLOW_SOL = 1;	/*!< \brief Position of the continuous adjoint flow solution in the solver container array. */
-
-const int TURB_SOL = 2;		/*!< \brief Position of the turbulence model solution in the solver container array. */
+const int TURB_SOL = 2;		  /*!< \brief Position of the turbulence model solution in the solver container array. */
 const int ADJTURB_SOL = 3;	/*!< \brief Position of the continuous adjoint turbulence solution in the solver container array. */
+const int TRANS_SOL = 4;	  /*!< \brief Position of the transition model solution in the solver container array. */
+const int POISSON_SOL = 2;	/*!< \brief Position of the electronic potential solution in the solver container array. */
+const int WAVE_SOL = 1;		  /*!< \brief Position of the wave equation in the solution solver array. */
+const int HEAT_SOL = 2;		  /*!< \brief Position of the heat equation in the solution solver array. */
+const int FEA_SOL = 1;		  /*!< \brief Position of the FEA equation in the solution solver array. */
+const int TEMPLATE_SOL = 0; /*!< \brief Position of the template solution. */
 
-const int TRANS_SOL = 4;	/*!< \brief Position of the transition model solution in the solver container array. */
-const int POISSON_SOL = 2;		/*!< \brief Position of the electronic potential solution in the solver container array. */
-const int WAVE_SOL = 1;		/*!< \brief Position of the wave equation in the solution solver array. */
-const int HEAT_SOL = 2;		/*!< \brief Position of the heat equation in the solution solver array. */
-const int FEA_SOL = 1;		/*!< \brief Position of the FEA equation in the solution solver array. */
-
-const int TEMPLATE_SOL = 0;     /*!< \brief Position of the template solution. */
-
-const int CONV_TERM = 0;	/*!< \brief Position of the convective terms in the numerics container array. */
-const int VISC_TERM = 1;        /*!< \brief Position of the viscous terms in the numerics container array. */
-const int SOURCE_FIRST_TERM = 2;        /*!< \brief Position of the first source term in the numerics container array. */
-const int SOURCE_SECOND_TERM = 3;   /*!< \brief Position of the second source term in the numerics container array. */
-const int CONV_BOUND_TERM = 4;       /*!< \brief Position of the convective boundary terms in the numerics container array. */
-const int VISC_BOUND_TERM = 5;       /*!< \brief Position of the viscous boundary terms in the numerics container array. */
+/*--- Container positions for inviscid/viscous boundary terms and piecewise source terms (numerics classes). ---*/
+const int CONV_TERM = 0;	        /*!< \brief Position of the convective terms in the numerics container array. */
+const int VISC_TERM = 1;          /*!< \brief Position of the viscous terms in the numerics container array. */
+const int SOURCE_FIRST_TERM = 2;  /*!< \brief Position of the first source term in the numerics container array. */
+const int SOURCE_SECOND_TERM = 3; /*!< \brief Position of the second source term in the numerics container array. */
+const int CONV_BOUND_TERM = 4;    /*!< \brief Position of the convective boundary terms in the numerics container array. */
+const int VISC_BOUND_TERM = 5;    /*!< \brief Position of the viscous boundary terms in the numerics container array. */
 
 const int FEA_TERM = 0;			/*!< \brief Position of the finite element analysis terms in the numerics container array. */
 
@@ -403,12 +410,14 @@ static const map<string, ENUM_MATH_PROBLEM> Math_Problem_Map = CCreateMap<string
 enum ENUM_SPACE {
   NO_CONVECTIVE = 0, /*!< \brief No convective scheme is used. */
   SPACE_CENTERED = 1,		/*!< \brief Space centered convective numerical method. */
-  SPACE_UPWIND = 2		/*!< \brief Upwind convective numerical method. */
+  SPACE_UPWIND = 2,		/*!< \brief Upwind convective numerical method. */
+  FINITE_ELEMENT = 3		/*!< \brief Finite element convective numerical method. */
 };
 static const map<string, ENUM_SPACE> Space_Map = CCreateMap<string, ENUM_SPACE>
 ("NONE", NO_CONVECTIVE)
 ("SPACE_CENTERED", SPACE_CENTERED)
-("SPACE_UPWIND", SPACE_UPWIND);
+("SPACE_UPWIND", SPACE_UPWIND)
+("FINITE_ELEMENT", FINITE_ELEMENT);
 
 /*!
  * \brief types of fluid model
@@ -545,7 +554,6 @@ static const map<string, ENUM_GUST_DIR> Gust_Dir_Map = CCreateMap<string, ENUM_G
 ("X_DIR", X_DIR)
 ("Y_DIR", Y_DIR);
 
-// If you add to ENUM_CENTERED, you must also add the option to ENUM_CONVECTIVE
 /*!
  * \brief types of centered spatial discretizations
  */
@@ -563,8 +571,6 @@ static const map<string, ENUM_CENTERED> Centered_Map = CCreateMap<string, ENUM_C
 ("LAX-FRIEDRICH", LAX)
 ("GKS_BGK", GKS_BGK);
 
-
-// If you add to ENUM_UPWIND, you must also add the option to ENUM_CONVECTIVE
 /*!
  * \brief types of upwind spatial discretizations
  */
@@ -572,18 +578,21 @@ enum ENUM_UPWIND {
   NO_UPWIND = 0,              /*!< \brief No upwind scheme is used. */
   ROE = 1,                    /*!< \brief Roe's upwind numerical method. */
   SCALAR_UPWIND = 2,          /*!< \brief Scalar upwind numerical method. */
-  AUSM = 3,                   /*!< \brief AUSM numerical method. */
-  HLLC = 4,                   /*!< \brief HLLC numerical method. */
-  SW = 5,                     /*!< \brief Steger-Warming method. */
-  MSW = 6,                    /*!< \brief Modified Steger-Warming method. */
-  TURKEL = 7,                 /*!< \brief Roe-Turkel's upwind numerical method. */
-  AUSMPWPLUS = 8,             /*!< \brief AUSMPW+ numerical method. */
-  CUSP = 9,                   /*!< \brief Convective upwind and split pressure numerical method. */
-  CONVECTIVE_TEMPLATE = 10    /*!< \brief Template for new numerical method . */
+  LAX_FRIEDRICH = 3,          /*!< \brief Lax-Friedrich numerical method. */
+  AUSM = 4,                   /*!< \brief AUSM numerical method. */
+  HLLC = 5,                   /*!< \brief HLLC numerical method. */
+  SW = 6,                     /*!< \brief Steger-Warming method. */
+  MSW = 7,                    /*!< \brief Modified Steger-Warming method. */
+  TURKEL = 8,                 /*!< \brief Roe-Turkel's upwind numerical method. */
+  AUSMPWPLUS = 9,             /*!< \brief AUSMPW+ numerical method. */
+  CUSP = 10,                  /*!< \brief Convective upwind and split pressure numerical method. */
+  VAN_LEER = 11,              /*!< \brief Van Leer method. */
+  CONVECTIVE_TEMPLATE = 12    /*!< \brief Template for new numerical method . */
 };
 static const map<string, ENUM_UPWIND> Upwind_Map = CCreateMap<string, ENUM_UPWIND>
 ("NONE", NO_UPWIND)
 ("ROE", ROE)
+("LAX-FRIEDRICH", LAX_FRIEDRICH)
 ("TURKEL_PREC", TURKEL)
 ("AUSM", AUSM)
 ("AUSMPW+", AUSMPWPLUS)
@@ -591,8 +600,31 @@ static const map<string, ENUM_UPWIND> Upwind_Map = CCreateMap<string, ENUM_UPWIN
 ("SW", SW)
 ("MSW", MSW)
 ("CUSP", CUSP)
+("VAN_LEER", VAN_LEER)
 ("SCALAR_UPWIND", SCALAR_UPWIND)
 ("CONVECTIVE_TEMPLATE", CONVECTIVE_TEMPLATE);
+
+/*!
+ * \brief types of FEM spatial discretizations
+ */
+enum ENUM_FEM {
+  NO_FEM = 0,    /*!< \brief No finite element scheme is used. */
+  DG = 1,            /*!< \brief Discontinuous Galerkin numerical method. */
+};
+static const map<string, ENUM_FEM> FEM_Map = CCreateMap<string, ENUM_FEM>
+("NONE", NO_FEM)
+("DG", DG);
+
+/*!
+ * \brief types of shock capturing method in Discontinuous Galerkin numerical method.
+ */
+enum ENUM_SHOCK_CAPTURING_DG {
+  NO_SHOCK_CAPTURING = 0,            /*!< \brief Shock capturing is not used. */
+  PERSSON = 1,                       /*!< \brief Per-Olof Persson's sub-cell shock capturing method. */
+};
+static const map<string, ENUM_SHOCK_CAPTURING_DG> ShockCapturingDG_Map = CCreateMap<string, ENUM_SHOCK_CAPTURING_DG>
+("NONE", NO_SHOCK_CAPTURING)
+("PERSSON", PERSSON);
 
 /*!
  * \brief Spatial numerical order integration
@@ -651,19 +683,47 @@ static const map<string, ENUM_TRANS_MODEL> Trans_Model_Map = CCreateMap<string, 
 ("BC", BC); //BAS-CAKMAKCIOGLU
 
 /*!
+ * \brief types of subgrid scale models
+ */
+enum ENUM_SGS_MODEL {
+  NO_SGS_MODEL = 0, /*!< \brief No subgrid scale model. */
+  IMPLICIT_LES = 1, /*!< \brief Implicit LES, i.e. no explicit SGS model. */
+  SMAGORINSKY  = 2, /*!< \brief Smagorinsky SGS model. */
+  WALE         = 3  /*!< \brief Wall-Adapting Local Eddy-viscosity SGS model. */
+};
+static const map<string, ENUM_SGS_MODEL> SGS_Model_Map = CCreateMap<string, ENUM_SGS_MODEL>
+("NONE",         NO_SGS_MODEL)
+("IMPLICIT_LES", IMPLICIT_LES)
+("SMAGORINSKY",  SMAGORINSKY)
+("WALE",         WALE);
+
+/*!
  * \brief type of time integration schemes
  */
 enum ENUM_TIME_INT {
   RUNGE_KUTTA_EXPLICIT = 1,	/*!< \brief Explicit Runge-Kutta time integration definition. */
   EULER_EXPLICIT = 2,   	/*!< \brief Explicit Euler time integration definition. */
   EULER_IMPLICIT = 3,   	/*!< \brief Implicit Euler time integration definition. */
-  CLASSICAL_RK4_EXPLICIT = 4,   	/*!< \brief Calssical RK4 time integration definition. */
+  CLASSICAL_RK4_EXPLICIT = 4,   /*!< \brief Classical RK4 time integration definition. */
+  ADER_DG = 5                   /*!< \brief ADER-DG time integration definition. */
 };
 static const map<string, ENUM_TIME_INT> Time_Int_Map = CCreateMap<string, ENUM_TIME_INT>
 ("RUNGE-KUTTA_EXPLICIT", RUNGE_KUTTA_EXPLICIT)
 ("EULER_EXPLICIT", EULER_EXPLICIT)
 ("EULER_IMPLICIT", EULER_IMPLICIT)
-("CLASSICAL_RK4_EXPLICIT", CLASSICAL_RK4_EXPLICIT);
+("CLASSICAL_RK4_EXPLICIT", CLASSICAL_RK4_EXPLICIT)
+("ADER_DG", ADER_DG);
+
+/*!
+ * \brief type of predictor for the ADER-DG time integration scheme.
+ */
+enum ENUM_ADER_PREDICTOR {
+  ADER_ALIASED_PREDICTOR     = 1, /*!< \brief Aliased predictor, easiest to do. */
+  ADER_NON_ALIASED_PREDICTOR = 2  /*!< \brief Non-aliased predictor. Consistent, but more difficult. */
+};
+static const map<string, ENUM_ADER_PREDICTOR> Ader_Predictor_Map = CCreateMap<string, ENUM_ADER_PREDICTOR>
+("ADER_ALIASED_PREDICTOR", ADER_ALIASED_PREDICTOR)
+("ADER_NON_ALIASED_PREDICTOR", ADER_NON_ALIASED_PREDICTOR);
 
 /*!
  * \brief type of time integration schemes
@@ -1172,6 +1232,7 @@ enum ENUM_PARAM {
   SURFACE_FILE = 23,		     /*!< Nodal coordinates set using a surface file. */
   CUSTOM = 24,               /*!< 'CUSTOM' for use in external python analysis. */
   NO_DEFORMATION = 25,		   /*!< \brief No Deformation. */
+  GE_LITE = 31,              /*!< Surface deformation by projecting points using the GELite library. */
   ANGLE_OF_ATTACK = 101,	   /*!< \brief Angle of attack for airfoils. */
   FFD_ANGLE_OF_ATTACK = 102	 /*!< \brief Angle of attack for FFD problem. */
 };
@@ -1203,7 +1264,8 @@ static const map<string, ENUM_PARAM> Param_Map = CCreateMap<string, ENUM_PARAM>
 ("SURFACE_FILE", SURFACE_FILE)
 ("CUSTOM", CUSTOM)
 ("NO_DEFORMATION", NO_DEFORMATION)
-("CST", CST);
+("CST", CST)
+("GE_LITE", GE_LITE);
 
 
 /*!
@@ -2013,6 +2075,41 @@ public:
   }
 };
 
+class COptionFEMConvect : public COptionBase{
+  string name; // identifier for the option
+  unsigned short & space;
+  unsigned short & fem;
+
+public:
+  COptionFEMConvect(string option_field_name, unsigned short & space_field, unsigned short & fem_field) : space(space_field), fem(fem_field) {
+    this->name = option_field_name;
+  }
+
+  ~COptionFEMConvect() {};
+  string SetValue(vector<string> option_value) {
+
+    string out = optionCheckMultipleValues(option_value, "unsigned short", this->name);
+    if (out.compare("") != 0) {
+      return out;
+    }
+
+    if (FEM_Map.count(option_value[0])) {
+      this->space = Space_Map.find("FINITE_ELEMENT")->second;
+      this->fem = FEM_Map.find(option_value[0])->second;
+      return "";
+    }
+
+    // Make them defined in case something weird happens
+    this->fem = NO_FEM;
+    return badValue(option_value, "convect", this->name);
+
+  }
+
+  void SetDefault() {
+    this->fem = NO_FEM;
+  }
+};
+
 class COptionMathProblem : public COptionBase {
   string name; // identifier for the option
   bool & cont_adjoint;
@@ -2165,6 +2262,7 @@ public:
         case FFD_THICKNESS:        nParamDV = 3; break;
         case FFD_ANGLE_OF_ATTACK:  nParamDV = 2; break;
         case SURFACE_FILE:         nParamDV = 0; break;
+        case GE_LITE:              nParamDV = 0; break;
         case CUSTOM:               nParamDV = 1; break;
         default : {
           string newstring;

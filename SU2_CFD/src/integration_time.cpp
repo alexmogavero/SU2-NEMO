@@ -56,6 +56,10 @@ void CMultiGridIntegration::MultiGrid_Iteration(CGeometry ***geometry,
                        (config[iZone]->GetKind_Solver() == NAVIER_STOKES)                 ||
                        (config[iZone]->GetKind_Solver() == KINETIC)                 ||
                        (config[iZone]->GetKind_Solver() == RANS)                          ||
+                       (config[iZone]->GetKind_Solver() == FEM_EULER)                     ||
+                       (config[iZone]->GetKind_Solver() == FEM_NAVIER_STOKES)             ||
+                       (config[iZone]->GetKind_Solver() == FEM_RANS)                      ||
+                       (config[iZone]->GetKind_Solver() == FEM_LES)                       ||
                        (config[iZone]->GetKind_Solver() == DISC_ADJ_EULER)                ||
                        (config[iZone]->GetKind_Solver() == DISC_ADJ_NAVIER_STOKES)        ||
                        (config[iZone]->GetKind_Solver() == DISC_ADJ_RANS));
@@ -945,4 +949,259 @@ void CStructuralIntegration::Structural_Iteration(CGeometry ***geometry, CSolver
 
   Convergence_Monitoring_FEM(geometry[iZone][MESH_0], config[iZone], solver_container[iZone][MESH_0][SolContainer_Position], Iteration);
 
+}
+
+CFEM_DG_Integration::CFEM_DG_Integration(CConfig *config) : CIntegration(config) { }
+
+CFEM_DG_Integration::~CFEM_DG_Integration(void) { }
+
+void CFEM_DG_Integration::SingleGrid_Iteration(CGeometry ***geometry,
+                                               CSolver ****solver_container,
+                                               CNumerics *****numerics_container,
+                                               CConfig **config,
+                                               unsigned short RunTime_EqSystem,
+                                               unsigned long Iteration,
+                                               unsigned short iZone) {
+
+  unsigned short iMesh, iStep, iLimit = 1;
+  su2double tick = 0.0;
+  unsigned short SolContainer_Position = config[iZone]->GetContainerPosition(RunTime_EqSystem);
+  unsigned short FinestMesh = config[iZone]->GetFinestMesh();
+  
+  /*--- For now, we assume no geometric multigrid. ---*/
+  iMesh = FinestMesh;
+
+  /*--- Determine the number of stages in the time stepping algorithm.
+        For the Runge-Kutta schemes this is the number of RK stages,
+        while for ADER-DG this information is not used, because a more
+        complicated algorithm must be used to facilitate time accurate
+        local time stepping.  Note that we are currently hard-coding
+        the classical RK4 scheme. ---*/
+  bool useADER = false;
+  switch (config[iZone]->GetKind_TimeIntScheme()) {
+    case RUNGE_KUTTA_EXPLICIT: iLimit = config[iZone]->GetnRKStep(); break;
+    case CLASSICAL_RK4_EXPLICIT: iLimit = 4; break;
+    case ADER_DG: iLimit = 1; useADER = true; break;
+    case EULER_EXPLICIT: case EULER_IMPLICIT: iLimit = 1; break; }
+
+  /*--- In case an unsteady simulation is carried out, it is possible that a
+        synchronization time step is specified. If so, set the boolean
+        TimeSynSpecified to true, which leads to an outer loop in the
+        algorithm below. ---*/
+  bool TimeSyncSpecified   = false;
+  const su2double TimeSync = config[iZone]->GetDelta_UnstTimeND();
+  if(config[iZone]->GetUnsteady_Simulation() == TIME_STEPPING &&
+     config[iZone]->GetUnst_CFL()            != 0.0           &&
+     TimeSync                                != 0.0) TimeSyncSpecified = true;
+
+  /*--- Outer loop, which is only active when a synchronization time has been
+        specified for an unsteady simulation. ---*/
+  bool syncTimeReached = false;
+  su2double timeEvolved = 0.0;
+  while( !syncTimeReached ) {
+
+    /* Compute the time step for stability. */
+    config[ZONE_0]->Tick(&tick);
+    solver_container[iZone][iMesh][SolContainer_Position]->SetTime_Step(geometry[iZone][iMesh],
+                                                                        solver_container[iZone][iMesh],
+                                                                        config[iZone], iMesh, Iteration);
+    config[ZONE_0]->Tock(tick,"SetTime_Step",3);
+
+    /* Possibly overrule the specified time step when a synchronization time was
+       specified and determine whether or not the time loop must be continued.
+       When TimeSyncSpecified is false, the loop is always terminated. */
+    if( TimeSyncSpecified )
+      solver_container[iZone][iMesh][SolContainer_Position]->CheckTimeSynchronization(config[iZone],
+                                                                                      TimeSync, timeEvolved,
+                                                                                      syncTimeReached);
+    else
+      syncTimeReached = true;
+
+    /*--- For ADER in combination with time accurate local time stepping, the
+          space and time integration are tightly coupled and cannot be treated
+          segregatedly. Therefore a different function is called for ADER to
+          carry out the space and time integration. ---*/
+    if( useADER ) {
+      config[ZONE_0]->Tick(&tick);
+      solver_container[iZone][iMesh][SolContainer_Position]->ADER_SpaceTimeIntegration(geometry[iZone][iMesh], solver_container[iZone][iMesh],
+                                                                                       numerics_container[iZone][iMesh][SolContainer_Position],
+                                                                                       config[iZone], iMesh, RunTime_EqSystem);
+      config[ZONE_0]->Tock(tick,"ADER_SpaceTimeIntegration",2);
+    }
+    else {
+
+      /*--- Time and space integration can be decoupled. ---*/
+      for (iStep = 0; iStep < iLimit; iStep++) {
+    
+        /*--- Preprocessing ---*/
+        config[ZONE_0]->Tick(&tick);
+        solver_container[iZone][iMesh][SolContainer_Position]->Preprocessing(geometry[iZone][iMesh], solver_container[iZone][iMesh], config[iZone], iMesh, iStep, RunTime_EqSystem, false);
+        config[ZONE_0]->Tock(tick,"Preprocessing",2);
+
+        /*--- Space integration ---*/
+        config[ZONE_0]->Tick(&tick);
+        Space_Integration(geometry[iZone][iMesh], solver_container[iZone][iMesh], numerics_container[iZone][iMesh][SolContainer_Position], config[iZone], iMesh, iStep, RunTime_EqSystem);
+        config[ZONE_0]->Tock(tick,"Space_Integration",2);
+    
+        /*--- Time integration, update solution using the old solution plus the solution increment ---*/
+        config[ZONE_0]->Tick(&tick);
+        Time_Integration(geometry[iZone][iMesh], solver_container[iZone][iMesh], config[iZone], iStep, RunTime_EqSystem, Iteration);
+        config[ZONE_0]->Tock(tick,"Time_Integration",2);
+    
+        /*--- Postprocessing ---*/
+        config[ZONE_0]->Tick(&tick);
+        solver_container[iZone][iMesh][SolContainer_Position]->Postprocessing(geometry[iZone][iMesh], solver_container[iZone][iMesh], config[iZone], iMesh);
+        config[ZONE_0]->Tock(tick,"Postprocessing",2);
+      }
+    }
+  }
+  
+  /*--- Calculate the inviscid and viscous forces ---*/
+  config[ZONE_0]->Tick(&tick);
+  solver_container[iZone][FinestMesh][SolContainer_Position]->Pressure_Forces(geometry[iZone][iMesh], config[iZone]);
+  config[ZONE_0]->Tock(tick,"Pressure_Forces",2);
+  
+  config[ZONE_0]->Tick(&tick);
+  solver_container[iZone][FinestMesh][SolContainer_Position]->Friction_Forces(geometry[iZone][iMesh], config[iZone]);
+  config[ZONE_0]->Tock(tick,"Friction_Forces",2);
+  
+  /*--- Convergence strategy ---*/
+  
+  //Convergence_Monitoring(geometry[iZone][FinestMesh], config[iZone], Iteration, monitor, FinestMesh);
+}
+
+void CFEM_DG_Integration::Space_Integration(CGeometry *geometry,
+                                            CSolver **solver_container,
+                                            CNumerics **numerics,
+                                            CConfig *config, unsigned short iMesh,
+                                            unsigned short iStep,
+                                            unsigned short RunTime_EqSystem) {
+  
+  unsigned short MainSolver = config->GetContainerPosition(RunTime_EqSystem);
+  su2double tick = 0.0;
+
+  /*--- Runge-Kutta type of time integration schemes. In the first step, i.e.
+        if iStep == 0, compute time step and set the old, and if needed, the
+        new solution. ---*/
+  if (iStep == 0) {
+    config->Tick(&tick);
+    solver_container[MainSolver]->Set_OldSolution(geometry);
+    config->Tock(tick,"Set_OldSolution",3);
+    
+    if (config->GetKind_TimeIntScheme() == CLASSICAL_RK4_EXPLICIT) {
+      config->Tick(&tick);
+      solver_container[MainSolver]->Set_NewSolution(geometry);
+      config->Tock(tick,"Set_NewSolution",3);
+    }
+  }
+
+  /*--- Compute the artificial viscosity for shock capturing in DG. ---*/
+  config->Tick(&tick);
+  solver_container[MainSolver]->Shock_Capturing_DG(geometry, solver_container, numerics[CONV_TERM], config, iMesh, 0);
+  config->Tock(tick,"Shock_Capturing",3);
+
+  /*--- Compute the volume portion of the residual. ---*/
+  config->Tick(&tick);
+  solver_container[MainSolver]->Volume_Residual(geometry, solver_container, numerics[CONV_TERM], config, iMesh, 0);
+  config->Tock(tick,"Volume_Residual",3);
+
+  /*--- Compute source term residuals ---*/
+  config->Tick(&tick);
+  solver_container[MainSolver]->Source_Residual(geometry, solver_container, numerics[SOURCE_FIRST_TERM], numerics[SOURCE_SECOND_TERM], config, iMesh);
+  config->Tock(tick,"Source_Residual",3);
+
+  /*--- Boundary conditions ---*/
+  for (unsigned short iMarker = 0; iMarker < config->GetnMarker_All(); iMarker++) {
+    switch (config->GetMarker_All_KindBC(iMarker)) {
+      case EULER_WALL:
+        config->Tick(&tick);
+        solver_container[MainSolver]->BC_Euler_Wall(geometry, solver_container, numerics[CONV_BOUND_TERM], config, iMarker);
+        config->Tock(tick,"BC_Euler_Wall",3);
+        break;
+      case FAR_FIELD:
+        config->Tick(&tick);
+        solver_container[MainSolver]->BC_Far_Field(geometry, solver_container, numerics[CONV_BOUND_TERM], numerics[VISC_BOUND_TERM], config, iMarker);
+        config->Tock(tick,"BC_Far_Field",3);
+        break;
+      case SYMMETRY_PLANE:
+        config->Tick(&tick);
+        solver_container[MainSolver]->BC_Sym_Plane(geometry, solver_container, numerics[CONV_BOUND_TERM], numerics[VISC_BOUND_TERM], config, iMarker);
+        config->Tock(tick,"BC_Sym_Plane",3);
+        break;
+      case INLET_FLOW:
+        config->Tick(&tick);
+        solver_container[MainSolver]->BC_Inlet(geometry, solver_container, numerics[CONV_BOUND_TERM], numerics[VISC_BOUND_TERM], config, iMarker);
+        config->Tock(tick,"BC_Inlet",3);
+        break;
+      case OUTLET_FLOW:
+        config->Tick(&tick);
+        solver_container[MainSolver]->BC_Outlet(geometry, solver_container, numerics[CONV_BOUND_TERM], numerics[VISC_BOUND_TERM], config, iMarker);
+        config->Tock(tick,"BC_Outlet",3);
+        break;
+      case ISOTHERMAL:
+        config->Tick(&tick);
+        solver_container[MainSolver]->BC_Isothermal_Wall(geometry, solver_container, numerics[CONV_BOUND_TERM], numerics[VISC_BOUND_TERM], config, iMarker);
+        config->Tock(tick,"BC_Isothermal_Wall",3);
+        break;
+      case HEAT_FLUX:
+        config->Tick(&tick);
+        solver_container[MainSolver]->BC_HeatFlux_Wall(geometry, solver_container, numerics[CONV_BOUND_TERM], numerics[VISC_BOUND_TERM], config, iMarker);
+        config->Tock(tick,"BC_HeatFlux_Wall",3);
+        break;
+      case CUSTOM_BOUNDARY:
+        config->Tick(&tick);
+        solver_container[MainSolver]->BC_Custom(geometry, solver_container, numerics[CONV_BOUND_TERM], config, iMarker);
+        config->Tock(tick,"BC_Custom",3);
+        break;
+      case PERIODIC_BOUNDARY:  // Nothing to be done for a periodic boundary.
+        break;
+      default:
+        cout << "BC not implemented." << endl;
+#ifndef HAVE_MPI
+        exit(EXIT_FAILURE);
+#else
+        MPI_Abort(MPI_COMM_WORLD,1);
+        MPI_Finalize();
+#endif
+    }
+  }
+  
+  /*--- Compute surface portion of the residual. ---*/
+  config->Tick(&tick);
+  solver_container[MainSolver]->Surface_Residual(geometry, solver_container, numerics[CONV_TERM], config, iMesh, 0);
+  config->Tock(tick,"Surface_Residual",3);
+
+  /*--- Multiply the residual by the (lumped) mass matrix, to obtain the final value. ---*/
+  config->Tick(&tick);
+  solver_container[MainSolver]->MultiplyResidualByInverseMassMatrix(config, false);
+  config->Tock(tick,"MultiplyResidualByInverseMassMatrix",3);
+}
+
+void CFEM_DG_Integration::Time_Integration(CGeometry *geometry, CSolver **solver_container, CConfig *config, unsigned short iStep,
+                                    unsigned short RunTime_EqSystem, unsigned long Iteration) {
+  
+  unsigned short MainSolver = config->GetContainerPosition(RunTime_EqSystem);
+  su2double tick = 0.0;
+  
+  /*--- Perform the time integration ---*/
+  switch (config->GetKind_TimeIntScheme()) {
+    case (RUNGE_KUTTA_EXPLICIT):
+      config->Tick(&tick);
+      solver_container[MainSolver]->ExplicitRK_Iteration(geometry, solver_container, config, iStep);
+      config->Tock(tick,"ExplicitRK_Iteration",3);
+      break;
+    case (CLASSICAL_RK4_EXPLICIT):
+      config->Tick(&tick);
+      solver_container[MainSolver]->ClassicalRK4_Iteration(geometry, solver_container, config, iStep);
+      config->Tock(tick,"CLASSICAL_RK4_EXPLICIT",3);
+      break;
+    default:
+      cout << "Time integration scheme not implemented." << endl;
+#ifndef HAVE_MPI
+      exit(EXIT_FAILURE);
+#else
+      MPI_Abort(MPI_COMM_WORLD,1);
+      MPI_Finalize();
+#endif
+  }
 }

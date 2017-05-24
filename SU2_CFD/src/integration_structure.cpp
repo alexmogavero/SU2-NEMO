@@ -71,6 +71,9 @@ void CIntegration::Space_Integration(CGeometry *geometry,
     case SPACE_UPWIND:
       solver_container[MainSolver]->Upwind_Residual(geometry, solver_container, numerics[CONV_TERM], config, iMesh);
       break;
+    case FINITE_ELEMENT:
+      solver_container[MainSolver]->Convective_Residual(geometry, solver_container, numerics[CONV_TERM], config, iMesh, iRKStep);
+      break;
   }
   
   /*--- Compute viscous residuals ---*/
@@ -165,11 +168,11 @@ void CIntegration::Space_Integration(CGeometry *geometry,
         solver_container[MainSolver]->BC_Neumann(geometry, solver_container, numerics[CONV_BOUND_TERM], config, iMarker);
         break;
       case LOAD_DIR_BOUNDARY:
-    solver_container[MainSolver]->BC_Dir_Load(geometry, solver_container, numerics[CONV_BOUND_TERM], config, iMarker);
-    break;
+        solver_container[MainSolver]->BC_Dir_Load(geometry, solver_container, numerics[CONV_BOUND_TERM], config, iMarker);
+        break;
       case LOAD_SINE_BOUNDARY:
-    solver_container[MainSolver]->BC_Sine_Load(geometry, solver_container, numerics[CONV_BOUND_TERM], config, iMarker);
-    break;
+        solver_container[MainSolver]->BC_Sine_Load(geometry, solver_container, numerics[CONV_BOUND_TERM], config, iMarker);
+        break;
     }
   }
 
@@ -319,7 +322,7 @@ void CIntegration::Time_Integration(CGeometry *geometry, CSolver **solver_contai
   unsigned short KindSolver = config->GetKind_Solver();
   
   /*--- Perform the time integration ---*/
-
+  
   /*--- Fluid time integration schemes ---*/
 
   if (KindSolver != FEM_ELASTICITY) {
@@ -466,7 +469,7 @@ void CIntegration::Convergence_Monitoring(CGeometry *geometry, CConfig *config, 
         Cauchy_Value = 0.0;
         Cauchy_Counter = 0;
         for (iCounter = 0; iCounter < config->GetCauchy_Elems(); iCounter++)
-        Cauchy_Serie[iCounter] = 0.0;
+          Cauchy_Serie[iCounter] = 0.0;
       }
       
       Old_Func = New_Func;
@@ -482,7 +485,7 @@ void CIntegration::Convergence_Monitoring(CGeometry *geometry, CConfig *config, 
       if (Iteration  >= config->GetCauchy_Elems()) {
         Cauchy_Value = 0;
         for (iCounter = 0; iCounter < config->GetCauchy_Elems(); iCounter++)
-        Cauchy_Value += Cauchy_Serie[iCounter];
+          Cauchy_Value += Cauchy_Serie[iCounter];
       }
       
       if (Cauchy_Value >= config->GetCauchy_Eps()) { Convergence = false; Convergence_FullMG = false; }
@@ -517,11 +520,9 @@ void CIntegration::Convergence_Monitoring(CGeometry *geometry, CConfig *config, 
     
     if (Already_Converged) { Convergence = true; Convergence_FullMG = true; }
     
-    
     /*--- Apply the same convergence criteria to all the processors ---*/
     
 #ifdef HAVE_MPI
-    
     unsigned short *sbuf_conv = NULL, *rbuf_conv = NULL;
     sbuf_conv = new unsigned short[1]; sbuf_conv[0] = 0;
     rbuf_conv = new unsigned short[1]; rbuf_conv[0] = 0;
@@ -532,13 +533,13 @@ void CIntegration::Convergence_Monitoring(CGeometry *geometry, CConfig *config, 
     SU2_MPI::Reduce(sbuf_conv, rbuf_conv, 1, MPI_UNSIGNED_SHORT, MPI_SUM, MASTER_NODE, MPI_COMM_WORLD);
     
     /*-- Compute global convergence criteria in the master node --*/
-    
+
     sbuf_conv[0] = 0;
     if (rank == MASTER_NODE) {
       if (rbuf_conv[0] == size) sbuf_conv[0] = 1;
       else sbuf_conv[0] = 0;
     }
-    
+
     SU2_MPI::Bcast(sbuf_conv, 1, MPI_UNSIGNED_SHORT, MASTER_NODE, MPI_COMM_WORLD);
     
     if (sbuf_conv[0] == 1) { Convergence = true; Convergence_FullMG = true; }
@@ -553,7 +554,7 @@ void CIntegration::Convergence_Monitoring(CGeometry *geometry, CConfig *config, 
     
     if (monitor != monitor) {
       if (rank == MASTER_NODE)
-      cout << "\n !!! Error: SU2 has diverged. Now exiting... !!! \n" << endl;
+        cout << "\n !!! Error: SU2 has diverged. Now exiting... !!! \n" << endl;
 #ifndef HAVE_MPI
       exit(EXIT_DIVERGENCE);
 #else
@@ -566,7 +567,7 @@ void CIntegration::Convergence_Monitoring(CGeometry *geometry, CConfig *config, 
     if (config->GetFinestMesh() != MESH_0 ) Convergence = false;
     
   }
-  
+
 }
 
 
@@ -601,11 +602,11 @@ void CIntegration::SetDualTime_Solver(CGeometry *geometry, CSolver *solver, CCon
     unsigned long iProcessor, owner, *owner_all = NULL;
     
     string Marker_Tag, Monitoring_Tag;
-  int rank, nProcessor;
+    int rank, nProcessor;
     
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &nProcessor);
-
+    
     /*--- Only if mater node allocate memory ---*/
     
     if (rank == MASTER_NODE) {

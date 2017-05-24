@@ -60,8 +60,14 @@ lib_sources = \
   ../include/config_structure.hpp \
   ../include/config_structure.hpp \
   ../include/config_structure.inl \
+  ../include/dense_matrix_product.hpp \
   ../include/dual_grid_structure.hpp \
   ../include/dual_grid_structure.inl \
+  ../include/fem_geometry_structure.hpp \
+  ../include/fem_geometry_structure.inl \
+  ../include/fem_standard_element.hpp \
+  ../include/fem_standard_element.inl \
+  ../include/gelite.hpp \
   ../include/geometry_structure.hpp \
   ../include/geometry_structure.inl \
   ../include/grid_adaptation_structure.hpp \
@@ -83,6 +89,8 @@ lib_sources = \
   ../include/datatype_structure.hpp \
   ../include/datatype_structure.inl \
   ../include/interpolation_structure.hpp \
+  ../include/gauss_jacobi_quadrature.hpp \
+  ../include/gauss_jacobi_quadrature.inl \
   ../include/gauss_structure.hpp \
   ../include/gauss_structure.inl \
   ../include/element_structure.hpp \
@@ -90,7 +98,14 @@ lib_sources = \
   ../include/adt_structure.hpp \
   ../include/adt_structure.inl \
   ../src/config_structure.cpp \
+  ../src/dense_matrix_product.cpp \
   ../src/dual_grid_structure.cpp \
+  ../src/fem_geometry_structure.cpp \
+  ../src/fem_integration_rules.cpp \
+  ../src/fem_standard_element.cpp \
+  ../src/fem_wall_distance.cpp \
+  ../src/fem_work_estimate_metis.cpp \
+  ../src/gelite.cpp \
   ../src/geometry_structure.cpp \
   ../src/grid_adaptation_structure.cpp \
   ../src/grid_movement_structure.cpp \
@@ -101,6 +116,7 @@ lib_sources = \
   ../src/mpi_structure.cpp \
   ../src/linear_solvers_structure_b.cpp \
   ../src/ad_structure.cpp \
+  ../src/gauss_jacobi_quadrature.cpp \
   ../src/gauss_structure.cpp \
   ../src/element_structure.cpp \
   ../src/element_linear.cpp \
@@ -137,6 +153,11 @@ lib_ldadd += @MUTATIONPP_LD@
 # if BUILD_JSONCPP
 lib_cxxflags += @JSONCPP_CXX@
 lib_ldadd += @JSONCPP_LD@
+# endif
+
+# if BUILD_GELITE
+lib_cxxflags += @GELITE_CXX@
+lib_ldadd += @GELITE_LD@
 # endif
 
 if BUILD_NORMAL

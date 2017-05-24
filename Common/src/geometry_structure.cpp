@@ -41,8 +41,8 @@
 /*--- Cross product ---*/
 
 #define CROSS(dest,v1,v2) \
-(dest)[0] = (v1)[1]*(v2)[2] - (v1)[2]*(v2)[1];	\
-(dest)[1] = (v1)[2]*(v2)[0] - (v1)[0]*(v2)[2];	\
+(dest)[0] = (v1)[1]*(v2)[2] - (v1)[2]*(v2)[1]; \
+(dest)[1] = (v1)[2]*(v2)[0] - (v1)[0]*(v2)[2]; \
 (dest)[2] = (v1)[0]*(v2)[1] - (v1)[1]*(v2)[0];
 
 /*--- Cross product ---*/
@@ -52,9 +52,307 @@
 /*--- a = b - c ---*/
 
 #define SUB(dest,v1,v2) \
-(dest)[0] = (v1)[0] - (v2)[0];	\
-(dest)[1] = (v1)[1] - (v2)[1];	\
+(dest)[0] = (v1)[0] - (v2)[0]; \
+(dest)[1] = (v1)[1] - (v2)[1]; \
 (dest)[2] = (v1)[2] - (v2)[2];
+
+bool unsignedLong2T::operator<(const unsignedLong2T &other) const {
+  if(long0 != other.long0) return (long0 < other.long0);
+  if(long1 != other.long1) return (long1 < other.long1);
+
+  return false;
+}
+
+bool unsignedLong2T::operator==(const unsignedLong2T &other) const {
+  if(long0 != other.long0) return false;
+  if(long1 != other.long1) return false;
+
+  return true;
+}
+
+void unsignedLong2T::Copy(const unsignedLong2T &other) {
+  long0 = other.long0;
+  long1 = other.long1;
+}
+
+FaceOfElementClass::FaceOfElementClass(){
+  nCornerPoints   = 0;
+  cornerPoints[0] = cornerPoints[1] = cornerPoints[2] = cornerPoints[3] = ULONG_MAX;
+  elemID0         = elemID1 = ULONG_MAX;
+  nPolyGrid0      = nPolyGrid1 = 0;
+  nPolySol0       = nPolySol1  = 0;
+  nDOFsElem0      = nDOFsElem1 = 0;
+  elemType0       = elemType1  = 0;
+  faceID0         = faceID1    = 0;
+  periodicIndex   = 0;
+  faceIndicator   = 0;
+
+  JacFaceIsConsideredConstant = false;
+  elem0IsOwner                = false;
+}
+
+bool FaceOfElementClass::operator<(const FaceOfElementClass &other) const {
+  if(nCornerPoints != other.nCornerPoints) return nCornerPoints < other.nCornerPoints;
+
+  for(unsigned short i=0; i<nCornerPoints; ++i)
+    if(cornerPoints[i] != other.cornerPoints[i]) return cornerPoints[i] < other.cornerPoints[i];
+
+  return false;
+}
+
+bool FaceOfElementClass::operator ==(const FaceOfElementClass &other) const {
+  if(nCornerPoints != other.nCornerPoints) return false;
+  for(unsigned short i=0; i<nCornerPoints; ++i)
+    if(cornerPoints[i] != other.cornerPoints[i]) return false;
+
+  return true;
+}
+
+void FaceOfElementClass::Copy(const FaceOfElementClass &other) {
+  nCornerPoints = other.nCornerPoints;
+  for(unsigned short i=0; i<nCornerPoints; ++i) cornerPoints[i] = other.cornerPoints[i];
+  for(unsigned short i=nCornerPoints; i<4; ++i) cornerPoints[i] = ULONG_MAX;
+
+  elemID0 = other.elemID0;
+  elemID1 = other.elemID1;
+
+  nPolyGrid0 = other.nPolyGrid0;
+  nPolyGrid1 = other.nPolyGrid1;
+  nPolySol0  = other.nPolySol0;
+  nPolySol1  = other.nPolySol1;
+
+  nDOFsElem0 = other.nDOFsElem0;
+  nDOFsElem1 = other.nDOFsElem1;
+  elemType0  = other.elemType0;
+  elemType1  = other.elemType1;
+  faceID0    = other.faceID0;
+  faceID1    = other.faceID1;
+
+  periodicIndex = other.periodicIndex;
+  faceIndicator = other.faceIndicator;
+
+  JacFaceIsConsideredConstant = other.JacFaceIsConsideredConstant;
+  elem0IsOwner                = other.elem0IsOwner;
+}
+
+void FaceOfElementClass::CreateUniqueNumberingWithOrientation(void) {
+
+  /*--- Determine the element type and create the unique numbering accordingly. ---*/
+  bool swapElements = false;
+  switch( nCornerPoints ) {
+
+    case 2: {
+      /* Element is a line. Check if the node numbering must be swapped. If so
+         also the element information must be swapped, because element 0 is to
+         the left of the face and element 1 to the right. */
+      if(cornerPoints[1] < cornerPoints[0]) {
+        swap(cornerPoints[0], cornerPoints[1]);
+        swapElements = true;
+      }
+      break;
+    }
+
+    case 3: {
+      /* Element is a triangle. The vertices are sorted in increasing order.
+         If the sequence of the new numbering is opposite to the current
+         numbering, the element information must be exchanged, because
+         element 0 is to the left of the face and element 1 to the right. */
+      unsigned long nn[] = {cornerPoints[0], cornerPoints[1], cornerPoints[2]};
+      unsigned short ind = 0;
+      if(nn[1] < nn[ind]) ind = 1;
+      if(nn[2] < nn[ind]) ind = 2;
+
+      unsigned short indm1 = ind==0 ? 2 : ind - 1;   // Next lower index.
+      unsigned short indp1 = ind==2 ? 0 : ind + 1;   // Next upper index.
+
+      if(nn[indp1] < nn[indm1]) {
+
+        /* The orientation of the triangle remains the same.
+           Store the new sorted node numbering. */
+        cornerPoints[0] = nn[ind];
+        cornerPoints[1] = nn[indp1];
+        cornerPoints[2] = nn[indm1];
+      }
+      else {
+
+        /* The orientation of the triangle changes. Store the new
+           sorted node numbering and set swapElements to true. */
+        cornerPoints[0] = nn[ind];
+        cornerPoints[1] = nn[indm1];
+        cornerPoints[2] = nn[indp1];
+        swapElements    = true;
+      }
+
+      break;
+    }
+
+    case 4: {
+      /* Element is a quadrilateral. The vertices are sorted in increasing order
+         under the condition neighboring vertices remain neighbors. If the
+         sequence of the new numbering is opposite to the current
+         numbering, the element information must be exchanged, because
+         element 0 is to the left of the face and element 1 to the right. */
+      unsigned long nn[] = {cornerPoints[0], cornerPoints[1],
+                            cornerPoints[2], cornerPoints[3]};
+      unsigned short ind = 0;
+      if(nn[1] < nn[ind]) ind = 1;
+      if(nn[2] < nn[ind]) ind = 2;
+      if(nn[3] < nn[ind]) ind = 3;
+
+      unsigned short indm1 = ind==0 ?       3 : ind - 1; // Next lower index.
+      unsigned short indp1 = ind==3 ?       0 : ind + 1; // Next upper index.
+      unsigned short indp2 = ind>=2 ? ind - 2 : ind + 2; // Opposite index.
+
+      if(nn[indp1] < nn[indm1]) {
+
+        /* The orientation of the quadrilateral remains the same.
+           Store the new sorted node numbering. */
+        cornerPoints[0] = nn[ind];
+        cornerPoints[1] = nn[indp1];
+        cornerPoints[2] = nn[indp2];
+        cornerPoints[3] = nn[indm1];
+      }
+      else {
+
+        /* The orientation of the quadrilateral changes. Store the new
+           sorted node numbering and set swapElements to true. */
+        cornerPoints[0] = nn[ind];
+        cornerPoints[1] = nn[indm1];
+        cornerPoints[2] = nn[indp2];
+        cornerPoints[3] = nn[indp1];
+        swapElements    = true;
+      }
+
+      break;
+    }
+
+    default: {
+      cout << "Unknown surface element type with " << nCornerPoints
+           << " corners." << endl;
+#ifndef HAVE_MPI
+      exit(EXIT_FAILURE);
+#else
+      MPI_Abort(MPI_COMM_WORLD,1);
+      MPI_Finalize();
+#endif
+      break;
+    }
+  }
+
+  /* Swap the element information, if needed. */
+  if( swapElements ) {
+    swap(elemID0,    elemID1);
+    swap(nPolyGrid0, nPolyGrid1);
+    swap(nPolySol0,  nPolySol1);
+    swap(nDOFsElem0, nDOFsElem1);
+    swap(elemType0,  elemType1);
+    swap(faceID0,    faceID1);
+  }
+}
+
+void BoundaryFaceClass::Copy(const BoundaryFaceClass &other) {
+  VTK_Type          = other.VTK_Type;
+  nPolyGrid         = other.nPolyGrid;
+  nDOFsGrid         = other.nDOFsGrid;
+  globalBoundElemID = other.globalBoundElemID;
+  domainElementID   = other.domainElementID;
+  Nodes             = other.Nodes;
+}
+
+MatchingFaceClass::MatchingFaceClass() {
+  nCornerPoints  = 0;
+  nDim           = 0;
+  nPoly          = 0;
+  nDOFsElem      = 0;
+  elemID         = 0;
+  tolForMatching = 0.0;
+}
+
+bool MatchingFaceClass::operator<(const MatchingFaceClass &other) const {
+
+  /* First compare the number of corner points. ---*/
+  if(nCornerPoints != other.nCornerPoints) return nCornerPoints < other.nCornerPoints;
+
+  /*--- Determine the tolerance for comparing both objects. ---*/
+  const su2double tol = min(tolForMatching, other.tolForMatching);
+
+  /*--- Loop over the number of corner points and dimensions and compare the
+        coordinates. If considered different, return true if the current face
+        is considered smaller and false otherwise.            ---*/
+  for(unsigned short k=0; k<nCornerPoints; ++k) {
+    for(unsigned short l=0; l<nDim; ++l) {
+      if(fabs(cornerCoor[k][l] - other.cornerCoor[k][l]) > tol)
+        return cornerCoor[k][l] < other.cornerCoor[k][l];
+    }
+  }
+
+  /*--- Both objects are considered the same. Return false. ---*/
+  return false;
+}
+
+void MatchingFaceClass::SortFaceCoordinates(void) {
+
+  /*--- Determine the tolerance for a matching point for this face. This is
+        accomplished by computing the minimum distance between the points of
+        the face, multiplied by a relative tolerance.        ---*/
+  for(unsigned short k=0; k<nCornerPoints; ++k) {
+    for(unsigned short j=(k+1); j<nCornerPoints; ++j) {
+      su2double dist = 0.0;
+      for(unsigned short l=0; l<nDim; ++l) {
+        su2double ds = cornerCoor[k][l] - cornerCoor[j][l];
+        dist += ds*ds;
+      }
+      dist = sqrt(dist);
+
+      if(k==0 && j==1) tolForMatching = dist;
+      else             tolForMatching = min(tolForMatching, dist);
+    }
+  }
+
+  tolForMatching *= 1.e-6;
+
+  /*--- Sort the points in increasing order based on the coordinates.
+        An insertion sort algorithm is used, which is quite efficient
+        for at most four corner points.                        ---*/
+  for(unsigned short k=1; k<nCornerPoints; ++k) {
+    for(unsigned short j=k; j>0; --j) {
+
+      /* Check if cornerCoor[j] is considered less than cornerCoor[j-1]. */
+      bool lessThan = false;
+      for(unsigned short l=0; l<nDim; ++l) {
+        if(fabs(cornerCoor[j][l] - cornerCoor[j-1][l]) > tolForMatching) {
+          lessThan = cornerCoor[j][l] < cornerCoor[j-1][l];
+          break;
+        }
+      }
+
+      /* If cornerCoor[j] is less than cornerCoor[j-1] they must be swapped.
+         Otherwise an exit can be made from the j-loop.         */
+      if( lessThan ) {
+        for(unsigned short l=0; l<nDim; ++l)
+          swap(cornerCoor[j][l], cornerCoor[j-1][l]);
+      }
+      else break;
+    }
+  }
+}
+
+void MatchingFaceClass::Copy(const MatchingFaceClass &other) {
+  nCornerPoints = other.nCornerPoints;
+  nDim          = other.nDim;
+  nPoly         = other.nPoly;
+  nDOFsElem     = other.nDOFsElem;
+  elemType      = other.elemType;
+  elemID        = other.elemID;
+
+  for(unsigned short k=0; k<nCornerPoints; ++k) {
+    for(unsigned l=0; l<nDim; ++l) {
+      cornerCoor[k][l] = other.cornerCoor[k][l];
+    }
+  }
+
+  tolForMatching = other.tolForMatching;
+}
 
 CGeometry::CGeometry(void) {
   
@@ -143,7 +441,7 @@ CGeometry::~CGeometry(void) {
     }
     delete [] vertex;
   }
-  
+
   if (newBound != NULL) {
     for (iMarker = 0; iMarker < nMarker; iMarker++) {
       for (iElem_Bound = 0; iElem_Bound < nElem_Bound[iMarker]; iElem_Bound++) {
@@ -253,34 +551,34 @@ void CGeometry::SetEdges(void) {
 }
 
 void CGeometry::SetFaces(void) {
-  //	unsigned long iPoint, jPoint, iFace;
-  //	unsigned short jNode, iNode;
-  //	long TestFace = 0;
+  // unsigned long iPoint, jPoint, iFace;
+  // unsigned short jNode, iNode;
+  // long TestFace = 0;
   //
-  //	nFace = 0;
-  //	for (iPoint = 0; iPoint < nPoint; iPoint++)
-  //		for (iNode = 0; iNode < node[iPoint]->GetnPoint(); iNode++) {
-  //			jPoint = node[iPoint]->GetPoint(iNode);
-  //			for (jNode = 0; jNode < node[jPoint]->GetnPoint(); jNode++)
-  //				if (node[jPoint]->GetPoint(jNode) == iPoint) {
-  //					TestFace = node[jPoint]->GetFace(jNode);
-  //					break;
-  //				}
-  //			if (TestFace == -1) {
-  //				node[iPoint]->SetFace(nFace, iNode);
-  //				node[jPoint]->SetFace(nFace, jNode);
-  //				nFace++;
-  //			}
-  //		}
+  // nFace = 0;
+  // for (iPoint = 0; iPoint < nPoint; iPoint++)
+  //  for (iNode = 0; iNode < node[iPoint]->GetnPoint(); iNode++) {
+  //   jPoint = node[iPoint]->GetPoint(iNode);
+  //   for (jNode = 0; jNode < node[jPoint]->GetnPoint(); jNode++)
+  //    if (node[jPoint]->GetPoint(jNode) == iPoint) {
+  //     TestFace = node[jPoint]->GetFace(jNode);
+  //     break;
+  //    }
+  //   if (TestFace == -1) {
+  //    node[iPoint]->SetFace(nFace, iNode);
+  //    node[jPoint]->SetFace(nFace, jNode);
+  //    nFace++;
+  //   }
+  //  }
   //
-  //	face = new CFace*[nFace];
+  // face = new CFace*[nFace];
   //
-  //	for (iPoint = 0; iPoint < nPoint; iPoint++)
-  //		for (iNode = 0; iNode < node[iPoint]->GetnPoint(); iNode++) {
-  //			jPoint = node[iPoint]->GetPoint(iNode);
-  //			iFace = FindFace(iPoint, jPoint);
-  //			if (iPoint < jPoint) face[iFace] = new CFace(iPoint, jPoint, nDim);
-  //		}
+  // for (iPoint = 0; iPoint < nPoint; iPoint++)
+  //  for (iNode = 0; iNode < node[iPoint]->GetnPoint(); iNode++) {
+  //   jPoint = node[iPoint]->GetPoint(iNode);
+  //   iFace = FindFace(iPoint, jPoint);
+  //   if (iPoint < jPoint) face[iFace] = new CFace(iPoint, jPoint, nDim);
+  //  }
 }
 
 void CGeometry::TestGeometry(void) {
@@ -333,17 +631,17 @@ void CGeometry::SetSpline(vector<su2double> &x, vector<su2double> &y, unsigned l
   
   u = new su2double [n];
   
-  if (yp1 > 0.99e30)			// The lower boundary condition is set either to be "nat
-    y2[0]=u[0]=0.0;			  // -ural"
-  else {									// or else to have a specified first derivative.
+  if (yp1 > 0.99e30)   // The lower boundary condition is set either to be "nat
+    y2[0]=u[0]=0.0;     // -ural"
+  else {         // or else to have a specified first derivative.
     y2[0] = -0.5;
     u[0]=(3.0/(x[1]-x[0]))*((y[1]-y[0])/(x[1]-x[0])-yp1);
   }
   
-  for (i=2; i<=n-1; i++) {									//  This is the decomposition loop of the tridiagonal al-
-    sig=(x[i-1]-x[i-2])/(x[i]-x[i-2]);		//	gorithm. y2 and u are used for tem-
-    p=sig*y2[i-2]+2.0;										//	porary storage of the decomposed
-    y2[i-1]=(sig-1.0)/p;										//	factors.
+  for (i=2; i<=n-1; i++) {         //  This is the decomposition loop of the tridiagonal al-
+    sig=(x[i-1]-x[i-2])/(x[i]-x[i-2]);  // gorithm. y2 and u are used for tem-
+    p=sig*y2[i-2]+2.0;          // porary storage of the decomposed
+    y2[i-1]=(sig-1.0)/p;          // factors.
     
     su2double a1 = (y[i]-y[i-1])/(x[i]-x[i-1]); if (x[i] == x[i-1]) a1 = 1.0;
     su2double a2 = (y[i-1]-y[i-2])/(x[i-1]-x[i-2]); if (x[i-1] == x[i-2]) a2 = 1.0;
@@ -352,15 +650,15 @@ void CGeometry::SetSpline(vector<su2double> &x, vector<su2double> &y, unsigned l
     
   }
   
-  if (ypn > 0.99e30)						// The upper boundary condition is set either to be
-    qn=un=0.0;									// "natural"
-  else {												// or else to have a specified first derivative.
+  if (ypn > 0.99e30)      // The upper boundary condition is set either to be
+    qn=un=0.0;         // "natural"
+  else {            // or else to have a specified first derivative.
     qn=0.5;
     un=(3.0/(x[n-1]-x[n-2]))*(ypn-(y[n-1]-y[n-2])/(x[n-1]-x[n-2]));
   }
   y2[n-1]=(un-qn*u[n-2])/(qn*y2[n-2]+1.0);
-  for (k=n-1; k>=1; k--)					// This is the backsubstitution loop of the tridiagonal
-    y2[k-1]=y2[k-1]*y2[k]+u[k-1];	  // algorithm.
+  for (k=n-1; k>=1; k--)     // This is the backsubstitution loop of the tridiagonal
+    y2[k-1]=y2[k-1]*y2[k]+u[k-1];   // algorithm.
   
   delete[] u;
   
@@ -373,17 +671,17 @@ su2double CGeometry::GetSpline(vector<su2double>&xa, vector<su2double>&ya, vecto
   if (x < xa[0]) x = xa[0];       // Clip max and min values
   if (x > xa[n-1]) x = xa[n-1];
   
-  klo = 1;										// We will find the right place in the table by means of
-  khi = n;										// bisection. This is optimal if sequential calls to this
-  while (khi-klo > 1) {			// routine are at random values of x. If sequential calls
-    k = (khi+klo) >> 1;				// are in order, and closely spaced, one would do better
-    if (xa[k-1] > x) khi = k;		// to store previous values of klo and khi and test if
-    else klo=k;							// they remain appropriate on the next call.
-  }								// klo and khi now bracket the input value of x
+  klo = 1;          // We will find the right place in the table by means of
+  khi = n;          // bisection. This is optimal if sequential calls to this
+  while (khi-klo > 1) {   // routine are at random values of x. If sequential calls
+    k = (khi+klo) >> 1;    // are in order, and closely spaced, one would do better
+    if (xa[k-1] > x) khi = k;  // to store previous values of klo and khi and test if
+    else klo=k;       // they remain appropriate on the next call.
+  }        // klo and khi now bracket the input value of x
   h = xa[khi-1] - xa[klo-1];
-  if (h == 0.0) h = EPS; // cout << "Bad xa input to routine splint" << endl;	// The xa’s must be distinct.
+  if (h == 0.0) h = EPS; // cout << "Bad xa input to routine splint" << endl; // The xa’s must be distinct.
   a = (xa[khi-1]-x)/h;
-  b = (x-xa[klo-1])/h;				// Cubic spline polynomial is now evaluated.
+  b = (x-xa[klo-1])/h;    // Cubic spline polynomial is now evaluated.
   y = a*ya[klo-1]+b*ya[khi-1]+((a*a*a-a)*y2a[klo-1]+(b*b*b-b)*y2a[khi-1])*(h*h)/6.0;
   
   return y;
@@ -1346,28 +1644,55 @@ CPhysicalGeometry::CPhysicalGeometry(CConfig *config, unsigned short val_iZone, 
   string val_mesh_filename  = config->GetMesh_FileName();
   unsigned short val_format = config->GetMesh_FileFormat();
 
+  /*--- Determine whether or not a FEM discretization is used ---*/
+
+  const bool fem_solver = ((config->GetKind_Solver() == FEM_EULER)         ||
+                           (config->GetKind_Solver() == FEM_NAVIER_STOKES) ||
+                           (config->GetKind_Solver() == FEM_RANS)          ||
+                           (config->GetKind_Solver() == FEM_LES));
+
   /*--- Initialize counters for local/global points & elements ---*/
   
   if (rank == MASTER_NODE)
     cout << endl <<"---------------------- Read Grid File Information -----------------------" << endl;
-  
-  switch (val_format) {
-    case SU2:
-      Read_SU2_Format_Parallel(config, val_mesh_filename, val_iZone, val_nZone);
-      break;
-    case CGNS:
-      Read_CGNS_Format_Parallel(config, val_mesh_filename, val_iZone, val_nZone);
-      break;
-    default:
-      if (rank == MASTER_NODE) cout << "Unrecognized mesh format specified!" << endl;
+
+  if( fem_solver ) {
+    switch (val_format) {
+      case SU2:
+        Read_SU2_Format_Parallel_FEM(config, val_mesh_filename, val_iZone, val_nZone);
+        break;
+
+      default:
+        if (rank == MASTER_NODE) cout << "Unrecognized mesh format specified for the FEM solver!" << endl;
 #ifndef HAVE_MPI
-      exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
 #else
-      MPI_Barrier(MPI_COMM_WORLD);
-      MPI_Abort(MPI_COMM_WORLD,1);
-      MPI_Finalize();
+        MPI_Barrier(MPI_COMM_WORLD);
+        MPI_Abort(MPI_COMM_WORLD,1);
+        MPI_Finalize();
 #endif
-      break;
+        break;
+    }
+  }
+  else {
+
+    switch (val_format) {
+      case SU2:
+        Read_SU2_Format_Parallel(config, val_mesh_filename, val_iZone, val_nZone);
+        break;
+      case CGNS:
+        Read_CGNS_Format_Parallel(config, val_mesh_filename, val_iZone, val_nZone);
+        break;
+      default:
+        if (rank == MASTER_NODE) cout << "Unrecognized mesh format specified!" << endl;
+#ifndef HAVE_MPI
+        exit(EXIT_FAILURE);
+#else
+        MPI_Abort(MPI_COMM_WORLD,1);
+        MPI_Finalize();
+#endif
+        break;
+    }
   }
 
   /*--- After reading the mesh, assert that the dimension is equal to 2 or 3. ---*/
@@ -4357,10 +4682,10 @@ void CPhysicalGeometry::SetSendReceive(CConfig *config) {
   unsigned short nDomain, iNode, iDomain, jDomain, jNode;
   vector<unsigned long>::iterator it;
   
-  vector<vector<unsigned long> > SendTransfLocal;	/*!< \brief Vector to store the type of transformation for this send point. */
-  vector<vector<unsigned long> > ReceivedTransfLocal;	/*!< \brief Vector to store the type of transformation for this received point. */
-	vector<vector<unsigned long> > SendDomainLocal; /*!< \brief SendDomain[from domain][to domain] and return the point index of the node that must me sended. */
-	vector<vector<unsigned long> > ReceivedDomainLocal; /*!< \brief SendDomain[from domain][to domain] and return the point index of the node that must me sended. */
+  vector<vector<unsigned long> > SendTransfLocal; /*!< \brief Vector to store the type of transformation for this send point. */
+  vector<vector<unsigned long> > ReceivedTransfLocal; /*!< \brief Vector to store the type of transformation for this received point. */
+ vector<vector<unsigned long> > SendDomainLocal; /*!< \brief SendDomain[from domain][to domain] and return the point index of the node that must me sended. */
+ vector<vector<unsigned long> > ReceivedDomainLocal; /*!< \brief SendDomain[from domain][to domain] and return the point index of the node that must me sended. */
   
   int rank = MASTER_NODE;
   int size = SINGLE_NODE;
@@ -4478,7 +4803,7 @@ void CPhysicalGeometry::SetSendReceive(CConfig *config) {
   }
   
   /*--- First compute the Send/Receive boundaries ---*/
-  Counter_Send = 0; 	Counter_Receive = 0;
+  Counter_Send = 0;  Counter_Receive = 0;
   for (iDomain = 0; iDomain < nDomain; iDomain++)
     if (SendDomainLocal[iDomain].size() != 0) Counter_Send++;
   
@@ -5379,7 +5704,7 @@ void CPhysicalGeometry::Read_SU2_Format_Parallel(CConfig *config, string val_mes
   npoint_procs  = new unsigned long[size];
   
   /*--- Open grid file ---*/
-  
+
   strcpy (cstr, val_mesh_filename.c_str());
   mesh_file.open(cstr, ios::in);
   
@@ -5636,7 +5961,6 @@ void CPhysicalGeometry::Read_SU2_Format_Parallel(CConfig *config, string val_mes
   }
   
   mesh_file.close();
-  strcpy (cstr, val_mesh_filename.c_str());
   
   /*--- Read the elements in the file with two loops. The first finds
    elements that live in the local partition and builds the adjacency
@@ -5679,8 +6003,8 @@ void CPhysicalGeometry::Read_SU2_Format_Parallel(CConfig *config, string val_mes
     
     position = text_line.find ("NELEM=",0);
     if (position != string::npos) {
-      text_line.erase (0,6); nElem = atoi(text_line.c_str());
-      
+      text_line.erase (0,6); nElem = atol(text_line.c_str());
+
       /*--- Store total number of elements in the original mesh ---*/
       
       Global_nElem = nElem;
@@ -6543,7 +6867,7 @@ void CPhysicalGeometry::Read_SU2_Format_Parallel(CConfig *config, string val_mes
    In the future, this component will also be performed in parallel. ---*/
   
   mesh_file.open(cstr, ios::in);
-  
+
   /*--- If more than one, find the zone in the mesh file ---*/
   
 
@@ -8539,78 +8863,575 @@ void CPhysicalGeometry::Read_CGNS_Format_Parallel(CConfig *config, string val_me
   
 }
 
-void CPhysicalGeometry::Check_IntElem_Orientation(CConfig *config) {
-  
-  unsigned long Point_1, Point_2, Point_3, Point_4, Point_5, Point_6,
-  iElem, triangle_flip = 0, quad_flip = 0, tet_flip = 0, prism_flip = 0,
-  hexa_flip = 0, pyram_flip = 0;
-  su2double test_1, test_2, test_3, test_4, *Coord_1, *Coord_2, *Coord_3, *Coord_4,
-  *Coord_5, *Coord_6, a[3] = {0.0,0.0,0.0}, b[3] = {0.0,0.0,0.0}, c[3] = {0.0,0.0,0.0}, n[3] = {0.0,0.0,0.0}, test;
-  unsigned short iDim;
-  
-  int rank = MASTER_NODE;
+void CPhysicalGeometry::Read_SU2_Format_Parallel_FEM(CConfig        *config,
+                                                     string         val_mesh_filename,
+                                                     unsigned short val_iZone,
+                                                     unsigned short val_nZone) {
+  string text_line, Marker_Tag;
+  ifstream mesh_file;
+  string::size_type position;
+  int rank = MASTER_NODE, size = SINGLE_NODE;
+  unsigned long nDOFsGrid_Local = 0, loc_element_count = 0;
+  bool domain_flag   = false;
+  bool time_spectral = config->GetUnsteady_Simulation() == HARMONIC_BALANCE;
+  unsigned short nMarker_Max = config->GetnMarker_Max();
+  nZone = val_nZone;
+
+  /*--- Initialize counters for local/global points & elements ---*/
 #ifdef HAVE_MPI
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
 #endif
+  Global_nPoint  = 0; Global_nPointDomain   = 0; Global_nElem = 0;
+  nelem_edge     = 0; Global_nelem_edge     = 0;
+  nelem_triangle = 0; Global_nelem_triangle = 0;
+  nelem_quad     = 0; Global_nelem_quad     = 0;
+  nelem_tetra    = 0; Global_nelem_tetra    = 0;
+  nelem_hexa     = 0; Global_nelem_hexa     = 0;
+  nelem_prism    = 0; Global_nelem_prism    = 0;
+  nelem_pyramid  = 0; Global_nelem_pyramid  = 0;
 
-  /*--- Loop over all the elements ---*/
+  /*--- Allocate memory for the linear partition of the elements of the mesh.
+        These arrays are the size of the number of ranks. ---*/
+
+  starting_node = new unsigned long[size];
+  ending_node   = new unsigned long[size];
+  npoint_procs  = new unsigned long[size];
+
+  /*--- Open grid file ---*/ 
   
-  for (iElem = 0; iElem < nElem; iElem++) {
-    
-    /*--- 2D grid, triangle case ---*/
-    
-    if (elem[iElem]->GetVTK_Type() == TRIANGLE) {
-      
-      Point_1 = elem[iElem]->GetNode(0); Coord_1 = node[Point_1]->GetCoord();
-      Point_2 = elem[iElem]->GetNode(1); Coord_2 = node[Point_2]->GetCoord();
-      Point_3 = elem[iElem]->GetNode(2); Coord_3 = node[Point_3]->GetCoord();
-      
-      for (iDim = 0; iDim < nDim; iDim++) {
-        a[iDim] = 0.5*(Coord_2[iDim]-Coord_1[iDim]);
-        b[iDim] = 0.5*(Coord_3[iDim]-Coord_1[iDim]); }
-      test = a[0]*b[1]-b[0]*a[1];
-      
-      if (test < 0.0) {
-    	  elem[iElem]->Change_Orientation();
-    	  triangle_flip++;
+  mesh_file.open(val_mesh_filename.c_str(), ios::in);
+  
+  /*--- Check the grid ---*/
+
+  if (mesh_file.fail()) {
+    cout << "There is no mesh file (CPhysicalGeometry)!! " << val_mesh_filename << endl;
+#ifndef HAVE_MPI
+    exit(EXIT_FAILURE);
+#else
+    MPI_Abort(MPI_COMM_WORLD,1);
+    MPI_Finalize();
+#endif
+  }
+
+  /*--- If more than one, find the zone in the mesh file ---*/
+
+  if (val_nZone > 1 || time_spectral) {
+    if (time_spectral) {
+      if (rank == MASTER_NODE) cout << "Reading time spectral instance " << val_iZone+1 << ":" << endl;
+    } else {
+      while (getline (mesh_file,text_line)) {
+        /*--- Search for the current domain ---*/
+        position = text_line.find ("IZONE=",0);
+        if (position != string::npos) {
+          text_line.erase (0,6);
+          unsigned short jDomain = atoi(text_line.c_str());
+          if (jDomain == val_iZone+1) {
+            if (rank == MASTER_NODE) cout << "Reading zone " << val_iZone+1 << " points:" << endl;
+            break;
+          }
+        }
       }
     }
-    
-    /*--- 2D grid, quadrilateral case ---*/
-    
-    if (elem[iElem]->GetVTK_Type() == QUADRILATERAL) {
-      
-      Point_1 = elem[iElem]->GetNode(0); Coord_1 = node[Point_1]->GetCoord();
-      Point_2 = elem[iElem]->GetNode(1); Coord_2 = node[Point_2]->GetCoord();
-      Point_3 = elem[iElem]->GetNode(2); Coord_3 = node[Point_3]->GetCoord();
-      Point_4 = elem[iElem]->GetNode(3); Coord_4 = node[Point_4]->GetCoord();
-      
-      for (iDim = 0; iDim < nDim; iDim++) {
-        a[iDim] = 0.5*(Coord_2[iDim]-Coord_1[iDim]);
-        b[iDim] = 0.5*(Coord_3[iDim]-Coord_1[iDim]); }
-      test_1 = a[0]*b[1]-b[0]*a[1];
-      
-      for (iDim = 0; iDim < nDim; iDim++) {
-        a[iDim] = 0.5*(Coord_3[iDim]-Coord_2[iDim]);
-        b[iDim] = 0.5*(Coord_4[iDim]-Coord_2[iDim]); }
-      test_2 = a[0]*b[1]-b[0]*a[1];
-      
-      for (iDim = 0; iDim < nDim; iDim++) {
-        a[iDim] = 0.5*(Coord_4[iDim]-Coord_3[iDim]);
-        b[iDim] = 0.5*(Coord_1[iDim]-Coord_3[iDim]); }
-      test_3 = a[0]*b[1]-b[0]*a[1];
-      
-      for (iDim = 0; iDim < nDim; iDim++) {
-        a[iDim] = 0.5*(Coord_1[iDim]-Coord_4[iDim]);
-        b[iDim] = 0.5*(Coord_3[iDim]-Coord_4[iDim]); }
-      test_4 = a[0]*b[1]-b[0]*a[1];
-      
-      if ((test_1 < 0.0) && (test_2 < 0.0) && (test_3 < 0.0) && (test_4 < 0.0)) {
-        elem[iElem]->Change_Orientation();
-        quad_flip++;
+  }
+
+  /*--- Read grid file with format SU2 ---*/
+
+  while (getline (mesh_file, text_line)) {
+
+    /*--- Read the dimension of the problem ---*/
+
+    position = text_line.find ("NDIME=",0);
+    if (position != string::npos) {
+      if (domain_flag == false) {
+        text_line.erase (0,6); nDim = atoi(text_line.c_str());
+        if (rank == MASTER_NODE) {
+          if (nDim == 2) cout << "Two dimensional problem." << endl;
+          if (nDim == 3) cout << "Three dimensional problem." << endl;
+        }
+        domain_flag = true;
+      } else { break; }
+    }
+
+    /*--- Read the information about inner elements ---*/
+
+    position = text_line.find ("NELEM=",0);
+    if (position != string::npos) {
+      text_line.erase (0,6);
+      stringstream stream_line(text_line);
+      stream_line >> Global_nElem;
+
+      if ((rank == MASTER_NODE) && (size > SINGLE_NODE))
+        cout << Global_nElem << " interior elements before parallel partitioning." << endl;
+
+      /*--- Check if the number of cores used is larger than the number of
+            elements. Terminate if this is the case, because it does not make
+            sense to do this. ---*/
+      unsigned long nCores = size;   // Correct for the number of cores per rank.
+      if(nCores > Global_nElem) {
+
+        if (rank == MASTER_NODE) {
+          cout << endl;
+          cout << "Congratulations. You just qualified for the title \"Idiot user\"." << endl;
+          cout << "The number of cores, " << nCores
+               << ", is larger than the number of elements, " << Global_nElem << "." << endl;
+          cout << "This is not exactly an efficient use of the resources and therefore "
+               << "SU2 will terminate." << endl << endl;
+        }
+
+#ifndef HAVE_MPI
+        exit(EXIT_FAILURE);
+#else
+        MPI_Barrier(MPI_COMM_WORLD);
+        MPI_Abort(MPI_COMM_WORLD,1);
+        MPI_Finalize();
+#endif
+      }
+
+      /*--- Compute the number of elements that will be on each processor.
+            This is a linear partitioning with the addition of a simple load
+            balancing for any remainder elements. ---*/
+
+      unsigned long total_elem_accounted = 0;
+      for(unsigned long i = 0; i < (unsigned long)size; i++) {
+        npoint_procs[i] = Global_nElem/size;
+        total_elem_accounted = total_elem_accounted + npoint_procs[i];
+      }
+
+      /*--- Get the number of remainder elements after the even division ---*/
+      unsigned long rem_elem = Global_nElem - total_elem_accounted;
+      for (unsigned long i = 0; i<rem_elem; i++) {
+        ++npoint_procs[i];
+      }
+
+      /*--- Store the local number of elements and the beginning/end index ---*/
+      nElem = npoint_procs[rank];
+      starting_node[0] = 0;
+      ending_node[0]   = starting_node[0] + npoint_procs[0];
+      for (unsigned long i = 1; i < (unsigned long)size; i++) {
+        starting_node[i] = ending_node[i-1];
+        ending_node[i]   = starting_node[i] + npoint_procs[i] ;
+      }
+
+      /*--- Allocate space for elements ---*/
+
+      elem = new CPrimalGrid*[nElem];
+      for (unsigned long i = 0; i < nElem; i++) elem[i] = NULL;
+
+      /*--- Loop over all the elements and store the elements to be stored on
+            this rank. Furthermore, determine the total amount of DOFs for
+            the solution (which may differ from the number of DOFS for the
+            grid).                                                          ---*/
+
+      unsigned long nDOFs_tot = 0;
+      for (unsigned long i = 0; i < Global_nElem; i++) {
+
+        getline(mesh_file, text_line);
+        istringstream elem_line(text_line);
+
+        /*--- Read the value that defines the element type, the polynomial
+              degree of the geometry and the polynomial degree of the
+              solution. Extract this info as well.                     ---*/
+
+        unsigned long typeRead; elem_line >> typeRead;
+        unsigned long typeReadErrorMessage = typeRead;
+        unsigned short nPolySol, nPolyGrid;
+        if(typeRead > 10000) {
+          nPolySol  = typeRead/10000 -1;
+          typeRead  = typeRead%10000;
+          nPolyGrid = typeRead/100 + 1;
+        }
+        else {
+          nPolyGrid = typeRead/100 + 1;
+          nPolySol  = nPolyGrid;
+        }
+
+        unsigned short VTK_Type = typeRead%100;
+
+        unsigned short nDOFsGrid = FEMStandardElementBaseClass::GetNDOFsStatic(VTK_Type, nPolyGrid,
+                                                                               typeReadErrorMessage);
+        unsigned short nDOFsSol  = FEMStandardElementBaseClass::GetNDOFsStatic(VTK_Type, nPolySol,
+                                                                               typeReadErrorMessage);
+
+        /*--- Allocate the memory for a new primary grid FEM element if
+              this element must be stored on this rank.                 ---*/
+
+        if ((i >= starting_node[rank]) && (i < ending_node[rank])) {
+
+          elem[loc_element_count] = new CPrimalGridFEM(i, VTK_Type, nPolyGrid, nPolySol,
+                                                       nDOFsGrid, nDOFsSol, nDOFs_tot, 
+                                                       elem_line);
+          nDOFsGrid_Local += nDOFsGrid;
+          loc_element_count++;
+        }
+
+        /*--- Update the total value of the number of DOFs. ---*/
+
+        nDOFs_tot += nDOFsSol;
+      }
+
+      /*--- Break from the loop to find the element information. ---*/
+
+      break;
+    }
+
+  }
+
+  mesh_file.close();
+
+  /*--- Create a vector, which contains the global node IDs of the local elements. ---*/
+
+  vector<unsigned long> nodeIDsElemLoc;
+  nodeIDsElemLoc.reserve(nDOFsGrid_Local);
+  for(unsigned long i=0; i<loc_element_count; i++)
+  {
+    unsigned short nDOFsElem = elem[i]->GetnNodes();
+    for(unsigned short j=0; j<nDOFsElem; ++j)
+      nodeIDsElemLoc.push_back(elem[i]->GetNode(j));
+  }
+
+  sort(nodeIDsElemLoc.begin(), nodeIDsElemLoc.end());
+  vector<unsigned long>::iterator lastNode;
+  lastNode = unique(nodeIDsElemLoc.begin(), nodeIDsElemLoc.end());
+  nodeIDsElemLoc.erase(lastNode, nodeIDsElemLoc.end());
+
+  /*--- Allocate the memory for the coordinates to be stored on this rank. ---*/
+
+  nPoint     = nodeIDsElemLoc.size();
+  nPointNode = nPoint;
+  node = new CPoint*[nPoint];
+
+  /*--- Open the grid file again and go to the position where
+        the correct zone is stored.                           ---*/
+
+  mesh_file.open(val_mesh_filename.c_str(), ios::in);
+
+  if (val_nZone > 1 && !time_spectral) {
+    while (getline (mesh_file,text_line)) {
+      position = text_line.find ("IZONE=",0);
+      if (position != string::npos) {
+        text_line.erase (0,6);
+        unsigned short jDomain = atoi(text_line.c_str());
+        if (jDomain == val_iZone+1) break;
       }
     }
-    
+  }
+
+  /*--- While loop to read the point information. ---*/
+
+  while (getline (mesh_file, text_line)) {
+
+    position = text_line.find ("NPOIN=",0);
+    if (position != string::npos) {
+      text_line.erase (0,6);
+      stringstream stream_line(text_line);
+      stream_line >> Global_nPoint;
+
+      /*--- Loop over the global number of points and store the
+            ones that are needed on this processor.             ---*/
+
+      unsigned long ii = 0;
+      for(unsigned long i=0; i<Global_nPoint; ++i) {
+        getline(mesh_file, text_line);
+
+        if( binary_search(nodeIDsElemLoc.begin(), nodeIDsElemLoc.end(), i) ) {
+          istringstream point_line(text_line);
+
+          switch(nDim) {
+            case 2:
+              su2double Coord_2D[2];
+              point_line >> Coord_2D[0]; point_line >> Coord_2D[1];
+              node[ii] = new CPoint(Coord_2D[0], Coord_2D[1], i, config);
+              ii++;
+              break;
+
+            case 3:
+              su2double Coord_3D[3];
+              point_line >> Coord_3D[0]; point_line >> Coord_3D[1]; point_line >> Coord_3D[2];
+              node[ii] = new CPoint(Coord_3D[0], Coord_3D[1], Coord_3D[2], i, config);
+              ii++;
+              break;
+          }
+        }
+      }
+
+      break;
+    }
+  }
+
+  mesh_file.close();
+
+  /*--- Determine the faces of the local elements. --- */
+
+  vector<FaceOfElementClass> localFaces;
+  for(unsigned long k=0; k<loc_element_count; k++) {
+
+    /*--- Get the global IDs of the corner points of all the faces of this elements. ---*/
+
+    unsigned short nFaces;
+    unsigned short nPointsPerFace[6];
+    unsigned long  faceConn[6][4];
+
+    elem[k]->GetCornerPointsAllFaces(nFaces, nPointsPerFace, faceConn);
+
+    /*--- Loop over the faces and add them to localFaces. ---*/
+
+    for(unsigned short i=0; i<nFaces; ++i) {
+      FaceOfElementClass thisFace;
+      thisFace.nCornerPoints = nPointsPerFace[i];
+      for(unsigned short j=0; j<nPointsPerFace[i]; ++j)
+        thisFace.cornerPoints[j] = faceConn[i][j];
+      thisFace.elemID0 = k + starting_node[rank];
+
+      thisFace.CreateUniqueNumbering();
+      localFaces.push_back(thisFace);
+    }
+  }
+
+  /*--- Sort localFaces in increasing order and remove the double entities,
+        such that the binary search later on is a bit more efficient.       ---*/
+
+  sort(localFaces.begin(), localFaces.end());
+  vector<FaceOfElementClass>::iterator lastFace;
+  lastFace = unique(localFaces.begin(), localFaces.end());
+  localFaces.erase(lastFace, localFaces.end());
+
+
+  /*--- Open the grid file again and go to the position where
+        the correct zone is stored.                           ---*/
+
+  mesh_file.open(val_mesh_filename.c_str(), ios::in);
+
+  if (val_nZone > 1 && !time_spectral) {
+    while (getline (mesh_file,text_line)) {
+      position = text_line.find ("IZONE=",0);
+      if (position != string::npos) {
+        text_line.erase (0,6);
+        unsigned short jDomain = atoi(text_line.c_str());
+        if (jDomain == val_iZone+1) break;
+      }
+    }
+  }
+
+  /*--- While loop to read the boundary information. ---*/
+
+  while (getline (mesh_file, text_line)) {
+    /*--- Read number of markers ---*/
+    position = text_line.find ("NMARK=",0);
+    if (position != string::npos) {
+      text_line.erase (0,6);
+      istringstream stream_line(text_line);
+      stream_line >> nMarker;
+
+      if (rank == MASTER_NODE) cout << nMarker << " surface markers." << endl;
+      config->SetnMarker_All(nMarker);
+      bound = new CPrimalGrid**[nMarker];
+      nElem_Bound = new unsigned long [nMarker];
+      Tag_to_Marker = new string [nMarker_Max];
+
+      for(unsigned short iMarker = 0 ; iMarker < nMarker; iMarker++) {
+        getline (mesh_file, text_line);
+        text_line.erase (0,11);
+        text_line.erase (remove(text_line.begin(), text_line.end(), ' '),  text_line.end());
+        text_line.erase (remove(text_line.begin(), text_line.end(), '\r'), text_line.end());
+        text_line.erase (remove(text_line.begin(), text_line.end(), '\n'), text_line.end());
+
+        Marker_Tag = text_line.c_str();
+
+        /*--- Read the number of elements for this marker. ---*/
+        getline (mesh_file, text_line);
+        text_line.erase (0,13); istringstream nmark_line(text_line);
+        unsigned long nElem_Bound_Global;
+        nmark_line >> nElem_Bound_Global;
+        if (rank == MASTER_NODE)
+          cout << nElem_Bound_Global  << " boundary elements in index "<< iMarker 
+               <<" (Marker = " <<Marker_Tag<< ")." << endl;
+
+        /*--- Define a vector of FEM boundary elements to store the local boundary faces. ---*/
+        vector<BoundaryFaceClass> boundElems;
+
+        /*--- Loop over the global boundary faces. ---*/
+        for(unsigned long i=0; i<nElem_Bound_Global; ++i) {
+          getline (mesh_file, text_line);
+          istringstream bound_line(text_line);
+
+          /*--- Determine the element type, its number of DOFs and read
+                its node IDs.                                           ---*/
+          unsigned long typeRead; bound_line >> typeRead;
+          unsigned short nPolyGrid    = typeRead/100 + 1;
+          unsigned short VTK_Type     = typeRead%100;
+          unsigned short nDOFEdgeGrid = nPolyGrid + 1;
+
+          unsigned short nDOFsGrid = 0;
+          FaceOfElementClass thisFace;
+          thisFace.cornerPoints[0] = 0; thisFace.cornerPoints[1] = nPolyGrid;
+          switch( VTK_Type ) {
+            case LINE:
+              nDOFsGrid = nDOFEdgeGrid;
+              thisFace.nCornerPoints = 2;
+              break;
+
+            case TRIANGLE:
+              nDOFsGrid = nDOFEdgeGrid*(nDOFEdgeGrid+1)/2;
+              thisFace.nCornerPoints = 3;
+              thisFace.cornerPoints[2] = nDOFsGrid -1;
+              break;
+
+            case QUADRILATERAL:
+              nDOFsGrid = nDOFEdgeGrid*nDOFEdgeGrid;
+              thisFace.nCornerPoints = 4;
+              thisFace.cornerPoints[2] = nPolyGrid*nDOFEdgeGrid;
+              thisFace.cornerPoints[3] = nDOFsGrid -1;
+              break;
+
+            default:
+              cout << "Unknown FEM boundary element value, " << typeRead
+                   << ", in " << val_mesh_filename << endl;
+#ifndef HAVE_MPI
+              exit(EXIT_FAILURE);
+#else
+              MPI_Abort(MPI_COMM_WORLD,1);
+              MPI_Finalize();
+#endif
+          }
+
+          vector<unsigned long> nodeIDs(nDOFsGrid);
+          for(unsigned short j=0; j<nDOFsGrid; ++j) bound_line >> nodeIDs[j];
+
+          /*--- Convert the local numbering of thisFace to global numbering
+                and create a unique numbering of these nodes.               ---*/
+          for(unsigned short j=0; j<thisFace.nCornerPoints; ++j)
+            thisFace.cornerPoints[j] = nodeIDs[thisFace.cornerPoints[j]];
+          thisFace.CreateUniqueNumbering();
+
+          /*--- Check if this boundary face must be stored on this rank.
+                If so, create an object of BoundaryFaceClass and add it
+                to boundElems.                                          ---*/
+          if( binary_search(localFaces.begin(), localFaces.end(), thisFace) ) {
+            vector<FaceOfElementClass>::iterator low;
+            low = lower_bound(localFaces.begin(), localFaces.end(), thisFace);
+
+            BoundaryFaceClass thisBoundFace;
+            thisBoundFace.VTK_Type          = VTK_Type;
+            thisBoundFace.nPolyGrid         = nPolyGrid;
+            thisBoundFace.nDOFsGrid         = nDOFsGrid;
+            thisBoundFace.globalBoundElemID = i;
+            thisBoundFace.domainElementID   = low->elemID0;
+            thisBoundFace.Nodes             = nodeIDs;
+
+            boundElems.push_back(thisBoundFace);
+          }
+        }
+
+        /*--- Allocate space for the boundary elements and store the ones
+              whose parent element is stored on this rank. ---*/
+        nElem_Bound[iMarker] = boundElems.size();
+        bound[iMarker] = new CPrimalGrid* [nElem_Bound[iMarker]];
+
+        for(unsigned long i=0; i<nElem_Bound[iMarker]; ++i)
+          bound[iMarker][i] = new CPrimalGridBoundFEM(boundElems[i].globalBoundElemID,
+                                                      boundElems[i].domainElementID,
+                                                      boundElems[i].VTK_Type,
+                                                      boundElems[i].nPolyGrid,
+                                                      boundElems[i].nDOFsGrid,
+                                                      boundElems[i].Nodes);
+
+        /*--- Update config information storing the boundary information in the right place ---*/
+
+        Tag_to_Marker[config->GetMarker_CfgFile_TagBound(Marker_Tag)] = Marker_Tag;
+        config->SetMarker_All_TagBound(iMarker, Marker_Tag);
+        config->SetMarker_All_KindBC(iMarker, config->GetMarker_CfgFile_KindBC(Marker_Tag));
+        config->SetMarker_All_Monitoring(iMarker, config->GetMarker_CfgFile_Monitoring(Marker_Tag));
+        config->SetMarker_All_GeoEval(iMarker, config->GetMarker_CfgFile_GeoEval(Marker_Tag));
+        config->SetMarker_All_Designing(iMarker, config->GetMarker_CfgFile_Designing(Marker_Tag));
+        config->SetMarker_All_Plotting(iMarker, config->GetMarker_CfgFile_Plotting(Marker_Tag));
+        config->SetMarker_All_FSIinterface(iMarker, config->GetMarker_CfgFile_FSIinterface(Marker_Tag));
+        config->SetMarker_All_DV(iMarker, config->GetMarker_CfgFile_DV(Marker_Tag));
+        config->SetMarker_All_Moving(iMarker, config->GetMarker_CfgFile_Moving(Marker_Tag));
+        config->SetMarker_All_PerBound(iMarker, config->GetMarker_CfgFile_PerBound(Marker_Tag));
+        config->SetMarker_All_Out_1D(iMarker, config->GetMarker_CfgFile_Out_1D(Marker_Tag));
+        config->SetMarker_All_SendRecv(iMarker, NONE);
+      }
+
+      break;
+    }
+  }
+
+  mesh_file.close();
+}
+
+    void CPhysicalGeometry::Check_IntElem_Orientation(CConfig *config) {
+      
+      unsigned long Point_1, Point_2, Point_3, Point_4, Point_5, Point_6,
+      iElem, triangle_flip = 0, quad_flip = 0, tet_flip = 0, prism_flip = 0,
+      hexa_flip = 0, pyram_flip = 0;
+      su2double test_1, test_2, test_3, test_4, *Coord_1, *Coord_2, *Coord_3, *Coord_4,
+      *Coord_5, *Coord_6, a[3] = {0.0,0.0,0.0}, b[3] = {0.0,0.0,0.0}, c[3] = {0.0,0.0,0.0}, n[3] = {0.0,0.0,0.0}, test;
+      unsigned short iDim;
+      
+      int rank = MASTER_NODE;
+#ifdef HAVE_MPI
+      MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+#endif
+      
+      /*--- Loop over all the elements ---*/
+      
+      for (iElem = 0; iElem < nElem; iElem++) {
+        
+        /*--- 2D grid, triangle case ---*/
+        
+        if (elem[iElem]->GetVTK_Type() == TRIANGLE) {
+          
+          Point_1 = elem[iElem]->GetNode(0); Coord_1 = node[Point_1]->GetCoord();
+          Point_2 = elem[iElem]->GetNode(1); Coord_2 = node[Point_2]->GetCoord();
+          Point_3 = elem[iElem]->GetNode(2); Coord_3 = node[Point_3]->GetCoord();
+          
+          for (iDim = 0; iDim < nDim; iDim++) {
+            a[iDim] = 0.5*(Coord_2[iDim]-Coord_1[iDim]);
+            b[iDim] = 0.5*(Coord_3[iDim]-Coord_1[iDim]); }
+          test = a[0]*b[1]-b[0]*a[1];
+          
+          if (test < 0.0) {
+            elem[iElem]->Change_Orientation();
+            triangle_flip++;
+          }
+        }
+        
+        /*--- 2D grid, quadrilateral case ---*/
+        
+        if (elem[iElem]->GetVTK_Type() == QUADRILATERAL) {
+          
+          Point_1 = elem[iElem]->GetNode(0); Coord_1 = node[Point_1]->GetCoord();
+          Point_2 = elem[iElem]->GetNode(1); Coord_2 = node[Point_2]->GetCoord();
+          Point_3 = elem[iElem]->GetNode(2); Coord_3 = node[Point_3]->GetCoord();
+          Point_4 = elem[iElem]->GetNode(3); Coord_4 = node[Point_4]->GetCoord();
+          
+          for (iDim = 0; iDim < nDim; iDim++) {
+            a[iDim] = 0.5*(Coord_2[iDim]-Coord_1[iDim]);
+            b[iDim] = 0.5*(Coord_3[iDim]-Coord_1[iDim]); }
+          test_1 = a[0]*b[1]-b[0]*a[1];
+          
+          for (iDim = 0; iDim < nDim; iDim++) {
+            a[iDim] = 0.5*(Coord_3[iDim]-Coord_2[iDim]);
+            b[iDim] = 0.5*(Coord_4[iDim]-Coord_2[iDim]); }
+          test_2 = a[0]*b[1]-b[0]*a[1];
+          
+          for (iDim = 0; iDim < nDim; iDim++) {
+            a[iDim] = 0.5*(Coord_4[iDim]-Coord_3[iDim]);
+            b[iDim] = 0.5*(Coord_1[iDim]-Coord_3[iDim]); }
+          test_3 = a[0]*b[1]-b[0]*a[1];
+          
+          for (iDim = 0; iDim < nDim; iDim++) {
+            a[iDim] = 0.5*(Coord_1[iDim]-Coord_4[iDim]);
+            b[iDim] = 0.5*(Coord_3[iDim]-Coord_4[iDim]); }
+          test_4 = a[0]*b[1]-b[0]*a[1];
+          
+          if ((test_1 < 0.0) && (test_2 < 0.0) && (test_3 < 0.0) && (test_4 < 0.0)) {
+            elem[iElem]->Change_Orientation();
+            quad_flip++;
+          }
+        }
+        
     /*--- 3D grid, tetrahedron case ---*/
     
     if (elem[iElem]->GetVTK_Type() == TETRAHEDRON) {
@@ -9023,7 +9844,8 @@ void CPhysicalGeometry::ComputeWall_Distance(CConfig *config) {
 
   /*--- Build the ADT of the boundary nodes. ---*/
 
-  su2_adtPointsOnlyClass WallADT(nDim, nVertex_SolidWall, Coord_bound.data(), PointIDs.data());
+  su2_adtPointsOnlyClass WallADT(nDim, nVertex_SolidWall, Coord_bound.data(),
+                                 PointIDs.data(), true);
 
   /*--- Loop over all interior mesh nodes and compute the distances to each
    of the no-slip boundary nodes. Store the minimum distance to the wall
@@ -10790,7 +11612,7 @@ void CPhysicalGeometry::SetMeshFile (CConfig *config, string val_mesh_out_filena
           output_file << bound[iMarker][iElem_Bound]->GetVTK_Type() << "\t" ;
           for (iNodes = 0; iNodes < bound[iMarker][iElem_Bound]->GetnNodes(); iNodes++)
             output_file << bound[iMarker][iElem_Bound]->GetNode(iNodes) << "\t" ;
-          output_file	<< iElem_Bound << endl;
+          output_file << iElem_Bound << endl;
         }
       }
       
@@ -10799,7 +11621,7 @@ void CPhysicalGeometry::SetMeshFile (CConfig *config, string val_mesh_out_filena
           output_file << bound[iMarker][iElem_Bound]->GetVTK_Type() << "\t" ;
           for (iNodes = 0; iNodes < bound[iMarker][iElem_Bound]->GetnNodes(); iNodes++)
             output_file << bound[iMarker][iElem_Bound]->GetNode(iNodes) << "\t" ;
-          output_file	<< iElem_Bound << endl;
+          output_file << iElem_Bound << endl;
         }
       }
       
@@ -11205,7 +12027,7 @@ void CPhysicalGeometry::SetBoundSTL(char mesh_filename[MAX_STRING_SIZE], bool ne
   unsigned short iDim, iMarker;
   su2double p[3] = {0.0,0.0,0.0}, u[3] = {0.0,0.0,0.0}, v[3] = {0.0,0.0,0.0}, n[3] = {0.0,0.0,0.0}, a;
   
-  /*---	STL format:
+  /*--- STL format:
    solid NAME
    ...
    facet normal 0.00 0.00 1.00
@@ -11520,7 +12342,9 @@ void CPhysicalGeometry::SetColorGrid_Parallel(CConfig *config) {
     }
     
     /*--- Calling ParMETIS ---*/
-    if (rank == MASTER_NODE) cout << "Calling ParMETIS..." << endl;
+    if (rank == MASTER_NODE)
+      cout << endl <<"----------------------- Calling ParMETIS --------------------------------" << endl;
+
     ParMETIS_V3_PartKway(vtxdist,xadj, adjacency, NULL, NULL, &wgtflag,
                          &numflag, &ncon, &nparts, tpwgts, &ubvec, options,
                          &edgecut, part, &comm);
@@ -11554,6 +12378,1937 @@ void CPhysicalGeometry::SetColorGrid_Parallel(CConfig *config) {
 #endif
 #endif
   
+}
+
+void CPhysicalGeometry::SetColorFEMGrid_Parallel(CConfig *config) {
+
+  /*--- Determine my rank and the number of ranks. ---*/
+  int rank = MASTER_NODE;
+
+#ifdef HAVE_MPI
+  int size;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+#endif
+
+  /*--- Initialize the color vector of the elements. ---*/
+  for(unsigned long i=0; i<nElem; ++i)
+    elem[i]->SetColor(0);
+
+  /*--- Determine the faces of the elements. ---*/
+  vector<FaceOfElementClass> localFaces;
+  for(unsigned long k=0; k<nElem; k++) {
+
+    /*--- Get the global IDs of the corner points of all the faces of this element. ---*/
+    unsigned short nFaces;
+    unsigned short nPointsPerFace[6];
+    unsigned long  faceConn[6][4];
+
+    elem[k]->GetCornerPointsAllFaces(nFaces, nPointsPerFace, faceConn);
+
+    /*--- Loop over the faces and add them to localFaces. ---*/
+    for(unsigned short i=0; i<nFaces; ++i) {
+      FaceOfElementClass thisFace;
+      thisFace.nCornerPoints = nPointsPerFace[i];
+      for(unsigned short j=0; j<nPointsPerFace[i]; ++j)
+        thisFace.cornerPoints[j] = faceConn[i][j];
+      thisFace.elemID0    = starting_node[rank] + k;
+      thisFace.nPolySol0  = elem[k]->GetNPolySol();
+      thisFace.nDOFsElem0 = elem[k]->GetNDOFsSol();
+      thisFace.elemType0  = elem[k]->GetVTK_Type();
+
+      thisFace.CreateUniqueNumbering();
+      localFaces.push_back(thisFace);
+    }
+  }
+
+  /*--- Sort localFaces in increasing order. */
+  sort(localFaces.begin(), localFaces.end());
+
+  /*--- Loop over the boundary markers and its faces in order to flag the
+        physical boundary faces in localFaces. Note that use is made of the
+        overloaded function GetCornerPointsAllFaces, which explains the
+        dimensions of the variables used in the function call. Also note that
+        the periodic boundaries are excluded, because they are not physical.  ---*/
+  for(unsigned short iMarker=0; iMarker<nMarker; ++iMarker) {
+    if(config->GetMarker_All_KindBC(iMarker) != PERIODIC_BOUNDARY) {
+      for(unsigned long k=0; k<nElem_Bound[iMarker]; ++k) {
+
+        unsigned short nFaces;
+        unsigned short nPointsPerFace[6];
+        unsigned long  faceConn[6][4];
+        bound[iMarker][k]->GetCornerPointsAllFaces(nFaces, nPointsPerFace, faceConn);
+
+        FaceOfElementClass thisFace;
+        thisFace.nCornerPoints = nPointsPerFace[0];
+        for(unsigned short j=0; j<nPointsPerFace[0]; ++j)
+          thisFace.cornerPoints[j] = faceConn[0][j];
+        thisFace.CreateUniqueNumbering();
+
+        vector<FaceOfElementClass>::iterator low;
+        low = lower_bound(localFaces.begin(), localFaces.end(), thisFace);
+
+        /*--- Store the corresponding element ID for the boundary element and
+              invalidate the face by setting the element ID to an invalid value. ---*/
+        bound[iMarker][k]->SetDomainElement(low->elemID0);
+        low->elemID0 = Global_nElem + 10;
+      }
+    }
+  }
+
+  /*--- Loop over the faces and check for double entries. If a double entry is
+        found, the elemID from the second entry is copied to the first entry,
+        the polynomial degree is updated, and the second entry is invalidated. ---*/
+  unsigned long nFacesLoc = localFaces.size();
+  for(unsigned long i=1; i<nFacesLoc; ++i) {
+    if(localFaces[i] == localFaces[i-1]) {
+      localFaces[i-1].elemID1    = localFaces[i].elemID0;
+      localFaces[i-1].nPolySol1  = localFaces[i].nPolySol0;
+      localFaces[i-1].nDOFsElem1 = localFaces[i].nDOFsElem0;
+      localFaces[i-1].elemType1  = localFaces[i].elemType0;
+      localFaces[i].elemID0      = Global_nElem + 10;
+    }
+  }
+
+  /*--- Remove the invalidated faces. This is accomplished by giving the
+        face four points a global node ID that is larger than the largest
+        point ID in the grid. In this way the sorting operator puts
+        these faces at the end of the vector, see also the < operator
+        of FaceOfElementClass.                                         ---*/
+  unsigned long nFacesLocOr = nFacesLoc;
+  for(unsigned long i=0; i<nFacesLocOr; ++i) {
+    if(localFaces[i].elemID0 > Global_nElem) {
+      localFaces[i].nCornerPoints = 4;
+      localFaces[i].cornerPoints[0] = Global_nPoint;
+      localFaces[i].cornerPoints[1] = Global_nPoint;
+      localFaces[i].cornerPoints[2] = Global_nPoint;
+      localFaces[i].cornerPoints[3] = Global_nPoint;
+      --nFacesLoc;
+    }
+  }
+
+  sort(localFaces.begin(), localFaces.end());
+  localFaces.resize(nFacesLoc);
+
+  /*--- The following part of this function should only be present if we have
+        parallel support with MPI. ---*/
+
+#ifdef HAVE_MPI
+
+  /*--- Determine and store the faces, for which only one neighboring element
+        was found. For these faces the other neighbor might be stored on
+        a different rank (unless there are non-matching interfaces).     ---*/
+  vector<FaceOfElementClass> localFacesComm;
+  for(unsigned long i=0; i<nFacesLoc; ++i)
+    if(localFaces[i].elemID1 > Global_nElem) localFacesComm.push_back(localFaces[i]);
+
+  /*--- Determine the maximum global point ID that occurs in localFacesComm
+        of all ranks. Note that only the first point is taken into account,
+        because this point determines the rank where the face is sent to. ---*/
+  unsigned long nFacesLocComm = localFacesComm.size();
+  unsigned long maxPointIDLoc = 0;
+  for(unsigned long i=0; i<nFacesLocComm; ++i)
+    maxPointIDLoc = max(maxPointIDLoc, localFacesComm[i].cornerPoints[0]);
+
+  unsigned long maxPointID;
+  SU2_MPI::Allreduce(&maxPointIDLoc, &maxPointID, 1, MPI_UNSIGNED_LONG,
+                     MPI_MAX, MPI_COMM_WORLD);
+  ++maxPointID;
+
+  /*--- Create a vector with a linear distribution over the ranks for
+        the points that occur in the faces of localFacesComm.        ---*/
+  vector<unsigned long> facePointsProc(size+1, 0);
+  unsigned long total_point_accounted = 0;
+  for(unsigned long i=1; i<=(unsigned long)size; ++i) {
+   facePointsProc[i]      =  maxPointID/size;
+   total_point_accounted += facePointsProc[i];
+  }
+
+  unsigned long rem_point = maxPointID - total_point_accounted;
+  for(unsigned long i=1; i<=rem_point; ++i)
+    ++facePointsProc[i];
+
+  for(unsigned long i=0; i<(unsigned long)size; ++i)   
+    facePointsProc[i+1] += facePointsProc[i];
+
+  /*--- Determine the number of faces that has to be sent to each rank.
+        Note that the rank is stored in elemID1, such that the search
+        does not have to be repeated below.               ---*/
+  vector<unsigned long> nFacesComm(size, 0);
+  for(unsigned long i=0; i<nFacesLocComm; ++i) {
+    vector<unsigned long>::iterator low;
+    low = lower_bound(facePointsProc.begin(), facePointsProc.end(),
+                      localFacesComm[i].cornerPoints[0]);
+    unsigned long rankFace = low - facePointsProc.begin() -1;
+    if(*low == localFacesComm[i].cornerPoints[0]) ++rankFace;
+
+    ++nFacesComm[rankFace];
+    localFacesComm[i].elemID1 = rankFace;
+  }
+
+  /*--- Create the send buffer for the faces to be communicated. ---*/
+  vector<unsigned long> sendBufFace(9*nFacesLocComm);
+  vector<unsigned long> counter(size);
+  counter[0] = 0;
+  for(unsigned long i=1; i<(unsigned long)size; ++i)
+    counter[i] = counter[i-1] + 9*nFacesComm[i-1];
+
+  for(unsigned long i=0; i<nFacesLocComm; ++i) {
+    unsigned long rankFace = localFacesComm[i].elemID1;
+    unsigned long ii = counter[rankFace];
+    counter[rankFace] += 9;
+
+    sendBufFace[ii]   = localFacesComm[i].nCornerPoints;
+    sendBufFace[ii+1] = localFacesComm[i].cornerPoints[0];
+    sendBufFace[ii+2] = localFacesComm[i].cornerPoints[1];
+    sendBufFace[ii+3] = localFacesComm[i].cornerPoints[2];
+    sendBufFace[ii+4] = localFacesComm[i].cornerPoints[3];
+    sendBufFace[ii+5] = localFacesComm[i].elemID0;
+    sendBufFace[ii+6] = localFacesComm[i].nPolySol0;
+    sendBufFace[ii+7] = localFacesComm[i].nDOFsElem0;
+    sendBufFace[ii+8] = localFacesComm[i].elemType0;
+  }
+
+  /*--- Determine the number of ranks from which I receive a message. */
+  unsigned long nMessSend = 0;
+  for(unsigned long i=0; i<(unsigned long)size; ++i) {
+    if( nFacesComm[i] ) {counter[i] = 1; ++nMessSend;}
+    else                 counter[i] = 0;
+  }
+  vector<int> sizeRecv(size, 1);
+
+  unsigned long nMessRecv;
+  MPI_Reduce_scatter(counter.data(), &nMessRecv, sizeRecv.data(), 
+                     MPI_UNSIGNED_LONG, MPI_SUM, MPI_COMM_WORLD);
+
+  /*--- Send the data using nonblocking sends. ---*/
+  vector<MPI_Request> commReqs(max(nMessSend,nMessRecv));
+
+  nMessSend = 0;
+  unsigned long indSend = 0;
+  for(unsigned long i=0; i<(unsigned long)size; ++i) {
+    if( nFacesComm[i] ) {
+      unsigned long count = 9*nFacesComm[i];
+      SU2_MPI::Isend(&sendBufFace[indSend], count, MPI_UNSIGNED_LONG, i, i,
+                     MPI_COMM_WORLD, &commReqs[nMessSend]);
+      ++nMessSend;
+      indSend += count;
+    }
+  }
+
+  /*--- Loop over the number of ranks from which faces are received.
+        Receive the messages and store them in facesRecv.         ---*/
+  vector<FaceOfElementClass> facesRecv;
+  vector<unsigned long> nFacesRecv(nMessRecv+1);
+  vector<int>           rankRecv(nMessRecv);
+  nFacesRecv[0] = 0;
+  for(unsigned long i=0; i<nMessRecv; ++i) {
+    MPI_Status status;
+    MPI_Probe(MPI_ANY_SOURCE, rank, MPI_COMM_WORLD, &status);
+    rankRecv[i] = status.MPI_SOURCE;
+    int sizeMess;
+    MPI_Get_count(&status, MPI_UNSIGNED_LONG, &sizeMess);
+
+    vector<unsigned long> recvBuf(sizeMess);
+    SU2_MPI::Recv(recvBuf.data(), sizeMess, MPI_UNSIGNED_LONG,
+                  rankRecv[i], rank, MPI_COMM_WORLD, &status);
+
+    nFacesRecv[i+1] = nFacesRecv[i] + sizeMess/9;
+    facesRecv.resize(nFacesRecv[i+1]);
+    unsigned long ii = 0;
+    for(unsigned long j=nFacesRecv[i]; j<nFacesRecv[i+1]; ++j, ii+=9) {
+      facesRecv[j].nCornerPoints   = recvBuf[ii];
+      facesRecv[j].cornerPoints[0] = recvBuf[ii+1];
+      facesRecv[j].cornerPoints[1] = recvBuf[ii+2];
+      facesRecv[j].cornerPoints[2] = recvBuf[ii+3];
+      facesRecv[j].cornerPoints[3] = recvBuf[ii+4];
+      facesRecv[j].elemID0         = recvBuf[ii+5];
+      facesRecv[j].nPolySol0       = recvBuf[ii+6];
+      facesRecv[j].nDOFsElem0      = recvBuf[ii+7];
+      facesRecv[j].elemType0       = recvBuf[ii+8];
+    }
+  }
+
+  /*--- The exact contents of facesRecv is needed when communicating back
+        the data to the original ranks, so a copy is made of facesRecv.
+        As localFacesComm is not needed anymore, this vector is used
+        for the sorting and searching of the data of facesRecv. ---*/
+  localFacesComm = facesRecv;
+  sort(localFacesComm.begin(), localFacesComm.end());
+
+  nFacesLocComm = localFacesComm.size();
+  for(unsigned long i=1; i<localFacesComm.size(); ++i) {
+    if(localFacesComm[i] == localFacesComm[i-1]) {
+      localFacesComm[i-1].elemID1    = localFacesComm[i].elemID0;
+      localFacesComm[i-1].nPolySol1  = localFacesComm[i].nPolySol0;
+      localFacesComm[i-1].nDOFsElem1 = localFacesComm[i].nDOFsElem0;
+      localFacesComm[i-1].elemType1  = localFacesComm[i].elemType0;
+
+      localFacesComm[i].nCornerPoints = 4;
+      localFacesComm[i].cornerPoints[0] = Global_nPoint;
+      localFacesComm[i].cornerPoints[1] = Global_nPoint;
+      localFacesComm[i].cornerPoints[2] = Global_nPoint;
+      localFacesComm[i].cornerPoints[3] = Global_nPoint;
+      --nFacesLocComm;
+    }
+  }
+
+  sort(localFacesComm.begin(), localFacesComm.end());
+  localFacesComm.resize(nFacesLocComm);
+
+  /*--- Complete the first round of non-blocking sends. ---*/
+  SU2_MPI::Waitall(nMessSend, commReqs.data(), MPI_STATUSES_IGNORE);
+
+  /*--- Send the data back to the requesting ranks. ---*/
+  sendBufFace.resize(9*nFacesRecv[nMessRecv]);
+  indSend = 0;
+  for(unsigned long i=0; i<nMessRecv; ++i) {
+    unsigned long ii = indSend;
+    for(unsigned long j=nFacesRecv[i]; j<nFacesRecv[i+1]; ++j, ii+=9) {
+      sendBufFace[ii]   = facesRecv[j].nCornerPoints;
+      sendBufFace[ii+1] = facesRecv[j].cornerPoints[0];
+      sendBufFace[ii+2] = facesRecv[j].cornerPoints[1];
+      sendBufFace[ii+3] = facesRecv[j].cornerPoints[2];
+      sendBufFace[ii+4] = facesRecv[j].cornerPoints[3];
+
+      vector<FaceOfElementClass>::iterator low;
+      low = lower_bound(localFacesComm.begin(), localFacesComm.end(),
+                        facesRecv[j]);
+      if(facesRecv[j].elemID0 == low->elemID0) {
+        sendBufFace[ii+5] = low->elemID1;
+        sendBufFace[ii+6] = facesRecv[j].nPolySol1;
+        sendBufFace[ii+7] = low->nDOFsElem1;
+        sendBufFace[ii+8] = low->elemType1;
+      }
+      else {
+        sendBufFace[ii+5] = low->elemID0;
+        sendBufFace[ii+6] = facesRecv[j].nPolySol0;
+        sendBufFace[ii+7] = low->nDOFsElem0;
+        sendBufFace[ii+8] = low->elemType0;
+      }
+    }
+
+    unsigned long count = ii - indSend;
+    SU2_MPI::Isend(&sendBufFace[indSend], count, MPI_UNSIGNED_LONG, rankRecv[i],
+                   rankRecv[i]+1, MPI_COMM_WORLD, &commReqs[i]);
+    indSend = ii;
+  }
+
+
+  /*--- Loop over the ranks to which I originally sent my face data.
+        The return data contains information about the neighboring element. ---*/
+  for(unsigned long i=0; i<nMessSend; ++i) {
+    MPI_Status status;
+    MPI_Probe(MPI_ANY_SOURCE, rank+1, MPI_COMM_WORLD, &status);
+    int sizeMess;
+    MPI_Get_count(&status, MPI_UNSIGNED_LONG, &sizeMess);
+
+    vector<unsigned long> recvBuf(sizeMess);
+    SU2_MPI::Recv(recvBuf.data(), sizeMess, MPI_UNSIGNED_LONG,
+                  status.MPI_SOURCE, rank+1, MPI_COMM_WORLD, &status);
+
+    sizeMess /= 9;
+    unsigned long jj = 0;
+    for(unsigned long j=0; j<(unsigned long) sizeMess; ++j, jj+=9) {
+      FaceOfElementClass thisFace;
+      thisFace.nCornerPoints   = recvBuf[jj];
+      thisFace.cornerPoints[0] = recvBuf[jj+1];
+      thisFace.cornerPoints[1] = recvBuf[jj+2];
+      thisFace.cornerPoints[2] = recvBuf[jj+3];
+      thisFace.cornerPoints[3] = recvBuf[jj+4];
+
+      vector<FaceOfElementClass>::iterator low;
+      low = lower_bound(localFaces.begin(), localFaces.end(), thisFace);
+      low->elemID1    = recvBuf[jj+5];
+      low->nPolySol1  = recvBuf[jj+6];
+      low->nDOFsElem1 = recvBuf[jj+7];
+      low->elemType1  = recvBuf[jj+8];
+    }
+  }
+
+  /*--- Complete the second round of non-blocking sends. ---*/
+  SU2_MPI::Waitall(nMessRecv, commReqs.data(), MPI_STATUSES_IGNORE);
+
+  /*--- Wild cards have been used in the communication, so
+        synchronize the ranks to avoid problems.          ---*/
+  MPI_Barrier(MPI_COMM_WORLD);
+
+#endif
+
+  /*--- In the procedure above the periodic boundaries are not found.
+        A different treatment must be used in order to find these. ---*/
+  DeterminePeriodicFacesFEMGrid(config, localFaces);
+
+  /*--- Determine the total number of non-matching faces in the grid. ---*/
+  nFacesLoc   = localFaces.size();
+  nFacesLocOr = nFacesLoc;
+  for(unsigned long i=0; i<nFacesLocOr; ++i) {
+    if(localFaces[i].elemID1 > Global_nElem) {
+      localFaces[i].nCornerPoints = 4;
+      localFaces[i].cornerPoints[0] = Global_nPoint;
+      localFaces[i].cornerPoints[1] = Global_nPoint;
+      localFaces[i].cornerPoints[2] = Global_nPoint;
+      localFaces[i].cornerPoints[3] = Global_nPoint;
+      --nFacesLoc;
+    }
+  }
+
+  nFacesLocOr -= nFacesLoc;
+  if( nFacesLocOr ) {
+    sort(localFaces.begin(), localFaces.end());
+    localFaces.resize(nFacesLoc);
+  }
+
+  unsigned long nNonMatchingFaces = nFacesLocOr;
+
+#ifdef HAVE_MPI
+  SU2_MPI::Reduce(&nFacesLocOr, &nNonMatchingFaces, 1, MPI_UNSIGNED_LONG,
+                  MPI_SUM, MASTER_NODE, MPI_COMM_WORLD);
+#endif
+  if(rank == MASTER_NODE && nNonMatchingFaces) {
+    cout << "There are " << nNonMatchingFaces << " non-matching faces in the grid. "
+         << "These are ignored in the partitioning." << endl;
+  }
+
+  /*--- In case of periodic boundaries with only one element in the periodic
+        direction, there are faces for which both adjacent elements are the
+        same. This also means that these faces are still present twice and one
+        must be removed. This is done below. ---*/
+  map<unsignedLong2T, unsigned long> mapFaceToInd;
+
+  nFacesLocOr = nFacesLoc;
+  for(unsigned long i=0; i<nFacesLoc; ++i) {
+    if(localFaces[i].elemID0 == localFaces[i].elemID1) {
+
+      /* Search for this entry in mapFaceToInd. */
+      unsignedLong2T thisFace(localFaces[i].elemID0, localFaces[i].periodicIndex);
+      map<unsignedLong2T, unsigned long>::const_iterator MMI;
+      MMI = mapFaceToInd.find(thisFace);
+
+      if(MMI == mapFaceToInd.end()) {
+
+        /* This face is not stored in the map yet. Do so now. */
+        mapFaceToInd[thisFace] = i;
+      }
+      else {
+
+        /* This face is already stored in the map, which means that it is
+           already present in the list of faces. Invalidate this face. */
+        localFaces[i].nCornerPoints = 4;
+        localFaces[i].cornerPoints[0] = Global_nPoint;
+        localFaces[i].cornerPoints[1] = Global_nPoint;
+        localFaces[i].cornerPoints[2] = Global_nPoint;
+        localFaces[i].cornerPoints[3] = Global_nPoint;
+        --nFacesLoc;
+      }
+    }
+  }
+
+  /*--- Check if the number of faces removed is identical to the number
+        of faces stored in the map mapFaceToInd. ---*/
+  nFacesLocOr -= nFacesLoc;
+  if(nFacesLocOr != mapFaceToInd.size()) {
+
+    cout << "Something wrong with periodic faces for which elements are "
+         << "their own neighbors" << endl;
+#ifndef HAVE_MPI
+    exit(EXIT_FAILURE);
+#else
+    MPI_Abort(MPI_COMM_WORLD,1);
+    MPI_Finalize();
+#endif
+  }
+
+  /*--- Remove the invalidated faces, if any present. ---*/
+  if( nFacesLocOr ) {
+    sort(localFaces.begin(), localFaces.end());
+    localFaces.resize(nFacesLoc);
+  }
+
+  /*--- Determine whether or not the Jacobians of the elements and faces
+        can be considered constant. ---*/
+  DetermineFEMConstantJacobiansAndLenScale(config);
+
+  /*--- Determine the time levels of the elements. This is only relevant
+        when time accurate local time stepping is employed. ---*/
+  map<unsigned long, unsigned short> mapExternalElemIDToTimeLevel;
+  DetermineTimeLevelElements(config, localFaces, mapExternalElemIDToTimeLevel);
+
+  /*--- Determine the ownership of the internal faces, i.e. which adjacent
+        element is responsible for computing the fluxes through the face. ---*/
+  for(unsigned long i=0; i<nFacesLoc; ++i) {
+
+    /* Check for a matching face. */
+    if(localFaces[i].elemID1 < Global_nElem) {
+
+      /* Determine the time level for both elements. Elem0 is always owned, while
+         elem1 is either owned or external. The data for external elements is
+         stored in mapExternalElemIDToTimeLevel. */
+      unsigned long  elemID0    = localFaces[i].elemID0 - starting_node[rank];
+      unsigned short timeLevel0 = elem[elemID0]->GetTimeLevel();
+
+      unsigned short timeLevel1;
+      if(localFaces[i].elemID1 >= starting_node[rank] &&
+         localFaces[i].elemID1 <  starting_node[rank]+nElem) {
+
+        unsigned long elemID1 = localFaces[i].elemID1 - starting_node[rank];
+        timeLevel1 = elem[elemID1]->GetTimeLevel();
+      }
+      else {
+
+        map<unsigned long,unsigned short>::const_iterator MI;
+        MI = mapExternalElemIDToTimeLevel.find(localFaces[i].elemID1);
+        timeLevel1 = MI->second;
+      }
+
+      /* Check if both elements have the same time level. */
+      if(timeLevel0 == timeLevel1) {
+
+        /* Same time level, hence both elements can own the face. The decision
+           below makes an attempt to spread the workload evenly. */
+        const unsigned long sumElemID = localFaces[i].elemID0 + localFaces[i].elemID1;
+        if( sumElemID%2 )
+          localFaces[i].elem0IsOwner = localFaces[i].elemID0 < localFaces[i].elemID1;
+        else
+          localFaces[i].elem0IsOwner = localFaces[i].elemID0 > localFaces[i].elemID1;
+      }
+      else {
+
+        /* The time level of both elements differ. The element with the smallest
+           time level must be the owner of the element. */
+        localFaces[i].elem0IsOwner = timeLevel0 < timeLevel1;
+      }
+    }
+    else {
+
+      /* Non-matching face. Give the ownership to element 0. */
+      localFaces[i].elem0IsOwner = true;
+    }
+  }
+
+  /*--- All the matching face information is known now, including periodic
+        faces. Store the information of the neighbors in the data structure
+        for the local elements.     ---*/
+  for(unsigned long k=0; k<nElem; ++k) {
+    unsigned short nFaces;
+    unsigned short nPointsPerFace[6];
+    unsigned long  faceConn[6][4];
+
+    elem[k]->GetCornerPointsAllFaces(nFaces, nPointsPerFace, faceConn);
+    elem[k]->InitializeNeighbors(nFaces);
+
+    for(unsigned short i=0; i<nFaces; ++i) {
+      FaceOfElementClass thisFace;
+      thisFace.nCornerPoints = nPointsPerFace[i];
+      for(unsigned short j=0; j<nPointsPerFace[i]; ++j)
+        thisFace.cornerPoints[j] = faceConn[i][j];
+      thisFace.elemID0    = starting_node[rank] + k;
+      thisFace.nPolySol0  = elem[k]->GetNPolySol();
+      thisFace.nDOFsElem0 = elem[k]->GetNDOFsSol();
+
+      thisFace.CreateUniqueNumbering();
+
+      if( binary_search(localFaces.begin(), localFaces.end(), thisFace) ) {
+        vector<FaceOfElementClass>::iterator low;
+        low = lower_bound(localFaces.begin(), localFaces.end(), thisFace);
+
+        if(low->elemID0 == thisFace.elemID0) {
+          elem[k]->SetNeighbor_Elements(low->elemID1, i);
+          elem[k]->SetOwnerFace(low->elem0IsOwner, i);
+        }
+        else {
+          elem[k]->SetNeighbor_Elements(low->elemID0, i);
+          elem[k]->SetOwnerFace(!(low->elem0IsOwner), i);
+        }
+
+        if(low->periodicIndex > 0)
+          elem[k]->SetPeriodicIndex(low->periodicIndex-1, i);
+      }
+    }
+  }
+
+  /*-- Create the vectors that describe the connectivity of the graph. ---*/
+  vector<unsigned long> xadj_l(nElem+1, 0);
+  for(unsigned long i=0; i<nFacesLoc; ++i) {
+    long ii = localFaces[i].elemID0 - starting_node[rank];
+    ++xadj_l[ii+1];
+
+    if(localFaces[i].periodicIndex == 0) {
+      ii = localFaces[i].elemID1 - starting_node[rank];
+      if(ii >= 0 && ii < (long) nElem) ++xadj_l[ii+1];
+    }
+  }
+
+  for(unsigned long i=0; i<nElem; ++i)
+    xadj_l[i+1] += xadj_l[i];
+
+  vector<unsigned long> xxadj_l = xadj_l;
+  vector<unsigned long> adjacency_l(xadj_l[nElem]);
+  for(unsigned long i=0; i<nFacesLoc; ++i) {
+    long ii = localFaces[i].elemID0 - starting_node[rank];
+    adjacency_l[xxadj_l[ii]++] = localFaces[i].elemID1;
+
+    if(localFaces[i].periodicIndex == 0) {
+      ii = localFaces[i].elemID1 - starting_node[rank];
+      if(ii >= 0 && ii < (long) nElem) adjacency_l[xxadj_l[ii]++] = localFaces[i].elemID0;
+    }
+  }
+
+  for(unsigned long i=0; i<nElem; ++i)
+    sort(adjacency_l.begin()+xadj_l[i], adjacency_l.begin()+xadj_l[i+1]);
+
+  /*--- Compute the weigts of the graph. ---*/
+  vector<su2double> vwgt(2*nElem);
+  vector<su2double> adjwgt(xadj_l[nElem]);
+
+  ComputeFEMGraphWeights(config, localFaces, xadj_l, adjacency_l,
+                         mapExternalElemIDToTimeLevel, vwgt, adjwgt);
+
+  /*--- It is possible that some neighbors appear multiple times due to e.g.
+        periodic boundary conditions. ParMETIS is not able to deal with this
+        situation, hence these multiple entries must be removed. ---*/
+  unsigned long ii = 0, indBeg = 0;
+  for(unsigned long i=0; i<nElem; ++i) {
+    for(unsigned long j=indBeg; j<xadj_l[i+1];) {
+      adjacency_l[ii] = adjacency_l[j];
+      adjwgt[ii]      = adjwgt[j++];
+      while(j<xadj_l[i+1] && adjacency_l[ii] == adjacency_l[j])
+        adjwgt[ii] += adjwgt[j++];
+      ++ii;
+    }
+
+    /* Set indBeg for the next element and store the corrected
+       value for xadj_l[i+1]. */
+    indBeg = xadj_l[i+1];
+    xadj_l[i+1] = ii;
+  }
+
+  /*--- The remainder of this function should only ever be called if we have parallel
+        support with MPI and have the ParMETIS library compiled and linked. ---*/
+
+#ifdef HAVE_MPI
+#ifdef HAVE_PARMETIS
+
+  /*--- Only call ParMETIS if we have more than one rank to avoid errors ---*/
+  if(size > SINGLE_NODE)
+  {
+    /*--- The scalar variables and the options array for the call to ParMETIS. ---*/
+    idx_t  wgtflag = 3;               // Weights on both the vertices and edges.
+    idx_t  numflag = 0;               // C-numbering.
+    idx_t  ncon    = 2;               // Number of constraints.
+    real_t ubvec[] = {1.05, 1.05};    // Tolerances for the vertex weights, recommended value is 1.05.
+    idx_t  nparts  = (idx_t)size;     // Number of subdomains. Must be number of MPI ranks.
+    idx_t  options[METIS_NOPTIONS];   // Just use the default options.
+    METIS_SetDefaultOptions(options);
+    options[1] = 0;
+
+    /*--- Determine the array, which stores the distribution of the graph nodes
+          over the ranks.     ---*/
+    vector<idx_t> vtxdist(size+1);
+    vtxdist[0] = 0;
+    for(int i=0; i<size; ++i)
+      vtxdist[i+1] = (idx_t)ending_node[i];
+
+    /*--- Copy some of the vectors needed for the call the ParMETIS,
+          but now with the data type used by ParMETIS.   ---*/
+    vector<idx_t> xadjPar(nElem+1);
+    for(unsigned long i=0; i<=nElem; ++i)
+      xadjPar[i] = (idx_t) xadj_l[i];
+
+    vector<idx_t> adjacencyPar(xadj_l[nElem]);
+    for(unsigned long i=0; i<xadj_l[nElem]; ++i)
+      adjacencyPar[i] = adjacency_l[i];
+
+    vector<idx_t> vwgtPar(nElem*ncon);
+    for(unsigned long i=0; i<nElem*ncon; ++i)
+      vwgtPar[i] = (idx_t) ceil(vwgt[i]);
+
+    vector<idx_t> adjwgtPar(xadj_l[nElem]);
+    for(unsigned long i=0; i<xadj_l[nElem]; ++i)
+      adjwgtPar[i] = (idx_t) ceil(adjwgt[i]);
+
+    vector<real_t> tpwgts(size*ncon, 1.0/((real_t)size));  // Equal distribution.
+
+    /*--- Calling ParMETIS ---*/
+    vector<idx_t> part(nElem);
+    if (rank == MASTER_NODE)
+      cout << endl <<"----------------------- Calling ParMETIS --------------------------------" << endl;
+
+    idx_t edgecut;
+    MPI_Comm comm = MPI_COMM_WORLD;
+    ParMETIS_V3_PartKway(vtxdist.data(), xadjPar.data(), adjacencyPar.data(),
+                         vwgtPar.data(), adjwgtPar.data(), &wgtflag, &numflag,
+                         &ncon, &nparts, tpwgts.data(), ubvec, options,
+                         &edgecut, part.data(), &comm);
+    if (rank == MASTER_NODE) {
+      cout << "Finished partitioning using ParMETIS (";
+      cout << edgecut << " edge cuts)." << endl;
+    }
+
+    /*--- Set the color of the elements to the outcome of ParMETIS. ---*/
+    for(unsigned long i=0; i<nElem; ++i)
+      elem[i]->SetColor(part[i]);
+  }
+
+#endif
+#endif
+}
+
+void CPhysicalGeometry::DeterminePeriodicFacesFEMGrid(CConfig                    *config,
+                                                      vector<FaceOfElementClass> &localFaces) {
+
+  /*--- Create the MPI datatype for the communication of facesDonor. ---*/
+  MatchingFaceClass thisMatchingFace;
+
+#ifdef HAVE_MPI
+  int blockLen[] = {1, 1, 1, 1, 1, 1, 12, 1};
+  MPI_Datatype type[] = {MPI_UNSIGNED_SHORT, MPI_UNSIGNED_SHORT,
+                         MPI_UNSIGNED_SHORT, MPI_UNSIGNED_SHORT,
+                         MPI_UNSIGNED_SHORT, MPI_UNSIGNED_LONG,
+                         MPI_DOUBLE,         MPI_DOUBLE};
+  MPI_Aint disp[8];
+  MPI_Get_address(&thisMatchingFace.nCornerPoints,  disp);
+  MPI_Get_address(&thisMatchingFace.nDim,           disp+1);
+  MPI_Get_address(&thisMatchingFace.nPoly,          disp+2);
+  MPI_Get_address(&thisMatchingFace.nDOFsElem,      disp+3);
+  MPI_Get_address(&thisMatchingFace.elemType,       disp+4);
+  MPI_Get_address(&thisMatchingFace.elemID,         disp+5);
+  MPI_Get_address( thisMatchingFace.cornerCoor,     disp+6);
+  MPI_Get_address(&thisMatchingFace.tolForMatching, disp+7);
+
+  MPI_Aint base;
+  MPI_Get_address(&thisMatchingFace, &base);
+  // for(unsigned short i=0; i<8; ++i) disp[i] = MPI_Aint_diff(disp[i], base);
+  for(unsigned short i=0; i<8; ++i) disp[i] = disp[i] - base;
+
+  MPI_Datatype MPI_MATCHINGFACE_TYPE_HELP;
+  MPI_Type_create_struct(8, blockLen, disp, type, &MPI_MATCHINGFACE_TYPE_HELP);
+
+  MPI_Datatype MPI_MATCHINGFACE_TYPE;
+  MPI_Aint sizeofentry = sizeof(thisMatchingFace);
+  MPI_Type_create_resized(MPI_MATCHINGFACE_TYPE_HELP, 0, sizeofentry,
+                          &MPI_MATCHINGFACE_TYPE);
+  MPI_Type_commit(&MPI_MATCHINGFACE_TYPE);
+#endif
+
+  /*--- Determine a mapping from the global point ID to the local index
+        of the points.            ---*/
+  map<unsigned long,unsigned long> globalPointIDToLocalInd;
+  for(unsigned i=0; i<nPoint; ++i) {
+    globalPointIDToLocalInd[node[i]->GetGlobalIndex()] = i;
+  }
+
+  /*--- Loop over the number of markers present in the grid and check for a periodic one. ---*/
+  for(unsigned short iMarker=0; iMarker<config->GetnMarker_All(); ++iMarker) {
+    if(config->GetMarker_All_KindBC(iMarker) == PERIODIC_BOUNDARY) {
+
+      /*--- Determine the donor marker and the transformation from the
+            current marker to the donor marker.    ---*/
+      unsigned short jMarker = config->GetMarker_Periodic_Donor(config->GetMarker_All_TagBound(iMarker));
+
+      su2double *center = config->GetPeriodicRotCenter(config->GetMarker_All_TagBound(iMarker));
+      su2double *angles = config->GetPeriodicRotAngles(config->GetMarker_All_TagBound(iMarker));
+      su2double *trans  = config->GetPeriodicTranslation(config->GetMarker_All_TagBound(iMarker));
+
+      /*--- Store (center+trans) as it is constant and will be added on. ---*/
+      su2double translation[] = {center[0] + trans[0],
+                                 center[1] + trans[1],
+                                 center[2] + trans[2]};
+
+      /*--- Store angles separately for clarity. Compute sines/cosines. ---*/
+      su2double theta = angles[0];
+      su2double phi   = angles[1];
+      su2double psi   = angles[2];
+
+      su2double cosTheta = cos(theta), cosPhi = cos(phi), cosPsi = cos(psi);
+      su2double sinTheta = sin(theta), sinPhi = sin(phi), sinPsi = sin(psi);
+
+      /*--- Compute the rotation matrix. Note that the implicit
+       ordering is rotation about the x-axis, y-axis, then z-axis. ---*/
+      su2double rotMatrix[3][3];
+      rotMatrix[0][0] =  cosPhi*cosPsi;
+      rotMatrix[1][0] =  cosPhi*sinPsi;
+      rotMatrix[2][0] = -sinPhi;
+
+      rotMatrix[0][1] = sinTheta*sinPhi*cosPsi - cosTheta*sinPsi;
+      rotMatrix[1][1] = sinTheta*sinPhi*sinPsi + cosTheta*cosPsi;
+      rotMatrix[2][1] = sinTheta*cosPhi;
+
+      rotMatrix[0][2] = cosTheta*sinPhi*cosPsi + sinTheta*sinPsi;
+      rotMatrix[1][2] = cosTheta*sinPhi*sinPsi - sinTheta*cosPsi;
+      rotMatrix[2][2] = cosTheta*cosPhi;
+
+      /*--- Define the vector to store the faces of the donor. Initialize its
+            size to the number of local donor faces.    ---*/
+      vector<MatchingFaceClass> facesDonor(nElem_Bound[jMarker]);
+
+      /*------------------------------------------------------------------*/
+      /*--- Step 1: Store the information of the local faces of the donor
+                    marker in the variables defined above.             ---*/
+      /*------------------------------------------------------------------*/
+
+      /*--- Loop over the local elements of the donor marker. ---*/
+      for(unsigned long k=0; k<nElem_Bound[jMarker]; ++k) {
+
+        /*--- Get the connectivity of this face. The reason for the used
+              function arguments for GetCornerPointsAllFaces, is that
+              GetCornerPointsAllFaces is an overloaded function.   ---*/
+        unsigned short nFaces;
+        unsigned short nPointsPerFace[6];
+        unsigned long  faceConn[6][4];
+        bound[jMarker][k]->GetCornerPointsAllFaces(nFaces, nPointsPerFace, faceConn);
+
+        /*--- Search for this face in localFaces. It must be present. ---*/
+        FaceOfElementClass thisFace;
+        thisFace.nCornerPoints = nPointsPerFace[0];
+        for(unsigned short j=0; j<nPointsPerFace[0]; ++j)
+          thisFace.cornerPoints[j] = faceConn[0][j];
+        thisFace.CreateUniqueNumbering();
+
+        vector<FaceOfElementClass>::iterator low;
+        low = lower_bound(localFaces.begin(), localFaces.end(), thisFace);
+
+        /*--- Store the relevant data in facesDonor. ---*/
+        facesDonor[k].nDim          = nDim;
+        facesDonor[k].nCornerPoints = nPointsPerFace[0];
+        facesDonor[k].elemID        = low->elemID0;
+        facesDonor[k].nPoly         = low->nPolySol0;
+        facesDonor[k].nDOFsElem     = low->nDOFsElem0;
+        facesDonor[k].elemType      = low->elemType0;
+
+        for(unsigned short j=0; j<nPointsPerFace[0]; ++j) {
+          map<unsigned long,unsigned long>::const_iterator MI;
+          MI = globalPointIDToLocalInd.find(faceConn[0][j]);
+          unsigned long ind = MI->second;
+
+          for(unsigned l=0; l<nDim; ++l)
+            facesDonor[k].cornerCoor[j][l] = node[ind]->GetCoord(l);
+        }
+
+        /*--- Create the tolerance for this face and sort the coordinates. ---*/
+        facesDonor[k].SortFaceCoordinates();
+      }
+
+      /*------------------------------------------------------------------*/
+      /*--- Step 2: In parallel mode the data of the donor marker is
+                    gathered on all ranks.                             ---*/
+      /*------------------------------------------------------------------*/
+
+#ifdef HAVE_MPI
+
+      /*--- Determine the number of ranks and check if this is indeed
+            a parallel simulation.                       ---*/
+      int size;
+      MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+      if(size > 1) {
+
+        /*--- Allocate the memory for the size arrays in Allgatherv. ---*/
+        vector<int> recvCounts(size), displs(size);
+
+        /*--- Create the values of recvCounts for the gather of the facesDonor. ---*/
+        int sizeLocal = facesDonor.size();
+
+        SU2_MPI::Allgather(&sizeLocal, 1, MPI_INT, recvCounts.data(), 1,
+                           MPI_INT, MPI_COMM_WORLD);
+
+        /*--- Create the data for the vector displs from the known values of
+              recvCounts. Also determine the total size of the data.   ---*/
+        displs[0] = 0;
+        for(int i=1; i<size; ++i) displs[i] = displs[i-1] + recvCounts[i-1];
+
+        int sizeGlobal = displs.back() + recvCounts.back();
+
+        /*--- Gather the faces from all ranks to all ranks. Use Allgatherv
+              for this purpose.                  ---*/
+        vector<MatchingFaceClass> bufLocalFaces = facesDonor;
+        facesDonor.resize(sizeGlobal);
+
+        MPI_Allgatherv(bufLocalFaces.data(), sizeLocal, MPI_MATCHINGFACE_TYPE,
+                       facesDonor.data(), recvCounts.data(), displs.data(),
+                       MPI_MATCHINGFACE_TYPE, MPI_COMM_WORLD);
+      }
+#endif
+
+      /*--- Sort facesDonor in increasing order. ---*/
+      sort(facesDonor.begin(), facesDonor.end());
+
+      /*------------------------------------------------------------------*/
+      /*--- Step 3: Find for the current marker the required data in the
+                    variables for the donor marker.                    ---*/
+      /*------------------------------------------------------------------*/
+
+      /*--- Loop over the local faces of this boundary marker. ---*/
+      for(unsigned long k=0; k<nElem_Bound[iMarker]; ++k) {
+
+        /*--- Get the connectivity of this face. The reason for the used
+              function arguments for GetCornerPointsAllFaces, is that
+              GetCornerPointsAllFaces is an overloaded function.   ---*/
+        unsigned short nFaces;
+        unsigned short nPointsPerFace[6];
+        unsigned long  faceConn[6][4];
+        bound[iMarker][k]->GetCornerPointsAllFaces(nFaces, nPointsPerFace, faceConn);
+
+        /*--- Search for this face in localFaces. It must be present. ---*/
+        FaceOfElementClass thisFace;
+        thisFace.nCornerPoints = nPointsPerFace[0];
+        for(unsigned short j=0; j<nPointsPerFace[0]; ++j)
+          thisFace.cornerPoints[j] = faceConn[0][j];
+        thisFace.CreateUniqueNumbering();
+
+        vector<FaceOfElementClass>::iterator low;
+        low = lower_bound(localFaces.begin(), localFaces.end(), thisFace);
+
+        /*--- Indicate that this face is a periodic face. This is accomplished
+              by setting periodicIndex to iMarker + 1.       ---*/
+        low->periodicIndex = iMarker + 1;
+
+        /*--- Store the data for this boundary element also in thisMatchingFace,
+              such that a search can be carried out in donorFaces. Note that the
+              periodic transformation must be applied to the coordinates. ---*/
+        thisMatchingFace.nDim          = nDim;
+        thisMatchingFace.nCornerPoints = nPointsPerFace[0];
+        thisMatchingFace.elemID        = low->elemID0;
+        thisMatchingFace.nPoly         = low->nPolySol0;
+        thisMatchingFace.nDOFsElem     = low->nDOFsElem0;
+        thisMatchingFace.elemType      = low->elemType0;
+
+        for(unsigned short j=0; j<nPointsPerFace[0]; ++j) {
+          map<unsigned long,unsigned long>::const_iterator MI;
+          MI = globalPointIDToLocalInd.find(faceConn[0][j]);
+          unsigned long ind = MI->second;
+          const su2double *coor = node[ind]->GetCoord();
+
+          const su2double dx =             coor[0] - center[0];
+          const su2double dy =             coor[1] - center[1];
+          const su2double dz = nDim == 3 ? coor[2] - center[2] : 0.0;
+
+          thisMatchingFace.cornerCoor[j][0] = rotMatrix[0][0]*dx + rotMatrix[0][1]*dy
+                                            + rotMatrix[0][2]*dz + translation[0];
+          thisMatchingFace.cornerCoor[j][1] = rotMatrix[1][0]*dx + rotMatrix[1][1]*dy
+                                            + rotMatrix[1][2]*dz + translation[1];
+          thisMatchingFace.cornerCoor[j][2] = rotMatrix[2][0]*dx + rotMatrix[2][1]*dy
+                                            + rotMatrix[2][2]*dz + translation[2];
+        }
+
+        /*--- Create the tolerance for this face and sort the coordinates. ---*/
+        thisMatchingFace.SortFaceCoordinates();
+
+        /*--- Check if thisMatchingFace is present in facesDonor. If so, set the
+              missing information in the face corresponding to the iterator low. ---*/
+        if( binary_search(facesDonor.begin(), facesDonor.end(), thisMatchingFace) ) {
+
+          vector<MatchingFaceClass>::const_iterator donorLow;
+          donorLow = lower_bound(facesDonor.begin(), facesDonor.end(), thisMatchingFace);
+
+          low->elemID1    = donorLow->elemID;
+          low->nPolySol1  = donorLow->nPoly;
+          low->nDOFsElem1 = donorLow->nDOFsElem;
+          low->elemType1  = donorLow->elemType;
+        }
+      }
+    }
+  }
+
+#ifdef HAVE_MPI
+  /*--- Free the MPI datatype for the communication of facesDonor. ---*/
+  MPI_Type_free(&MPI_MATCHINGFACE_TYPE);
+  MPI_Type_free(&MPI_MATCHINGFACE_TYPE_HELP);
+#endif
+}
+
+void CPhysicalGeometry::DetermineFEMConstantJacobiansAndLenScale(CConfig *config) {
+
+  /*--- Determine a mapping from the global point ID to the local index
+        of the points.    ---*/
+  map<unsigned long,unsigned long> globalPointIDToLocalInd;
+  for(unsigned long i=0; i<nPoint; ++i) {
+    globalPointIDToLocalInd[node[i]->GetGlobalIndex()] = i;
+  }
+
+  /*--- Define the vectors to store the standard elements for the volume elements
+        and surface faces. These standard elements will be created based on the
+        polynomial degree of the grid.      ---*/
+  vector<FEMStandardElementClass> standardVolumeElements, standardFaceElements;
+
+  unsigned short nStandardVolumeElements = 0, nStandardFaceElements = 0;
+
+  /*--- Loop over the local volume elements. ---*/
+  for(unsigned long i=0; i<nElem; ++i) {
+
+    /*------------------------------------------------------------------------*/
+    /*--- Compute the Jacobians of the volume element and determine        ---*/
+    /*--- whether the Jacobians can be considered constant.                ---*/
+    /*------------------------------------------------------------------------*/
+
+    /*--- Determine the standard element of the volume element. If it does not
+          exist yet, it will be created. Note that it suffices to indicate that
+          the Jacobians are constant, because the only task here is to determine
+          whether or not the Jacobians are constant. ---*/
+    unsigned short VTK_Type  = elem[i]->GetVTK_Type();
+    unsigned short nPolyGrid = elem[i]->GetNPolyGrid();
+
+    unsigned short ii;
+    for(ii=0; ii<nStandardVolumeElements; ++ii) {
+      if( standardVolumeElements[ii].SameStandardElement(VTK_Type, nPolyGrid, true) )
+        break;
+    }
+
+    if(ii == nStandardVolumeElements) {
+      ++nStandardVolumeElements;
+      standardVolumeElements.push_back(FEMStandardElementClass(VTK_Type, nPolyGrid,
+                                                               true, config));
+    }
+
+    /*--- Allocate the memory for some help vectors to carry out the matrix
+          product to determine the derivatives of the coordinates w.r.t.
+          the parametric coordinates. ---*/
+    unsigned short nDOFs        = standardVolumeElements[ii].GetNDOFs();
+    unsigned short nIntegration = standardVolumeElements[ii].GetNIntegration();
+
+    unsigned long sizeResult = nDim*nDim*nIntegration;
+    unsigned long sizeRHS    = nDim*nDOFs;
+
+    vector<su2double> vecResult(sizeResult), vecRHS(sizeRHS);
+
+    /* Store the coordinates in vecRHS. */
+    unsigned int jj = 0;
+    for(unsigned short j=0; j<nDOFs; ++j) {
+      unsigned long nodeID = elem[i]->GetNode(j);
+
+      map<unsigned long,unsigned long>::const_iterator MI = globalPointIDToLocalInd.find(nodeID);
+      unsigned long ind = MI->second;
+      for(unsigned short k=0; k<nDim; ++k, ++jj)
+        vecRHS[jj] = node[ind]->GetCoord(k);
+    }
+
+    /*--- Get the pointer to the matrix storage of the basis functions and its
+          derivatives. The first nDOFs*nIntegration entries of this matrix
+          correspond to the interpolation data to the integration points
+          and are not needed. Hence this part is skipped. ---*/
+    const su2double *matBasisInt    = standardVolumeElements[ii].GetMatBasisFunctionsIntegration();
+    const su2double *matDerBasisInt = &matBasisInt[nDOFs*nIntegration];
+
+    /* Carry out the matrix matrix product. */
+    DenseMatrixProduct(nDim*nIntegration, nDim, nDOFs,
+                       matDerBasisInt, vecRHS.data(), vecResult.data());
+
+    /*--- Compute the Jacobians in the integration points and determine
+          the minimum and maximum values. Make a distinction between
+          a 2D and 3D element. ---*/
+    su2double jacMin = 1.e+25, jacMax = -1.e+25;
+
+    switch( nDim ) {
+      case 2: {
+
+        /* 2D computation. Store the offset between the r and s derivatives. */
+        const unsigned int off = 2*nIntegration;
+
+        /*--- Loop over the integration points to compute the Jacobians. ---*/
+        for(unsigned short j=0; j<nIntegration; ++j) {
+          const unsigned int jx = 2*j; const unsigned int jy = jx+1;
+          const su2double dxdr = vecResult[jx],     dydr = vecResult[jy];
+          const su2double dxds = vecResult[jx+off], dyds = vecResult[jy+off];
+
+          const su2double Jac = dxdr*dyds - dxds*dydr;
+
+          jacMin = min(jacMin, Jac);
+          jacMax = max(jacMax, Jac);
+        }
+
+        break;
+      }
+
+      case 3: {
+        /* 3D computation. Store the offset between the r and s and r and t derivatives. */
+        const unsigned int offS = 3*nIntegration, offT = 6*nIntegration;
+
+        /*--- Loop over the integration points to compute the Jacobians. ---*/
+        for(unsigned short j=0; j<nIntegration; ++j) {
+          const unsigned int jx = 3*j; const unsigned int jy = jx+1, jz = jx+2;
+          const su2double dxdr = vecResult[jx],      dydr = vecResult[jy],      dzdr = vecResult[jz];
+          const su2double dxds = vecResult[jx+offS], dyds = vecResult[jy+offS], dzds = vecResult[jz+offS];
+          const su2double dxdt = vecResult[jx+offT], dydt = vecResult[jy+offT], dzdt = vecResult[jz+offT];
+
+          const su2double Jac = dxdr*(dyds*dzdt - dzds*dydt) - dxds*(dydr*dzdt - dzdr*dydt)
+                              + dxdt*(dydr*dzds - dzdr*dyds);
+
+          jacMin = min(jacMin, Jac);
+          jacMax = max(jacMax, Jac);
+        }
+
+        break;
+      }
+    }
+
+    /*--- Check for negative Jacobians. ---*/
+    if(jacMin <= 0.0) {
+
+      cout << "Negative Jacobian found" << endl;
+#ifndef HAVE_MPI
+      exit(EXIT_FAILURE);
+#else
+      MPI_Abort(MPI_COMM_WORLD,1);
+      MPI_Finalize();
+#endif
+    }
+
+    /*--- Determine the ratio of the maximum and minimum value of the Jacobian.
+          From this ratio, determine whether or not the element is considered to
+          have a constant Jacobian. ---*/
+    bool constJacobian = (jacMax/jacMin) <= 1.000001;
+    elem[i]->SetJacobianConsideredConstant(constJacobian);
+
+    /*------------------------------------------------------------------------*/
+    /*--- Compute the normal vectors of the faces of the element and check ---*/
+    /*--- for constant Jacobians of the faces.                             ---*/
+    /*------------------------------------------------------------------------*/
+
+    /*--- Get the global IDs of the corner points of all the faces
+          of this element. ---*/
+    unsigned short nFaces;
+    unsigned short nPointsPerFace[6];
+    unsigned long  faceConn[6][4];
+
+    elem[i]->GetCornerPointsAllFaces(nFaces, nPointsPerFace, faceConn);
+
+    /*--- Initialize the array, which stores whether or not the faces are
+          considered to have a constant Jacobian. ---*/
+    elem[i]->InitializeJacobianConstantFaces(nFaces);
+
+    /*--- Loop over the number of faces of this element. ---*/
+    su2double jacFaceMax = 0.0;
+    for(unsigned short j=0; j<nFaces; ++j) {
+
+      /*--- Determine the index jj in the standard face elements for this face.
+            If not present, create the standard element. ---*/
+      switch( nPointsPerFace[j] ) {
+        case 2: VTK_Type = LINE;          break;
+        case 3: VTK_Type = TRIANGLE;      break;
+        case 4: VTK_Type = QUADRILATERAL; break;
+      }
+
+      for(jj=0; jj<nStandardFaceElements; ++jj) {
+        if( standardFaceElements[jj].SameStandardElement(VTK_Type, nPolyGrid, true) )
+          break;
+      }
+
+      if(jj == nStandardFaceElements) {
+        ++nStandardFaceElements;
+        standardFaceElements.push_back(FEMStandardElementClass(VTK_Type, nPolyGrid,
+                                                               true, config));
+      }
+
+      /*--- Set the pointer to store the face connectivity of this face. ---*/
+      unsigned short *connFace = NULL;
+      switch( j) {
+        case 0: connFace = standardVolumeElements[ii].GetConnFace0(); break;
+        case 1: connFace = standardVolumeElements[ii].GetConnFace1(); break;
+        case 2: connFace = standardVolumeElements[ii].GetConnFace2(); break;
+        case 3: connFace = standardVolumeElements[ii].GetConnFace3(); break;
+        case 4: connFace = standardVolumeElements[ii].GetConnFace4(); break;
+        case 5: connFace = standardVolumeElements[ii].GetConnFace5(); break;
+      }
+
+      /*--- Store the relevant derivative vectors of the standard element of
+            the face as well as the number of DOFs and integration points. ---*/
+      nDOFs        = standardFaceElements[jj].GetNDOFs();
+      nIntegration = standardFaceElements[jj].GetNIntegration();
+
+      const su2double *dr = standardFaceElements[jj].GetDrBasisFunctionsIntegration();
+      const su2double *ds = standardFaceElements[jj].GetDsBasisFunctionsIntegration();
+
+      /*--- Allocate the memory for the vector to store the normals in the
+            integration points of the face. */
+      vector<su2double> normalsFace((nDim+1)*nIntegration);
+
+      /*--- Compute the unit normals in the integration points. Make a
+            distinction between two and three dimensions.  ---*/
+      switch( nDim ) {
+        case 2: {
+
+          /*--- Two dimensional case, for which the faces are edges.
+                The normal is the vector normal to the tangent vector
+                of the edge. Loop over the integration points. ---*/
+          for(unsigned short k=0; k<nIntegration; ++k) {
+
+            const su2double *drr = &dr[k*nDOFs];
+            su2double dxdr = 0.0, dydr = 0.0;
+            for(unsigned short l=0; l<nDOFs; ++l) {
+              dxdr += vecRHS[2*connFace[l]]  *drr[l];
+              dydr += vecRHS[2*connFace[l]+1]*drr[l];
+            }
+
+            normalsFace[3*k]   =  dydr;
+            normalsFace[3*k+1] = -dxdr;
+            normalsFace[3*k+2] =  sqrt(dxdr*dxdr + dydr*dydr);
+          }
+
+          break;
+        }
+
+        case 3: {
+
+          /*--- Three dimensional case, for which the faces are triangles or
+                quadrilaterals. The normal is the vector obtained via the
+                cross product of two tangent vectors.
+                Loop over the integration points.               ---*/
+          for(unsigned short k=0; k<nIntegration; ++k) {
+
+            const su2double *drr = &dr[k*nDOFs], *dss = &ds[k*nDOFs];
+            su2double dxdr = 0.0, dydr = 0.0, dzdr = 0.0,
+                      dxds = 0.0, dyds = 0.0, dzds = 0.0;
+
+            for(unsigned short l=0; l<nDOFs; ++l) {
+              dxdr += vecRHS[3*connFace[l]]  *drr[l]; dxds += vecRHS[3*connFace[l]]  *dss[l];
+              dydr += vecRHS[3*connFace[l]+1]*drr[l]; dyds += vecRHS[3*connFace[l]+1]*dss[l];
+              dzdr += vecRHS[3*connFace[l]+2]*drr[l]; dzds += vecRHS[3*connFace[l]+2]*dss[l];
+            }
+
+            su2double nx = dydr*dzds - dyds*dzdr;
+            su2double ny = dxds*dzdr - dxdr*dzds;
+            su2double nz = dxdr*dyds - dxds*dydr;
+
+            normalsFace[4*k]   = nx;
+            normalsFace[4*k+1] = ny;
+            normalsFace[4*k+2] = nz;
+            normalsFace[4*k+3] = sqrt(nx*nx + ny*ny + nz*nz);
+          }
+
+          break;
+        }
+      }
+
+      /*--- Double loop over the integration points to determine the minimum
+            value of the cosine between the normals. Also the minimum and
+            maximum length of the normal is determined.     ---*/
+      su2double normLenMin = 1.0e-15, normLenMax = 0.0;
+      su2double minCosAngleFaceNormals = 1.0;
+      unsigned short kk = (nDim+1);
+      for(unsigned short k=0; k<nIntegration; ++k) {
+
+        if(k == 0) normLenMin = normLenMax = normalsFace[nDim];
+        else {
+          normLenMin = min(normLenMin, normalsFace[k*kk+nDim]);
+          normLenMax = max(normLenMax, normalsFace[k*kk+nDim]);
+        }
+
+        for(unsigned short l=k+1; l<nIntegration; ++l) {
+          su2double dot = 0.0;
+          for(unsigned short m=0; m<nDim; ++m)
+            dot += normalsFace[k*kk+m]*normalsFace[l*kk+m];
+          dot /= normalsFace[k*kk+nDim]*normalsFace[l*kk+nDim];
+
+          minCosAngleFaceNormals = min(minCosAngleFaceNormals, dot);
+        }
+      }
+
+      /*--- Compute the ratio of normLenMin and normLenMax and determine
+            whether the face is considered to have a constant Jacobian. ---*/
+      su2double maxRatioLenFaceNormals = normLenMax/normLenMin;
+
+      constJacobian = minCosAngleFaceNormals >= 0.999999 &&
+                      maxRatioLenFaceNormals <= 1.000001;
+
+      elem[i]->SetJacobianConstantFace(constJacobian, j);
+
+      /* Update the maximum value of the Jacobian of all faces surrounding
+         the current element. */
+      jacFaceMax = max(jacFaceMax, normLenMax);
+    }
+
+    /*------------------------------------------------------------------------*/
+    /*--- Determine the length scale of the element. This is needed to     ---*/
+    /*--- compute the computational weights of an element when time        ---*/
+    /*--- accurate local time stepping is employed and to determine a      ---*/
+    /*--- tolerance when periodic transformations are present. Note that a ---*/
+    /*--- factor 2 must be taken into account, which is the length scale   ---*/
+    /*--- of all the reference elements used in this code.                 ---*/
+    /*------------------------------------------------------------------------*/
+
+    const su2double lenScale = 2.0*jacMin/jacFaceMax;
+    elem[i]->SetLengthScale(lenScale);
+  }
+}
+
+void CPhysicalGeometry::DetermineTimeLevelElements(
+                          CConfig *config,
+                          const vector<FaceOfElementClass>   &localFaces,
+                          map<unsigned long, unsigned short> &mapExternalElemIDToTimeLevel) {
+
+  /*--- Determine my rank and the number of ranks. ---*/
+  int rank = MASTER_NODE;
+
+#ifdef HAVE_MPI
+  int size;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+#endif
+
+  /*--- Initialize the time level of external elements to zero. ---*/
+  for(vector<FaceOfElementClass>::const_iterator FI =localFaces.begin();
+                                                 FI!=localFaces.end(); ++FI) {
+    if(FI->elemID1 < Global_nElem) {     // Safeguard against non-matching faces.
+
+      if(FI->elemID1 <  starting_node[rank] ||
+         FI->elemID1 >= starting_node[rank]+nElem) {
+
+        /* This element is an external element. Store it in the map
+           mapExternalElemIDToTimeLevel if not already done so. */
+        map<unsigned long,unsigned short>::iterator MI;
+        MI = mapExternalElemIDToTimeLevel.find(FI->elemID1);
+        if(MI == mapExternalElemIDToTimeLevel.end())
+          mapExternalElemIDToTimeLevel[FI->elemID1] = 0;
+      }
+    }
+  }
+
+  /*--- Get the number of time levels used and check whether or not
+        time accurate local time stepping is used. ---*/
+  const unsigned short nTimeLevels = config->GetnLevels_TimeAccurateLTS();
+
+  if(nTimeLevels == 1) {
+
+    /*--- No time accurate local time stepping. Set the time level of
+          all elements to zero. ---*/
+    for(unsigned long i=0; i<nElem; ++i)
+      elem[i]->SetTimeLevel(0);
+  }
+  else {
+
+    /*--- Time accurate local time stepping is used. The estimate of the time
+          step is based on free stream values at the moment, but this is easy
+          to change, if needed. ---*/
+    const su2double Gamma      = config->GetGamma();
+    const su2double Prandtl    = config->GetPrandtl_Lam();
+    unsigned short nTimeLevels = config->GetnLevels_TimeAccurateLTS();
+
+    const su2double Density   = config->GetDensity_FreeStreamND();
+    const su2double *Vel      = config->GetVelocity_FreeStreamND();
+    const su2double Viscosity = config->GetViscosity_FreeStreamND();
+
+    su2double VelMag = 0.0;
+    for(unsigned short iDim=0; iDim<nDim; ++iDim)
+      VelMag += Vel[iDim]*Vel[iDim];
+    VelMag = sqrt(VelMag);
+
+    const su2double SoundSpeed = VelMag/config->GetMach();
+    
+    /*------------------------------------------------------------------------*/
+    /*--- Step 1: Estimate the time steps of the locally owned elements.   ---*/
+    /*------------------------------------------------------------------------*/
+
+    /* In the estimate of the time step the spectral radius of the inviscid terms is
+       needed. As the current estimate is based on the free stream, the value of this
+       spectral radius can be computed beforehand. Note that this is a rather
+       conservative estimate. */
+    su2double charVel2 = 0.0;
+    for(unsigned short iDim=0; iDim<nDim; ++iDim) {
+      const su2double rad = fabs(Vel[iDim]) + SoundSpeed;
+      charVel2 += rad*rad;
+    }
+
+    const su2double charVel = sqrt(charVel2);
+
+    /* Also the viscous contribution to the time step is constant. Compute it. */
+    const su2double factHeatFlux  =  Gamma/Prandtl;
+    const su2double lambdaOverMu  = -TWO3;
+    const su2double radVisc       =  max(max(1.0, 2.0+lambdaOverMu),factHeatFlux)
+                                  *  Viscosity/Density;
+
+    /*--- Allocate the memory for time step estimate of the local elements and
+          determine the values. Also keep track of the minimum value. ---*/
+    su2double minDeltaT = 1.e25;
+    vector<su2double> timeStepElements(nElem);
+
+    for(unsigned long i=0; i<nElem; ++i) {
+
+      unsigned short nPoly = elem[i]->GetNPolySol();
+      if(nPoly == 0) nPoly = 1;
+      const su2double lenScaleInv = nPoly/elem[i]->GetLengthScale();
+      const su2double lenScale    = 1.0/lenScaleInv;
+
+      timeStepElements[i] = lenScale/(charVel + lenScaleInv*radVisc);
+      minDeltaT           = min(minDeltaT, timeStepElements[i]);
+    }
+
+    /* Determine the minimum value of all elements in the grid.
+       Only needed for a parallel implementation. */
+#ifdef HAVE_MPI
+    su2double locVal = minDeltaT;
+    SU2_MPI::Allreduce(&locVal, &minDeltaT, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
+#endif
+
+    /*------------------------------------------------------------------------*/
+    /*--- Step 2: Set up the variables to carry out the MPI communication  ---*/
+    /*---         of the external element data.                            ---*/
+    /*------------------------------------------------------------------------*/
+
+#ifdef HAVE_MPI
+
+    /*--- Determine the ranks from which I receive element data during
+          the actual exchange. ---*/
+    vector<int> recvFromRank(size, 0);
+
+    for(vector<FaceOfElementClass>::const_iterator FI =localFaces.begin();
+                                                   FI!=localFaces.end(); ++FI) {
+      if(FI->elemID1 < Global_nElem) {     // Safeguard against non-matching faces.
+
+        if(FI->elemID1 <  starting_node[rank] ||
+           FI->elemID1 >= starting_node[rank]+nElem) {
+
+          /* Element is stored on a different rank. Determine this rank. */
+          int rankElem;
+          if(FI->elemID1 >= starting_node[size-1]) rankElem = size-1;
+          else {
+            const unsigned long *low;
+            low = lower_bound(starting_node, starting_node+size, FI->elemID1);
+
+            rankElem = low - starting_node -1;
+            if(*low == FI->elemID1) ++rankElem;
+          }
+
+          /* Set the corresponding index of recvFromRank to 1. */
+          recvFromRank[rankElem] = 1;
+        }
+      }
+    }
+
+    map<int,int> mapRankToIndRecv;
+    for(int i=0; i<size; ++i) {
+      if( recvFromRank[i] ) {
+        int ind = mapRankToIndRecv.size();
+        mapRankToIndRecv[i] = ind;
+      }
+    }
+
+    /* Determine the number of ranks from which I will receive data and to
+       which I will send data. */
+    int nRankRecv = mapRankToIndRecv.size();
+    int nRankSend;
+
+    vector<int> sizeSend(size, 1);
+    MPI_Reduce_scatter(recvFromRank.data(), &nRankSend, sizeSend.data(),
+                       MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+
+    /*--- Create the vector of vectors of the global element ID's that
+          will be received from other ranks. ---*/
+    vector<vector<unsigned long> > recvElem(nRankRecv, vector<unsigned long>(0));
+
+    for(vector<FaceOfElementClass>::const_iterator FI =localFaces.begin();
+                                                   FI!=localFaces.end(); ++FI) {
+      if(FI->elemID1 < Global_nElem) {     // Safeguard against non-matching faces.
+
+        if(FI->elemID1 <  starting_node[rank] ||
+           FI->elemID1 >= starting_node[rank]+nElem) {
+
+          int rankElem;
+          if(FI->elemID1 >= starting_node[size-1]) rankElem = size-1;
+          else {
+            const unsigned long *low;
+            low = lower_bound(starting_node, starting_node+size, FI->elemID1);
+
+            rankElem = low - starting_node -1;
+            if(*low == FI->elemID1) ++rankElem;
+          }
+
+          map<int,int>::const_iterator MRI = mapRankToIndRecv.find(rankElem);
+          recvElem[MRI->second].push_back(FI->elemID1);
+        }
+      }
+    }
+
+    /*--- Loop over the ranks from which I receive data during the actual
+          exchange and send over the global element ID's. In order to avoid
+          unnecessary communication, multiple entries are filtered out. ---*/
+    vector<MPI_Request> sendReqs(nRankRecv);
+    map<int,int>::const_iterator MRI = mapRankToIndRecv.begin();
+
+    for(int i=0; i<nRankRecv; ++i, ++MRI) {
+
+      sort(recvElem[i].begin(), recvElem[i].end());
+      vector<unsigned long>::iterator lastElem = unique(recvElem[i].begin(),
+                                                        recvElem[i].end());
+      recvElem[i].erase(lastElem, recvElem[i].end());
+
+      SU2_MPI::Isend(recvElem[i].data(), recvElem[i].size(), MPI_UNSIGNED_LONG,
+                     MRI->first, MRI->first, MPI_COMM_WORLD, &sendReqs[i]);
+    }
+
+    /*--- Receive the messages in arbitrary sequence and store the requested
+          element ID's, which are converted to local ID's. Furthermore, store
+          the processors from which the requested element ID's came from. ---*/
+    vector<vector<unsigned long> > sendElem(nRankSend, vector<unsigned long>(0));
+    vector<int> sendRank(nRankSend);
+
+    for(int i=0; i<nRankSend; ++i) {
+
+      MPI_Status status;
+      MPI_Probe(MPI_ANY_SOURCE, rank, MPI_COMM_WORLD, &status);
+      sendRank[i] = status.MPI_SOURCE;
+
+      int sizeMess;
+      MPI_Get_count(&status, MPI_UNSIGNED_LONG, &sizeMess);
+      sendElem[i].resize(sizeMess);
+
+      SU2_MPI::Recv(sendElem[i].data(), sizeMess, MPI_UNSIGNED_LONG,
+                    sendRank[i], rank, MPI_COMM_WORLD, &status);
+
+      for(int j=0; j<sizeMess; ++j)
+        sendElem[i][j] -= starting_node[rank];
+    }
+
+    /* Complete the non-blocking sends. Synchronize the processors afterwards,
+       because wild cards have been used in the communication. */
+    SU2_MPI::Waitall(nRankRecv, sendReqs.data(), MPI_STATUSES_IGNORE);
+    MPI_Barrier(MPI_COMM_WORLD);
+
+#endif
+
+    /*------------------------------------------------------------------------*/
+    /*--- Step 3: Determine the time levels of the owned elements as well  ---*/
+    /*---         the external elements. The information of the latter is  ---*/
+    /*---         stored in the map mapExternalElemIDToTimeLevel.          ---*/
+    /*------------------------------------------------------------------------*/
+
+    /* Initial estimate of the time level of the owned elements. */
+    for(unsigned long i=0; i<nElem; ++i) {
+      unsigned short timeLevel;
+      su2double deltaT = minDeltaT;
+      for(timeLevel=0; timeLevel<(nTimeLevels-1); ++timeLevel) {
+        deltaT *= 2;
+        if(timeStepElements[i] < deltaT) break;
+      }
+
+      elem[i]->SetTimeLevel(timeLevel);
+    }
+
+    /*--- Iterative algorithm to make sure that neighboring elements differ
+          at most one time level. This is no fundamental issue, but it makes
+          the parallel implementation easier, while the penalty in efficiency
+          should be small for most cases. ---*/
+    for(;;) {
+
+      /* Variable to indicate whether the local situation has changed. */
+      unsigned short localSituationChanged = 0;
+
+      /*--- Communicate the information of the externals, if needed. ---*/
+#ifdef HAVE_MPI
+
+      /* Define the send buffers and resize the vector of send requests. */
+      vector<vector<unsigned short> > sendBuf(nRankSend, vector<unsigned short>(0));
+      sendReqs.resize(nRankSend);
+
+      /*--- Copy the information of the time level into the send buffers
+            and send the data using non-blocking sends. ---*/
+      for(int i=0; i<nRankSend; ++i) {
+
+        sendBuf[i].resize(sendElem[i].size());
+        for(unsigned long j=0; j<sendElem[i].size(); ++j)
+          sendBuf[i][j] = elem[sendElem[i][j]]->GetTimeLevel();
+
+        SU2_MPI::Isend(sendBuf[i].data(), sendBuf[i].size(), MPI_UNSIGNED_SHORT,
+                       sendRank[i], sendRank[i], MPI_COMM_WORLD, &sendReqs[i]);
+      }
+
+      /*--- Receive the data for the externals. As this data is needed
+            immediately, blocking communication is used. The time level of the
+            externals is stored in mapExternalElemIDToTimeLevel, whose second
+            element, which contains the time level, is updated accordingly. ---*/
+      for(int i=0; i<nRankRecv; ++i) {
+
+        MPI_Status status;
+        MPI_Probe(MPI_ANY_SOURCE, rank, MPI_COMM_WORLD, &status);
+        int source = status.MPI_SOURCE;
+
+        MRI = mapRankToIndRecv.find(source);
+        const int ind = MRI->second;
+
+        vector<unsigned short> recvBuf(recvElem[ind].size());
+        SU2_MPI::Recv(recvBuf.data(), recvBuf.size(), MPI_UNSIGNED_SHORT,
+                      source, rank, MPI_COMM_WORLD, &status);
+
+        for(unsigned long j=0; j<recvBuf.size(); ++j) {
+          map<unsigned long,unsigned short>::iterator MI;
+          MI = mapExternalElemIDToTimeLevel.find(recvElem[ind][j]);
+          MI->second = recvBuf[j];
+        }
+      }
+
+      /* Complete the nonblocking sends. */
+      SU2_MPI::Waitall(nRankSend, sendReqs.data(), MPI_STATUSES_IGNORE);
+#endif
+      /*--- Loop over the matching faces and update the time levels of the
+            adjacent elements, if needed. ---*/
+      for(vector<FaceOfElementClass>::const_iterator FI =localFaces.begin();
+                                                 FI!=localFaces.end(); ++FI) {
+        /* Safeguard against non-matching faces. */
+        if(FI->elemID1 < Global_nElem) {
+
+          /* Local element ID of the first element. Per definition this is
+             always a locally stored element. Also store its time level. */
+          const unsigned long  elemID0    = FI->elemID0 - starting_node[rank];
+          const unsigned short timeLevel0 = elem[elemID0]->GetTimeLevel();
+
+          /* Determine the status of the second element. */
+          if(FI->elemID1 >= starting_node[rank] &&
+             FI->elemID1 <  starting_node[rank]+nElem) {
+
+            /* Both elements are stored locally. Determine the local
+               element of the second element and determine the minimum
+               time level. */
+            const unsigned long  elemID1    = FI->elemID1 - starting_node[rank];
+            const unsigned short timeLevel1 = elem[elemID1]->GetTimeLevel();
+            const unsigned short timeLevel  = min(timeLevel0, timeLevel1);
+
+            /* If the time level of either element is larger than timeLevel+1,
+               adapt the time levels and indicate that the local situation
+               has changed. */
+            if(timeLevel0 > timeLevel+1) {
+              elem[elemID0]->SetTimeLevel(timeLevel+1);
+              localSituationChanged = 1;
+            }
+
+            if(timeLevel1 > timeLevel+1) {
+              elem[elemID1]->SetTimeLevel(timeLevel+1);
+              localSituationChanged = 1;
+            }
+          }
+          else {
+
+            /* The second element is stored on a different processor.
+               Retrieve its time level from mapExternalElemIDToTimeLevel
+               and determine the minimum time level. */
+            map<unsigned long,unsigned short>::iterator MI;
+            MI = mapExternalElemIDToTimeLevel.find(FI->elemID1);
+            const unsigned short timeLevel = min(timeLevel0, MI->second);
+
+            /* If the time level of either element is larger than timeLevel+1,
+               adapt the time levels and indicate that the local situation
+               has changed. */
+            if(timeLevel0 > timeLevel+1) {
+              elem[elemID0]->SetTimeLevel(timeLevel+1);
+              localSituationChanged = 1;
+            }
+
+            if(MI->second > timeLevel+1) {
+              MI->second = timeLevel+1;
+              localSituationChanged = 1;
+            }
+          }
+        }
+      }
+
+      /* Determine whether or not the global situation changed. If not
+         the infinite loop can be terminated. For security reasons
+         post a barrier, because wild cards have been used in the
+         communication cycle. */
+      unsigned short globalSituationChanged = localSituationChanged;
+
+#ifdef HAVE_MPI
+      MPI_Barrier(MPI_COMM_WORLD);
+      SU2_MPI::Allreduce(&localSituationChanged, &globalSituationChanged,
+                         1, MPI_UNSIGNED_SHORT, MPI_MAX, MPI_COMM_WORLD);
+#endif
+      if( !globalSituationChanged ) break;
+    }
+
+    /*------------------------------------------------------------------------*/
+    /*--- Step 4: Print a nice output about the number of elements per     ---*/
+    /*---         time level.                                              ---*/
+    /*------------------------------------------------------------------------*/
+
+    if(rank == MASTER_NODE)
+      cout << endl <<"------- Element distribution for time accurate local time stepping ------" << endl;
+
+    /* Determine the local number of elements per time level. */
+    vector<unsigned long> nLocalElemPerLevel(nTimeLevels, 0);
+    for(unsigned long i=0; i<nElem; ++i)
+      ++nLocalElemPerLevel[elem[i]->GetTimeLevel()];
+
+    /* Determine the global version of nLocalElemPerLevel. This only needs to
+       be known on the master node. */
+    vector<unsigned long> nGlobalElemPerLevel = nLocalElemPerLevel;
+
+#ifdef HAVE_MPI
+     SU2_MPI::Reduce(nLocalElemPerLevel.data(), nGlobalElemPerLevel.data(),
+                     nTimeLevels, MPI_UNSIGNED_LONG, MPI_SUM,
+                     MASTER_NODE, MPI_COMM_WORLD);
+#endif
+
+    /* Write the output. */
+    if(rank == MASTER_NODE) {
+      for(unsigned short i=0; i<nTimeLevels; ++i) {
+        if( nGlobalElemPerLevel[i] )
+          cout << "Number of elements time level " << i << ": "
+               << nGlobalElemPerLevel[i] << endl;
+      }
+    }
+  }
+}
+
+void CPhysicalGeometry::ComputeFEMGraphWeights(
+              CConfig                                  *config,
+              const vector<FaceOfElementClass>         &localFaces,
+              const vector<unsigned long>              &xadj_l,
+              const vector<unsigned long>              &adjacency_l,
+              const map<unsigned long, unsigned short> &mapExternalElemIDToTimeLevel,
+                    vector<su2double>                  &vwgt,
+                    vector<su2double>                  &adjwgt){
+  /*--- Determine my rank. ---*/
+  int rank = MASTER_NODE;
+
+#ifdef HAVE_MPI
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+#endif
+
+  /*--- Determine the maximum time level that occurs in the grid. ---*/
+  unsigned short maxTimeLevel = 0;
+  for(unsigned long i=0; i<nElem; ++i)
+    maxTimeLevel = max(maxTimeLevel, elem[i]->GetTimeLevel());
+
+#ifdef HAVE_MPI
+  unsigned short maxTimeLevelLocal = maxTimeLevel;
+  SU2_MPI::Allreduce(&maxTimeLevelLocal, &maxTimeLevel, 1,
+                     MPI_UNSIGNED_SHORT, MPI_MAX, MPI_COMM_WORLD);
+#endif
+
+  /*--- Define the standard elements for the volume elements, the boundary faces
+        and the matching internal faces. ---*/
+  vector<FEMStandardElementClass>      standardElements;
+  vector<FEMStandardBoundaryFaceClass> standardBoundaryFaces;
+  vector<FEMStandardInternalFaceClass> standardMatchingFaces;
+
+  unsigned short nStandardElements = 0, nStandardBoundaryFaces = 0,
+                 nStandardMatchingFaces = 0;
+
+  /*--- Loop over the elements to determine the amount of computational work.
+        This amount has a contribution from both the volume integral and
+        surface integral to allow for Discontinuous and Continuous Galerkin
+        schemes. For the latter the contribution of the surface integral will
+        be negligible to the total amount of work.         ---*/
+  for(unsigned long i=0; i<nElem; ++i) {
+
+    /*------------------------------------------------------------------------*/
+    /*--- Determine the computational weight of the volume integral in the ---*/
+    /*--- (DG-)FEM formulation.                                            ---*/
+    /*------------------------------------------------------------------------*/
+
+    /* Easier storage of the two indices for the vertex weights of this element. */
+    const unsigned long ind0 = 2*i;
+    const unsigned long ind1 = ind0 + 1;
+
+    /*--- Determine the corresponding standard element for this volume element.
+          Create it, if it does not exist. ---*/
+    unsigned short VTK_Type = elem[i]->GetVTK_Type();
+    unsigned short nPolySol = elem[i]->GetNPolySol();
+    bool JacIsConstant      = elem[i]->GetJacobianConsideredConstant();
+
+    unsigned short ii;
+    for(ii=0; ii<nStandardElements; ++ii) {
+      if( standardElements[ii].SameStandardElement(VTK_Type, nPolySol,
+                                                   JacIsConstant) ) break;
+    }
+
+    if(ii == nStandardElements) {
+      ++nStandardElements;
+      standardElements.push_back(FEMStandardElementClass(VTK_Type, nPolySol,
+                                                         JacIsConstant, config));
+    }
+
+    /* Initialize the computational work for this element, which is stored
+       in the 1st vertex weight. */
+    vwgt[ind0] = standardElements[ii].WorkEstimateMetis(config);
+
+    /*------------------------------------------------------------------------*/
+    /*--- Determine the computational weight of the surface integral in    ---*/
+    /*--- the (DG-)FEM formulation.                                        ---*/
+    /*------------------------------------------------------------------------*/
+
+    /* Determine the global element ID of this element. */
+    unsigned long elemID = starting_node[rank] + i;
+
+    /*--- Get the global IDs of the corner points of all the faces of this element. ---*/
+    unsigned short nFaces;
+    unsigned short nPointsPerFace[6];
+    unsigned long  faceConn[6][4];
+
+    elem[i]->GetCornerPointsAllFaces(nFaces, nPointsPerFace, faceConn);
+
+    /*--- Loop over the number of faces of this element. ---*/
+    for(unsigned short j=0; j<nFaces; ++j) {
+
+      /* Determine the VTK type of the face. */
+      unsigned short VTK_Type_Face = 0;
+      switch( nPointsPerFace[j] ) {
+        case 2: VTK_Type_Face = LINE;          break;
+        case 3: VTK_Type_Face = TRIANGLE;      break;
+        case 4: VTK_Type_Face = QUADRILATERAL; break;
+      }
+
+      /* Easier storage whether or not the Jacobian is constant. */
+      JacIsConstant = elem[i]->GetJacobianConstantFace(j);
+
+      /*--- Check if this is a matching internal face. ---*/
+      FaceOfElementClass thisFace;
+      thisFace.nCornerPoints = nPointsPerFace[j];
+      for(unsigned short k=0; k<nPointsPerFace[j]; ++k)
+        thisFace.cornerPoints[k] = faceConn[j][k];
+      thisFace.CreateUniqueNumbering();
+
+      if( binary_search(localFaces.begin(), localFaces.end(), thisFace) ) {
+        vector<FaceOfElementClass>::const_iterator low;
+        low = lower_bound(localFaces.begin(), localFaces.end(), thisFace);
+
+        /* Check if this internal matching face is owned by this element. */
+        bool faceIsOwned;
+        if(elemID == low->elemID0) faceIsOwned =  low->elem0IsOwner;
+        else                       faceIsOwned = !low->elem0IsOwner;
+
+        if( faceIsOwned ) {
+
+          /*--- Determine the index of the corresponding standard matching
+                face. If it does not exist, create it. ---*/
+          for(ii=0; ii<nStandardMatchingFaces; ++ii) {
+            if( standardMatchingFaces[ii].SameStandardMatchingFace(VTK_Type_Face, JacIsConstant,
+                                                                   low->elemType0, low->nPolySol0,
+                                                                   low->elemType1, low->nPolySol1,
+                                                                   false, false) )
+              break;
+          }
+
+          if(ii == nStandardMatchingFaces) {
+            ++nStandardMatchingFaces;
+            standardMatchingFaces.push_back(FEMStandardInternalFaceClass(VTK_Type_Face,
+                                                                         low->elemType0, low->nPolySol0,
+                                                                         low->elemType1, low->nPolySol1,
+                                                                         JacIsConstant, false, false,
+                                                                         config));
+          }
+
+          /* Update the computational work for this element, i.e. the 1st 
+             vertex weight. */
+          vwgt[ind0] += standardMatchingFaces[ii].WorkEstimateMetis(config);
+        }
+      }
+      else {
+
+        /*--- This is a boundary face, which is owned by definition. Determine
+              the index of the corresponding standard boundary face. If it
+              does not exist, create it. ---*/
+        for(ii=0; ii<nStandardBoundaryFaces; ++ii) {
+          if(standardBoundaryFaces[ii].SameStandardBoundaryFace(VTK_Type_Face, JacIsConstant,
+                                                                VTK_Type, nPolySol, false) )
+            break;
+        }
+
+        if(ii == nStandardBoundaryFaces) {
+          ++nStandardBoundaryFaces;
+          standardBoundaryFaces.push_back(FEMStandardBoundaryFaceClass(VTK_Type_Face,
+                                                                       VTK_Type, nPolySol,
+                                                                       JacIsConstant, false,
+                                                                       config));
+        }
+
+        /* Update the computational work for this element, i.e. the 1st
+           vertex weight. */
+        vwgt[ind0] += standardBoundaryFaces[ii].WorkEstimateMetis(config);
+      }
+    }
+
+    /* The final weight is obtained by taking the amount of work in time into
+       account. Note that this correction is only relevant when time accurate
+       local time stepping is employed. */
+    const unsigned short diffLevel = maxTimeLevel - elem[i]->GetTimeLevel();
+    vwgt[ind0] *= pow(2, diffLevel);
+
+    /* Set the value of the second vertex weight to the number of DOFs. */
+    vwgt[ind1] = elem[i]->GetNDOFsSol();
+  }
+
+  /*--- Determine the minimum of the workload, i.e. 1st vertex weight,
+        over the entire domain. ---*/
+  su2double minvwgt = vwgt[0];
+  for(unsigned long i=0; i<nElem; ++i) minvwgt = min(minvwgt, vwgt[2*i]);
+
+#ifdef HAVE_MPI
+  su2double locminvwgt = minvwgt;
+  SU2_MPI::Allreduce(&locminvwgt, &minvwgt, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
+#endif
+
+  /*--- Scale the workload of the elements, the 1st vertex weight, with the
+        minimum value and multiply by 100, such that the conversion to integer
+        weights (ParMETIS is using integers for the weights) does not lead to
+        a significant increase in the load imbalance. ---*/
+  minvwgt = 100.0/minvwgt;
+  for(unsigned long i=0; i<nElem; ++i) vwgt[2*i] *= minvwgt;
+
+  /*--- Create a map of the two global element IDs adjacent to the face to
+        the index in localFaces. This map is used for an efficient search
+        to determine the edge weights of the graph.   ---*/
+  map<unsignedLong2T, unsigned long> mapElemIDsToFaceInd;
+  for(unsigned long i=0; i<localFaces.size(); ++i) {
+    unsigned long e0 = min(localFaces[i].elemID0, localFaces[i].elemID1);
+    unsigned long e1 = max(localFaces[i].elemID0, localFaces[i].elemID1);
+    mapElemIDsToFaceInd[unsignedLong2T(e0, e1)] = i;
+  }
+
+  /*--- Determine the edge weights by a double loop over the local elements
+        and its edges. The map mapElemIDsToFaceInd is used to determine
+        the corresponding index in localFaces.   ---*/
+  for(unsigned long i=0; i<nElem; ++i) {
+
+    const unsigned short timeLevelCur = elem[i]->GetTimeLevel();
+    const unsigned long  elemID0      = starting_node[rank] + i;
+
+    for(unsigned long j=xadj_l[i]; j<xadj_l[i+1]; ++j) {
+      const unsigned long e0 = min(elemID0, adjacency_l[j]);
+      const unsigned long e1 = max(elemID0, adjacency_l[j]);
+
+      /* Determine the index of this edge in localFaces. */
+      unsignedLong2T elemIDs(e0, e1);
+      map<unsignedLong2T, unsigned long>::const_iterator MI = mapElemIDsToFaceInd.find(elemIDs);
+      if(MI == mapElemIDsToFaceInd.end()) {
+        cout << "Entry not found in map in function CPhysicalGeometry::ComputeFEMGraphWeights" << endl;
+#ifndef HAVE_MPI
+        exit(EXIT_FAILURE);
+#else
+        MPI_Abort(MPI_COMM_WORLD,1);
+        MPI_Finalize();
+#endif
+      }
+
+      unsigned long ind = MI->second;
+
+      /* Determine the time level of the adjacent element. A distinction must be
+         made whether or not the element is currently stored on this rank. */
+      unsigned short timeLevelAdj;
+      if(adjacency_l[j] >= starting_node[rank] &&
+         adjacency_l[j] <  starting_node[rank]+nElem) {
+
+        unsigned long elemIDAdj = adjacency_l[j] - starting_node[rank];
+        timeLevelAdj = elem[elemIDAdj]->GetTimeLevel();
+      }
+      else {
+
+        map<unsigned long,unsigned short>::const_iterator MI;
+        MI = mapExternalElemIDToTimeLevel.find(adjacency_l[j]);
+        timeLevelAdj = MI->second;
+      }
+
+      /* Determine the difference of the maximum time level that occurs and
+         the minimum of the time level of the current and the adjacent element.
+         This value can only be nonzero when time accurate local time stepping
+         is employed. */
+      const unsigned short diffLevel = maxTimeLevel - min(timeLevelCur, timeLevelAdj);
+
+      /* Set the edge weight. As ParMetis expects an undirected graph, set the edge weight
+         to the sum of the number of DOFs on both sides, multiplied by the weight factor
+         to account for different time levels. */
+      adjwgt[j] = pow(2, diffLevel)
+                * (localFaces[ind].nDOFsElem0 + localFaces[ind].nDOFsElem1);
+    }
+  }
 }
 
 void CPhysicalGeometry::GetQualityStatistics(su2double *statistics) {
@@ -12446,7 +15201,7 @@ void CPhysicalGeometry::SetPeriodicBoundary(CConfig *config) {
           for (iIndex = 0; iIndex < node[jPoint]->GetnElem(); iIndex++) {
             iElem = node[jPoint]->GetElem(iIndex);
             PeriodicElem[iPeriodic].push_back(iElem);
-            for (unsigned short iNode = 0; iNode <	elem[iElem]->GetnNodes(); iNode ++) {
+            for (unsigned short iNode = 0; iNode < elem[iElem]->GetnNodes(); iNode ++) {
               kPoint = elem[iElem]->GetNode(iNode);
               if (!PeriodicBC[kPoint]) PeriodicPoint[iPeriodic][0].push_back(kPoint);
             }
@@ -12655,7 +15410,7 @@ void CPhysicalGeometry::SetGeometryPlanes(CConfig *config) {
   
   bool loop_on;
   unsigned short iMarker = 0;
-  su2double auxXCoord, auxYCoord, auxZCoord,	*Face_Normal = NULL, auxArea, *Xcoord = NULL, *Ycoord = NULL, *Zcoord = NULL, *FaceArea = NULL;
+  su2double auxXCoord, auxYCoord, auxZCoord, *Face_Normal = NULL, auxArea, *Xcoord = NULL, *Ycoord = NULL, *Zcoord = NULL, *FaceArea = NULL;
   unsigned long jVertex, iVertex, ixCoord, iPoint, iVertex_Wall, nVertex_Wall = 0;
   
   /*--- Compute the total number of points on the near-field ---*/
@@ -12671,7 +15426,7 @@ void CPhysicalGeometry::SetGeometryPlanes(CConfig *config) {
    equivalent area, and nearfield weight ---*/
   Xcoord = new su2double[nVertex_Wall];
   Ycoord = new su2double[nVertex_Wall];
-  if (nDim == 3)	Zcoord = new su2double[nVertex_Wall];
+  if (nDim == 3) Zcoord = new su2double[nVertex_Wall];
   FaceArea = new su2double[nVertex_Wall];
   
   /*--- Copy the boundary information to an array ---*/
@@ -14112,7 +16867,7 @@ CMultiGridGeometry::CMultiGridGeometry(CGeometry ***geometry, CConfig **config_c
           
           /*--- Now we do a sweep over all the nodes that surround the seed point ---*/
           
-          for (iNode = 0; iNode <	fine_grid->node[iPoint]->GetnPoint(); iNode ++) {
+          for (iNode = 0; iNode < fine_grid->node[iPoint]->GetnPoint(); iNode ++) {
             
             CVPoint = fine_grid->node[iPoint]->GetPoint(iNode);
             
@@ -14139,7 +16894,7 @@ CMultiGridGeometry::CMultiGridGeometry(CGeometry ***geometry, CConfig **config_c
           
           /*--- Now we do a sweep over all the indirect nodes that can be added ---*/
           
-          for (iNode = 0; iNode <	Suitable_Indirect_Neighbors.size(); iNode ++) {
+          for (iNode = 0; iNode < Suitable_Indirect_Neighbors.size(); iNode ++) {
             
             CVPoint = Suitable_Indirect_Neighbors[iNode];
             
@@ -14207,7 +16962,7 @@ CMultiGridGeometry::CMultiGridGeometry(CGeometry ***geometry, CConfig **config_c
       /*--- Count the number of agglomerated neighbors, and modify the queue ---*/
       
       priority = 0;
-      for (iNode = 0; iNode <	fine_grid->node[iPoint]->GetnPoint(); iNode ++) {
+      for (iNode = 0; iNode < fine_grid->node[iPoint]->GetnPoint(); iNode ++) {
         jPoint = fine_grid->node[iPoint]->GetPoint(iNode);
         if (fine_grid->node[jPoint]->GetAgglomerate() == true) priority++;
       }
@@ -14247,7 +17002,7 @@ CMultiGridGeometry::CMultiGridGeometry(CGeometry ***geometry, CConfig **config_c
       
       /*--- Now we do a sweep over all the nodes that surround the seed point ---*/
       
-      for (iNode = 0; iNode <	fine_grid->node[iPoint]->GetnPoint(); iNode ++) {
+      for (iNode = 0; iNode < fine_grid->node[iPoint]->GetnPoint(); iNode ++) {
         
         CVPoint = fine_grid->node[iPoint]->GetPoint(iNode);
         
@@ -14283,7 +17038,7 @@ CMultiGridGeometry::CMultiGridGeometry(CGeometry ***geometry, CConfig **config_c
       
       /*--- Now we do a sweep over all the indirect nodes that can be added ---*/
       
-      for (iNode = 0; iNode <	Suitable_Indirect_Neighbors.size(); iNode ++) {
+      for (iNode = 0; iNode < Suitable_Indirect_Neighbors.size(); iNode ++) {
         
         CVPoint = Suitable_Indirect_Neighbors[iNode];
         
@@ -14706,11 +17461,11 @@ bool CMultiGridGeometry::GeometricalCheck(unsigned long iPoint, CGeometry *fine_
   
   bool Stretching = true;
   
-  /*	unsigned short iNode, iDim;
+  /* unsigned short iNode, iDim;
    unsigned long jPoint;
    su2double *Coord_i = fine_grid->node[iPoint]->GetCoord();
    su2double max_dist = 0.0 ; su2double min_dist = 1E20;
-   for (iNode = 0; iNode <	fine_grid->node[iPoint]->GetnPoint(); iNode ++) {
+   for (iNode = 0; iNode < fine_grid->node[iPoint]->GetnPoint(); iNode ++) {
    jPoint = fine_grid->node[iPoint]->GetPoint(iNode);
    su2double *Coord_j = fine_grid->node[jPoint]->GetCoord();
    su2double distance = 0.0;
@@ -14738,7 +17493,7 @@ void CMultiGridGeometry::SetSuitableNeighbors(vector<unsigned long> *Suitable_In
   
   vector<unsigned long> First_Neighbor_Points;
   First_Neighbor_Points.push_back(iPoint);
-  for (iNode = 0; iNode <	fine_grid->node[iPoint]->GetnPoint(); iNode ++) {
+  for (iNode = 0; iNode < fine_grid->node[iPoint]->GetnPoint(); iNode ++) {
     jPoint = fine_grid->node[iPoint]->GetPoint(iNode);
     First_Neighbor_Points.push_back(jPoint);
   }
@@ -14747,16 +17502,16 @@ void CMultiGridGeometry::SetSuitableNeighbors(vector<unsigned long> *Suitable_In
   
   vector<unsigned long> Second_Neighbor_Points, Second_Origin_Points, Suitable_Second_Neighbors;
   
-  for (iNode = 0; iNode <	fine_grid->node[iPoint]->GetnPoint(); iNode ++) {
+  for (iNode = 0; iNode < fine_grid->node[iPoint]->GetnPoint(); iNode ++) {
     jPoint = fine_grid->node[iPoint]->GetPoint(iNode);
     
-    for (jNode = 0; jNode <	fine_grid->node[jPoint]->GetnPoint(); jNode ++) {
+    for (jNode = 0; jNode < fine_grid->node[jPoint]->GetnPoint(); jNode ++) {
       kPoint = fine_grid->node[jPoint]->GetPoint(jNode);
       
       /*--- Check that the second neighbor do not belong to the first neighbor or the seed ---*/
       
       SecondNeighborSeed = true;
-      for (iNeighbor = 0; iNeighbor <	First_Neighbor_Points.size(); iNeighbor ++)
+      for (iNeighbor = 0; iNeighbor < First_Neighbor_Points.size(); iNeighbor ++)
         if (kPoint == First_Neighbor_Points[iNeighbor]) {
           SecondNeighborSeed = false; break;
         }
@@ -14771,9 +17526,9 @@ void CMultiGridGeometry::SetSuitableNeighbors(vector<unsigned long> *Suitable_In
   
   /*---  Identify those second neighbors that are repeated (candidate to be added) ---*/
   
-  for (iNeighbor = 0; iNeighbor <	Second_Neighbor_Points.size(); iNeighbor ++)
+  for (iNeighbor = 0; iNeighbor < Second_Neighbor_Points.size(); iNeighbor ++)
     
-    for (jNeighbor = 0; jNeighbor <	Second_Neighbor_Points.size(); jNeighbor ++)
+    for (jNeighbor = 0; jNeighbor < Second_Neighbor_Points.size(); jNeighbor ++)
       
     /*--- Repeated second neighbor with different origin ---*/
       
@@ -14807,17 +17562,17 @@ void CMultiGridGeometry::SetSuitableNeighbors(vector<unsigned long> *Suitable_In
   
   vector<unsigned long> Third_Neighbor_Points, Third_Origin_Points;
   
-  for (jNode = 0; jNode <	Suitable_Second_Neighbors.size(); jNode ++) {
+  for (jNode = 0; jNode < Suitable_Second_Neighbors.size(); jNode ++) {
     kPoint = Suitable_Second_Neighbors[jNode];
     
-    for (kNode = 0; kNode <	fine_grid->node[kPoint]->GetnPoint(); kNode ++) {
+    for (kNode = 0; kNode < fine_grid->node[kPoint]->GetnPoint(); kNode ++) {
       lPoint = fine_grid->node[kPoint]->GetPoint(kNode);
       
       /*--- Check that the third neighbor do not belong to the first neighbors or the seed ---*/
       
       ThirdNeighborSeed = true;
       
-      for (iNeighbor = 0; iNeighbor <	First_Neighbor_Points.size(); iNeighbor ++)
+      for (iNeighbor = 0; iNeighbor < First_Neighbor_Points.size(); iNeighbor ++)
         if (lPoint == First_Neighbor_Points[iNeighbor]) {
           ThirdNeighborSeed = false;
           break;
@@ -14825,7 +17580,7 @@ void CMultiGridGeometry::SetSuitableNeighbors(vector<unsigned long> *Suitable_In
       
       /*--- Check that the third neighbor do not belong to the second neighbors ---*/
       
-      for (iNeighbor = 0; iNeighbor <	Suitable_Second_Neighbors.size(); iNeighbor ++)
+      for (iNeighbor = 0; iNeighbor < Suitable_Second_Neighbors.size(); iNeighbor ++)
         if (lPoint == Suitable_Second_Neighbors[iNeighbor]) {
           ThirdNeighborSeed = false;
           break;
@@ -14841,8 +17596,8 @@ void CMultiGridGeometry::SetSuitableNeighbors(vector<unsigned long> *Suitable_In
   
   /*---  Identify those third neighbors that are repeated (candidate to be added) ---*/
   
-  for (iNeighbor = 0; iNeighbor <	Third_Neighbor_Points.size(); iNeighbor ++)
-    for (jNeighbor = 0; jNeighbor <	Third_Neighbor_Points.size(); jNeighbor ++)
+  for (iNeighbor = 0; iNeighbor < Third_Neighbor_Points.size(); iNeighbor ++)
+    for (jNeighbor = 0; jNeighbor < Third_Neighbor_Points.size(); jNeighbor ++)
       
     /*--- Repeated second neighbor with different origin ---*/
       
@@ -14898,7 +17653,7 @@ void CMultiGridGeometry::SetVertex(CGeometry *fine_grid, CConfig *config) {
   /*--- If any children node belong to the boundary then the entire control
    volume will belong to the boundary ---*/
   for (iCoarsePoint = 0; iCoarsePoint < nPoint; iCoarsePoint ++)
-    for (iChildren = 0; iChildren <	node[iCoarsePoint]->GetnChildren_CV(); iChildren ++) {
+    for (iChildren = 0; iChildren < node[iCoarsePoint]->GetnChildren_CV(); iChildren ++) {
       iFinePoint = node[iCoarsePoint]->GetChildren_CV(iChildren);
       if (fine_grid->node[iFinePoint]->GetBoundary()) {
         node[iCoarsePoint]->SetBoundary(nMarker);
@@ -14919,7 +17674,7 @@ void CMultiGridGeometry::SetVertex(CGeometry *fine_grid, CConfig *config) {
   
   for (iCoarsePoint = 0; iCoarsePoint < nPoint; iCoarsePoint ++) {
     if (node[iCoarsePoint]->GetBoundary()) {
-      for (iChildren = 0; iChildren <	node[iCoarsePoint]->GetnChildren_CV(); iChildren ++) {
+      for (iChildren = 0; iChildren < node[iCoarsePoint]->GetnChildren_CV(); iChildren ++) {
         iFinePoint = node[iCoarsePoint]->GetChildren_CV(iChildren);
         for (iMarker = 0; iMarker < nMarker; iMarker ++) {
           if ((fine_grid->node[iFinePoint]->GetVertex(iMarker) != -1) && (node[iCoarsePoint]->GetVertex(iMarker) == -1)) {
@@ -14946,7 +17701,7 @@ void CMultiGridGeometry::SetVertex(CGeometry *fine_grid, CConfig *config) {
   
   for (iCoarsePoint = 0; iCoarsePoint < nPoint; iCoarsePoint ++)
     if (node[iCoarsePoint]->GetBoundary())
-      for (iChildren = 0; iChildren <	node[iCoarsePoint]->GetnChildren_CV(); iChildren ++) {
+      for (iChildren = 0; iChildren < node[iCoarsePoint]->GetnChildren_CV(); iChildren ++) {
         iFinePoint = node[iCoarsePoint]->GetChildren_CV(iChildren);
         for (iMarker = 0; iMarker < fine_grid->GetnMarker(); iMarker ++) {
           if ((fine_grid->node[iFinePoint]->GetVertex(iMarker) != -1) && (node[iCoarsePoint]->GetVertex(iMarker) == -1)) {
@@ -15367,7 +18122,7 @@ void CMultiGridGeometry::FindNormal_Neighbor(CConfig *config) {
 void CMultiGridGeometry::SetGeometryPlanes(CConfig *config) {
   bool loop_on;
   unsigned short iMarker = 0;
-  su2double auxXCoord, auxYCoord, auxZCoord,	*Face_Normal = NULL, auxArea, *Xcoord = NULL, *Ycoord = NULL, *Zcoord = NULL, *FaceArea = NULL;
+  su2double auxXCoord, auxYCoord, auxZCoord, *Face_Normal = NULL, auxArea, *Xcoord = NULL, *Ycoord = NULL, *Zcoord = NULL, *FaceArea = NULL;
   unsigned long jVertex, iVertex, ixCoord, iPoint, iVertex_Wall, nVertex_Wall = 0;
   
   /*--- Compute the total number of points on the near-field ---*/
@@ -15383,7 +18138,7 @@ void CMultiGridGeometry::SetGeometryPlanes(CConfig *config) {
    equivalent area, and nearfield weight ---*/
   Xcoord = new su2double[nVertex_Wall];
   Ycoord = new su2double[nVertex_Wall];
-  if (nDim == 3)	Zcoord = new su2double[nVertex_Wall];
+  if (nDim == 3) Zcoord = new su2double[nVertex_Wall];
   FaceArea = new su2double[nVertex_Wall];
   
   /*--- Copy the boundary information to an array ---*/
@@ -15816,7 +18571,7 @@ void CPeriodicGeometry::SetPeriodicBoundary(CGeometry *geometry, CConfig *config
       nPeriodic++;
   
   /*--- First compute the Send/Receive boundaries, count the number of points ---*/
-  Counter_Send = 0; 	Counter_Receive = 0;
+  Counter_Send = 0;  Counter_Receive = 0;
   for (iPeriodic = 1; iPeriodic <= nPeriodic; iPeriodic++) {
     if (geometry->PeriodicPoint[iPeriodic][0].size() != 0)
       Counter_Send += geometry->PeriodicPoint[iPeriodic][0].size();
@@ -16274,7 +19029,7 @@ void CMultiGridQueue::Update(unsigned long iPoint, CGeometry *fine_grid) {
   unsigned long jPoint;
   
   RemoveCV(iPoint);
-  for (iNode = 0; iNode <	fine_grid->node[iPoint]->GetnPoint(); iNode ++) {
+  for (iNode = 0; iNode < fine_grid->node[iPoint]->GetnPoint(); iNode ++) {
     jPoint = fine_grid->node[iPoint]->GetPoint(iNode);
     if (fine_grid->node[jPoint]->GetAgglomerate() == false)
       IncrPriorityCV(jPoint);

@@ -104,6 +104,15 @@ AC_ARG_WITH(Jsoncpp-lib,
 AC_ARG_WITH(Jsoncpp-include,
    	AS_HELP_STRING([--with-Jsoncpp-include[=ARG]], [Jsoncpp include directory, ARG = path to json.h]),
 	[with_Jsoncpp_include=$withval], [with_Jsoncpp_include="no"])
+AC_ARG_WITH(BLAS-lib,
+    AS_HELP_STRING([--with-BLAS-lib[=ARG]], [BLAS library directory, ARG = path to libblas.a]),
+    [with_BLAS_lib=$withval], [with_BLAS_lib="no"])
+AC_ARG_WITH(CBLAS-lib,
+    AS_HELP_STRING([--with-CBLAS-lib[=ARG]], [CBLAS library directory, ARG = path to libcblas.a]),
+    [with_CBLAS_lib=$withval], [with_CBLAS_lib="no"])
+AC_ARG_WITH(CBLAS-include,
+    AS_HELP_STRING([--with-CBLAS-include[=ARG]], [CBLAS include directory, ARG = path to cblas.h]),
+    [with_CBLAS_include=$withval], [with_CBLAS_include="no"])
 AC_ARG_WITH(LAPACK-lib,
     AS_HELP_STRING([--with-LAPACK-lib[=ARG]], [LAPACK library directory, ARG = path to liblapacke.a]),
     [with_LAPACK_lib=$withval], [with_LAPACK_lib="no"])
@@ -140,6 +149,13 @@ AC_ARG_ENABLE(complex,
 AC_ARG_ENABLE(normal,
     AS_HELP_STRING([--disable-normal], [build executables with normal datatype (default = yes)]),
     [build_NORMAL=$enableval], [build_NORMAL="yes"])
+
+AC_ARG_WITH(GELITE-lib,
+        AS_HELP_STRING([--with-GELITE-lib[=ARG]], [GELITE library directory, ARG = path to libgeom.a]),
+        [with_GELITE_lib=$withval], [with_GELITE_lib="no"])
+AC_ARG_WITH(GELITE-include,
+        AS_HELP_STRING([--with-GELITE-include[=ARG]], [GELITE include directory, ARG = path to geom/Geometry.h]),
+        [with_GELITE_include=$withval], [with_GELITE_include="no"])
 
 # Check for the old  MPI option so that we can throw an error
 AC_ARG_WITH(MPI,
@@ -427,47 +443,90 @@ AC_SUBST([JSONCPP_LD])
 ##########################
 
 # check for lib
-LAPACKElib=liblapacke.a
-LAPACKlib=liblapack.a
 BLASlib=libblas.a
-gfortranlib=libgfortran.a
-quadmathlib=libquadmath.a
+have_BLAS="no"
+
+if test "$with_BLAS_lib" != "no"
+then
+AC_CHECK_FILE([$with_BLAS_lib/$BLASlib],[have_BLAS="yes"],[have_BLAS="no"])
+if test "$have_BLAS" == "no"
+then
+AC_MSG_ERROR([BLAS requested but library file not found.])
+fi
+fi
+
+if test "$have_BLAS" != "no"
+then
+AM_CONDITIONAL(BUILD_BLAS,true)
+BLAS_CXX="-DHAVE_BLAS"
+BLAS_LD="$with_BLAS_lib"/$BLASlib
+else
+AM_CONDITIONAL(BUILD_BLAS,false)
+BLAS_CXX=
+BLAS_LD=
+fi
+AC_SUBST([BLAS_CXX])
+AC_SUBST([BLAS_LD])
+
+###########################
+
+# check for lib
+CBLASlib=libcblas.a
+CBLASheader=cblas.h
+have_CBLAS="no"
+
+if test "$with_CBLAS_lib" != "no"
+then
+AC_CHECK_FILE([$with_CBLAS_lib/$CBLASlib],[have_CBLAS="yes"],[have_CBLAS="no"])
+if test "$have_CBLAS" == "no"
+then
+AC_MSG_ERROR([CBLAS requested but library file not found.])
+fi
+fi
+
+# check for header
+if test "$have_CBLAS" != "no"
+then
+if test "$with_CBLAS_include" != "no"
+then
+AC_CHECK_FILE([$with_CBLAS_include/$CBLASheader],[have_CBLAS='yes'],[have_CBLAS='no'])
+if test "$have_CBLAS" == "no"
+then
+AC_MSG_ERROR([CBLAS requested but header file not found.])
+fi
+else
+have_CBLAS="no"
+fi
+fi
+
+if test "$have_CBLAS" != "no"
+then
+AM_CONDITIONAL(BUILD_CBLAS,true)
+CBLAS_CXX="-DHAVE_CBLAS -I"$with_CBLAS_include""
+CBLAS_LD="$with_CBLAS_lib"/$CBLASlib
+else
+AM_CONDITIONAL(BUILD_CBLAS,false)
+CBLAS_CXX=
+CBLAS_LD=
+fi
+AC_SUBST([CBLAS_CXX])
+AC_SUBST([CBLAS_LD])
+
+###########################
+
+# check for lib
+LAPACKlib=liblapack.so
+LAPACKElib=liblapacke.a
 LAPACKheader=lapacke.h
 have_LAPACK="no"
 
 if test "$with_LAPACK_lib" != "no"
 then
-
 AC_CHECK_FILE([$with_LAPACK_lib/$LAPACKlib],[have_LAPACK="yes"],[have_LAPACK="no"])
 if test "$have_LAPACK" == "no"
 then
 AC_MSG_ERROR([LAPACK requested but library file not found.])
 fi
-
-AC_CHECK_FILE([$with_LAPACK_lib/$LAPACKElib],[have_LAPACK="yes"],[have_LAPACK="no"])
-if test "$have_LAPACK" == "no"
-then
-AC_MSG_ERROR([LAPACKE requested but library file not found.])
-fi
-
-AC_CHECK_FILE([$with_LAPACK_lib/$BLASlib],[have_LAPACK="yes"],[have_LAPACK="no"])
-if test "$have_LAPACK" == "no"
-then
-AC_MSG_ERROR([BLAS requested but library file not found.])
-fi
-
-AC_CHECK_FILE([$with_gfortran_lib/$gfortranlib],[have_LAPACK="yes"],[have_LAPACK="no"])
-if test "$have_LAPACK" == "no"
-then
-AC_MSG_ERROR([gfortran requested but library file not found.])
-fi
-
-AC_CHECK_FILE([$with_gfortran_lib/$quadmathlib],[have_LAPACK="yes"],[have_LAPACK="no"])
-if test "$have_LAPACK" == "no"
-then
-AC_MSG_ERROR([quadmath requested but library file not found.])
-fi
-
 fi
 
 # check for header
@@ -489,11 +548,7 @@ if test "$have_LAPACK" != "no"
 then
 AM_CONDITIONAL(BUILD_LAPACK,true)
 LAPACK_CXX="-DHAVE_LAPACK -I"$with_LAPACK_include""
-LAPACK_LD="$with_LAPACK_lib"/$LAPACKElib
-LAPACK_LD+="  $with_LAPACK_lib"/$LAPACKlib
-LAPACK_LD+="  $with_LAPACK_lib"/$BLASlib
-LAPACK_LD+="  $with_gfortran_lib"/$gfortranlib
-LAPACK_LD+="  $with_gfortran_lib"/$quadmathlib
+LAPACK_LD=""$with_LAPACK_lib"/$LAPACKElib "$with_LAPACK_lib"/$LAPACKlib"
 else
 AM_CONDITIONAL(BUILD_LAPACK,false)
 LAPACK_CXX=
@@ -503,6 +558,63 @@ AC_SUBST([LAPACK_CXX])
 AC_SUBST([LAPACK_LD])
 
 ###########################
+
+# check for lib
+GELITElibgeom=libgeom.a
+GELITElibnmb=libnmb.a
+GELITElibvmath=libvmath.a
+GELITEheader=geom/Geometry.h
+have_GELITE="no"
+
+if test "$with_GELITE_lib" != "no"
+then
+        AC_CHECK_FILE([$with_GELITE_lib/$GELITElibgeom],[have_GELITE="yes"],[have_GELITE="no"])
+        if test "$have_GELITE" == "no"
+        then
+                AC_MSG_ERROR([GELITE requested but geom library file not found.])
+        fi
+        AC_CHECK_FILE([$with_GELITE_lib/$GELITElibnmb],[have_GELITE="yes"],[have_GELITE="no"])
+        if test "$have_GELITE" == "no"
+        then
+                AC_MSG_ERROR([GELITE requested but nmb library file not found.])
+        fi
+        AC_CHECK_FILE([$with_GELITE_lib/$GELITElibvmath],[have_GELITE="yes"],[have_GELITE="no"])
+        if test "$have_GELITE" == "no"
+        then
+                AC_MSG_ERROR([GELITE requested but vmath library file not found.])
+        fi
+fi
+
+# check for header
+if test "$have_GELITE" != "no"
+then
+        if test "$with_GELITE_include" != "no"
+        then
+                AC_CHECK_FILE([$with_GELITE_include/$GELITEheader],[have_GELITE='yes'],[have_GELITE='no'])
+                if test "$have_GELITE" == "no"
+                then
+                        AC_MSG_ERROR([GELITE requested but header file not found.])
+                fi
+        else
+                have_GELITE="no"
+        fi
+fi
+
+if test "$have_GELITE" != "no"
+then
+        AM_CONDITIONAL(BUILD_GELITE,true)
+        GELITE_CXX="-DHAVE_GELITE -I"$with_GELITE_include""
+        GELITE_LD=""$with_GELITE_lib"/$GELITElibnmb "$with_GELITE_lib"/$GELITElibgeom "$with_GELITE_lib"/$GELITElibvmath"
+else
+        AM_CONDITIONAL(BUILD_GELITE,false)
+        GELITE_CXX=
+        GELITE_LD=
+fi
+AC_SUBST([GELITE_CXX])
+AC_SUBST([GELITE_LD])
+
+
+##########################
 # Determine what versions of the code to build
 
 build_PY=yes
@@ -636,8 +748,11 @@ Build Configuration Summary:
     SZIP support:         $have_SZIP
     ZLIB support:         $have_ZLIB
     Mutation++ support:   $have_Mutationpp
-    Jsoncpp support: 	  $have_Jsoncpp
-    LAPACK support:       $have_LAPACK
+    Jsoncpp support:      $have_Jsoncpp
+    BLAS support:         $have_BLAS
+    CBLAS support:        $have_CBLAS
+    LAPACKE support:      $have_LAPACK
+    GELite support:       $have_GELITE
     Datatype support:
         double              $build_NORMAL
         complex             $build_COMPLEX

@@ -120,8 +120,13 @@ am__libSU2_a_SOURCES_DIST =  \
 	../include/ad_structure.hpp ../include/ad_structure.inl \
 	../include/config_structure.hpp \
 	../include/config_structure.inl \
+	../include/dense_matrix_product.hpp \
 	../include/dual_grid_structure.hpp \
 	../include/dual_grid_structure.inl \
+	../include/fem_geometry_structure.hpp \
+	../include/fem_geometry_structure.inl \
+	../include/fem_standard_element.hpp \
+	../include/fem_standard_element.inl ../include/gelite.hpp \
 	../include/geometry_structure.hpp \
 	../include/geometry_structure.inl \
 	../include/grid_adaptation_structure.hpp \
@@ -141,23 +146,37 @@ am__libSU2_a_SOURCES_DIST =  \
 	../include/mpi_structure.inl ../include/datatype_structure.hpp \
 	../include/datatype_structure.inl \
 	../include/interpolation_structure.hpp \
+	../include/gauss_jacobi_quadrature.hpp \
+	../include/gauss_jacobi_quadrature.inl \
 	../include/gauss_structure.hpp ../include/gauss_structure.inl \
 	../include/element_structure.hpp \
 	../include/element_structure.inl ../include/adt_structure.hpp \
 	../include/adt_structure.inl ../src/config_structure.cpp \
-	../src/dual_grid_structure.cpp ../src/geometry_structure.cpp \
+	../src/dense_matrix_product.cpp ../src/dual_grid_structure.cpp \
+	../src/fem_geometry_structure.cpp \
+	../src/fem_integration_rules.cpp \
+	../src/fem_standard_element.cpp ../src/fem_wall_distance.cpp \
+	../src/fem_work_estimate_metis.cpp ../src/gelite.cpp \
+	../src/geometry_structure.cpp \
 	../src/grid_adaptation_structure.cpp \
 	../src/grid_movement_structure.cpp \
 	../src/linear_solvers_structure.cpp \
 	../src/primal_grid_structure.cpp ../src/vector_structure.cpp \
 	../src/matrix_structure.cpp ../src/mpi_structure.cpp \
 	../src/linear_solvers_structure_b.cpp ../src/ad_structure.cpp \
-	../src/gauss_structure.cpp ../src/element_structure.cpp \
-	../src/element_linear.cpp ../src/interpolation_structure.cpp \
-	../src/adt_structure.cpp
+	../src/gauss_jacobi_quadrature.cpp ../src/gauss_structure.cpp \
+	../src/element_structure.cpp ../src/element_linear.cpp \
+	../src/interpolation_structure.cpp ../src/adt_structure.cpp
 am__dirstamp = $(am__leading_dot)dirstamp
 am__objects_1 = ../src/libSU2_a-config_structure.$(OBJEXT) \
+	../src/libSU2_a-dense_matrix_product.$(OBJEXT) \
 	../src/libSU2_a-dual_grid_structure.$(OBJEXT) \
+	../src/libSU2_a-fem_geometry_structure.$(OBJEXT) \
+	../src/libSU2_a-fem_integration_rules.$(OBJEXT) \
+	../src/libSU2_a-fem_standard_element.$(OBJEXT) \
+	../src/libSU2_a-fem_wall_distance.$(OBJEXT) \
+	../src/libSU2_a-fem_work_estimate_metis.$(OBJEXT) \
+	../src/libSU2_a-gelite.$(OBJEXT) \
 	../src/libSU2_a-geometry_structure.$(OBJEXT) \
 	../src/libSU2_a-grid_adaptation_structure.$(OBJEXT) \
 	../src/libSU2_a-grid_movement_structure.$(OBJEXT) \
@@ -168,6 +187,7 @@ am__objects_1 = ../src/libSU2_a-config_structure.$(OBJEXT) \
 	../src/libSU2_a-mpi_structure.$(OBJEXT) \
 	../src/libSU2_a-linear_solvers_structure_b.$(OBJEXT) \
 	../src/libSU2_a-ad_structure.$(OBJEXT) \
+	../src/libSU2_a-gauss_jacobi_quadrature.$(OBJEXT) \
 	../src/libSU2_a-gauss_structure.$(OBJEXT) \
 	../src/libSU2_a-element_structure.$(OBJEXT) \
 	../src/libSU2_a-element_linear.$(OBJEXT) \
@@ -185,8 +205,13 @@ am__libSU2_AD_a_SOURCES_DIST =  \
 	../include/ad_structure.hpp ../include/ad_structure.inl \
 	../include/config_structure.hpp \
 	../include/config_structure.inl \
+	../include/dense_matrix_product.hpp \
 	../include/dual_grid_structure.hpp \
 	../include/dual_grid_structure.inl \
+	../include/fem_geometry_structure.hpp \
+	../include/fem_geometry_structure.inl \
+	../include/fem_standard_element.hpp \
+	../include/fem_standard_element.inl ../include/gelite.hpp \
 	../include/geometry_structure.hpp \
 	../include/geometry_structure.inl \
 	../include/grid_adaptation_structure.hpp \
@@ -206,22 +231,36 @@ am__libSU2_AD_a_SOURCES_DIST =  \
 	../include/mpi_structure.inl ../include/datatype_structure.hpp \
 	../include/datatype_structure.inl \
 	../include/interpolation_structure.hpp \
+	../include/gauss_jacobi_quadrature.hpp \
+	../include/gauss_jacobi_quadrature.inl \
 	../include/gauss_structure.hpp ../include/gauss_structure.inl \
 	../include/element_structure.hpp \
 	../include/element_structure.inl ../include/adt_structure.hpp \
 	../include/adt_structure.inl ../src/config_structure.cpp \
-	../src/dual_grid_structure.cpp ../src/geometry_structure.cpp \
+	../src/dense_matrix_product.cpp ../src/dual_grid_structure.cpp \
+	../src/fem_geometry_structure.cpp \
+	../src/fem_integration_rules.cpp \
+	../src/fem_standard_element.cpp ../src/fem_wall_distance.cpp \
+	../src/fem_work_estimate_metis.cpp ../src/gelite.cpp \
+	../src/geometry_structure.cpp \
 	../src/grid_adaptation_structure.cpp \
 	../src/grid_movement_structure.cpp \
 	../src/linear_solvers_structure.cpp \
 	../src/primal_grid_structure.cpp ../src/vector_structure.cpp \
 	../src/matrix_structure.cpp ../src/mpi_structure.cpp \
 	../src/linear_solvers_structure_b.cpp ../src/ad_structure.cpp \
-	../src/gauss_structure.cpp ../src/element_structure.cpp \
-	../src/element_linear.cpp ../src/interpolation_structure.cpp \
-	../src/adt_structure.cpp
+	../src/gauss_jacobi_quadrature.cpp ../src/gauss_structure.cpp \
+	../src/element_structure.cpp ../src/element_linear.cpp \
+	../src/interpolation_structure.cpp ../src/adt_structure.cpp
 am__objects_2 = ../src/libSU2_AD_a-config_structure.$(OBJEXT) \
+	../src/libSU2_AD_a-dense_matrix_product.$(OBJEXT) \
 	../src/libSU2_AD_a-dual_grid_structure.$(OBJEXT) \
+	../src/libSU2_AD_a-fem_geometry_structure.$(OBJEXT) \
+	../src/libSU2_AD_a-fem_integration_rules.$(OBJEXT) \
+	../src/libSU2_AD_a-fem_standard_element.$(OBJEXT) \
+	../src/libSU2_AD_a-fem_wall_distance.$(OBJEXT) \
+	../src/libSU2_AD_a-fem_work_estimate_metis.$(OBJEXT) \
+	../src/libSU2_AD_a-gelite.$(OBJEXT) \
 	../src/libSU2_AD_a-geometry_structure.$(OBJEXT) \
 	../src/libSU2_AD_a-grid_adaptation_structure.$(OBJEXT) \
 	../src/libSU2_AD_a-grid_movement_structure.$(OBJEXT) \
@@ -232,6 +271,7 @@ am__objects_2 = ../src/libSU2_AD_a-config_structure.$(OBJEXT) \
 	../src/libSU2_AD_a-mpi_structure.$(OBJEXT) \
 	../src/libSU2_AD_a-linear_solvers_structure_b.$(OBJEXT) \
 	../src/libSU2_AD_a-ad_structure.$(OBJEXT) \
+	../src/libSU2_AD_a-gauss_jacobi_quadrature.$(OBJEXT) \
 	../src/libSU2_AD_a-gauss_structure.$(OBJEXT) \
 	../src/libSU2_AD_a-element_structure.$(OBJEXT) \
 	../src/libSU2_AD_a-element_linear.$(OBJEXT) \
@@ -250,8 +290,13 @@ am__libSU2_DIRECTDIFF_a_SOURCES_DIST =  \
 	../include/ad_structure.hpp ../include/ad_structure.inl \
 	../include/config_structure.hpp \
 	../include/config_structure.inl \
+	../include/dense_matrix_product.hpp \
 	../include/dual_grid_structure.hpp \
 	../include/dual_grid_structure.inl \
+	../include/fem_geometry_structure.hpp \
+	../include/fem_geometry_structure.inl \
+	../include/fem_standard_element.hpp \
+	../include/fem_standard_element.inl ../include/gelite.hpp \
 	../include/geometry_structure.hpp \
 	../include/geometry_structure.inl \
 	../include/grid_adaptation_structure.hpp \
@@ -271,22 +316,36 @@ am__libSU2_DIRECTDIFF_a_SOURCES_DIST =  \
 	../include/mpi_structure.inl ../include/datatype_structure.hpp \
 	../include/datatype_structure.inl \
 	../include/interpolation_structure.hpp \
+	../include/gauss_jacobi_quadrature.hpp \
+	../include/gauss_jacobi_quadrature.inl \
 	../include/gauss_structure.hpp ../include/gauss_structure.inl \
 	../include/element_structure.hpp \
 	../include/element_structure.inl ../include/adt_structure.hpp \
 	../include/adt_structure.inl ../src/config_structure.cpp \
-	../src/dual_grid_structure.cpp ../src/geometry_structure.cpp \
+	../src/dense_matrix_product.cpp ../src/dual_grid_structure.cpp \
+	../src/fem_geometry_structure.cpp \
+	../src/fem_integration_rules.cpp \
+	../src/fem_standard_element.cpp ../src/fem_wall_distance.cpp \
+	../src/fem_work_estimate_metis.cpp ../src/gelite.cpp \
+	../src/geometry_structure.cpp \
 	../src/grid_adaptation_structure.cpp \
 	../src/grid_movement_structure.cpp \
 	../src/linear_solvers_structure.cpp \
 	../src/primal_grid_structure.cpp ../src/vector_structure.cpp \
 	../src/matrix_structure.cpp ../src/mpi_structure.cpp \
 	../src/linear_solvers_structure_b.cpp ../src/ad_structure.cpp \
-	../src/gauss_structure.cpp ../src/element_structure.cpp \
-	../src/element_linear.cpp ../src/interpolation_structure.cpp \
-	../src/adt_structure.cpp
+	../src/gauss_jacobi_quadrature.cpp ../src/gauss_structure.cpp \
+	../src/element_structure.cpp ../src/element_linear.cpp \
+	../src/interpolation_structure.cpp ../src/adt_structure.cpp
 am__objects_3 = ../src/libSU2_DIRECTDIFF_a-config_structure.$(OBJEXT) \
+	../src/libSU2_DIRECTDIFF_a-dense_matrix_product.$(OBJEXT) \
 	../src/libSU2_DIRECTDIFF_a-dual_grid_structure.$(OBJEXT) \
+	../src/libSU2_DIRECTDIFF_a-fem_geometry_structure.$(OBJEXT) \
+	../src/libSU2_DIRECTDIFF_a-fem_integration_rules.$(OBJEXT) \
+	../src/libSU2_DIRECTDIFF_a-fem_standard_element.$(OBJEXT) \
+	../src/libSU2_DIRECTDIFF_a-fem_wall_distance.$(OBJEXT) \
+	../src/libSU2_DIRECTDIFF_a-fem_work_estimate_metis.$(OBJEXT) \
+	../src/libSU2_DIRECTDIFF_a-gelite.$(OBJEXT) \
 	../src/libSU2_DIRECTDIFF_a-geometry_structure.$(OBJEXT) \
 	../src/libSU2_DIRECTDIFF_a-grid_adaptation_structure.$(OBJEXT) \
 	../src/libSU2_DIRECTDIFF_a-grid_movement_structure.$(OBJEXT) \
@@ -297,6 +356,7 @@ am__objects_3 = ../src/libSU2_DIRECTDIFF_a-config_structure.$(OBJEXT) \
 	../src/libSU2_DIRECTDIFF_a-mpi_structure.$(OBJEXT) \
 	../src/libSU2_DIRECTDIFF_a-linear_solvers_structure_b.$(OBJEXT) \
 	../src/libSU2_DIRECTDIFF_a-ad_structure.$(OBJEXT) \
+	../src/libSU2_DIRECTDIFF_a-gauss_jacobi_quadrature.$(OBJEXT) \
 	../src/libSU2_DIRECTDIFF_a-gauss_structure.$(OBJEXT) \
 	../src/libSU2_DIRECTDIFF_a-element_structure.$(OBJEXT) \
 	../src/libSU2_DIRECTDIFF_a-element_linear.$(OBJEXT) \
@@ -370,6 +430,10 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BLAS_CXX = @BLAS_CXX@
+BLAS_LD = @BLAS_LD@
+CBLAS_CXX = @CBLAS_CXX@
+CBLAS_LD = @CBLAS_LD@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -390,6 +454,8 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+GELITE_CXX = @GELITE_CXX@
+GELITE_LD = @GELITE_LD@
 GREP = @GREP@
 HDF5_CXX = @HDF5_CXX@
 HDF5_LD = @HDF5_LD@
@@ -509,8 +575,14 @@ lib_sources = \
   ../include/config_structure.hpp \
   ../include/config_structure.hpp \
   ../include/config_structure.inl \
+  ../include/dense_matrix_product.hpp \
   ../include/dual_grid_structure.hpp \
   ../include/dual_grid_structure.inl \
+  ../include/fem_geometry_structure.hpp \
+  ../include/fem_geometry_structure.inl \
+  ../include/fem_standard_element.hpp \
+  ../include/fem_standard_element.inl \
+  ../include/gelite.hpp \
   ../include/geometry_structure.hpp \
   ../include/geometry_structure.inl \
   ../include/grid_adaptation_structure.hpp \
@@ -532,6 +604,8 @@ lib_sources = \
   ../include/datatype_structure.hpp \
   ../include/datatype_structure.inl \
   ../include/interpolation_structure.hpp \
+  ../include/gauss_jacobi_quadrature.hpp \
+  ../include/gauss_jacobi_quadrature.inl \
   ../include/gauss_structure.hpp \
   ../include/gauss_structure.inl \
   ../include/element_structure.hpp \
@@ -539,7 +613,14 @@ lib_sources = \
   ../include/adt_structure.hpp \
   ../include/adt_structure.inl \
   ../src/config_structure.cpp \
+  ../src/dense_matrix_product.cpp \
   ../src/dual_grid_structure.cpp \
+  ../src/fem_geometry_structure.cpp \
+  ../src/fem_integration_rules.cpp \
+  ../src/fem_standard_element.cpp \
+  ../src/fem_wall_distance.cpp \
+  ../src/fem_work_estimate_metis.cpp \
+  ../src/gelite.cpp \
   ../src/geometry_structure.cpp \
   ../src/grid_adaptation_structure.cpp \
   ../src/grid_movement_structure.cpp \
@@ -550,6 +631,7 @@ lib_sources = \
   ../src/mpi_structure.cpp \
   ../src/linear_solvers_structure_b.cpp \
   ../src/ad_structure.cpp \
+  ../src/gauss_jacobi_quadrature.cpp \
   ../src/gauss_structure.cpp \
   ../src/element_structure.cpp \
   ../src/element_linear.cpp \
@@ -572,10 +654,14 @@ lib_sources = \
 # endif
 
 # if BUILD_JSONCPP
+# endif
+
+# if BUILD_GELITE
 lib_cxxflags = -fPIC @su2_externals_INCLUDES@ @HDF5_CXX@ @SZIP_CXX@ \
-	@ZLIB_CXX@ @MUTATIONPP_CXX@ @JSONCPP_CXX@ $(am__empty)
+	@ZLIB_CXX@ @MUTATIONPP_CXX@ @JSONCPP_CXX@ @GELITE_CXX@ \
+	$(am__empty)
 lib_ldadd = @su2_externals_LIBS@ @HDF5_LD@ @SZIP_LD@ @ZLIB_LD@ \
-	@MUTATIONPP_LD@ @JSONCPP_LD@ $(am__empty)
+	@MUTATIONPP_LD@ @JSONCPP_LD@ @GELITE_LD@ $(am__empty)
 # endif
 @BUILD_NORMAL_TRUE@libSU2_a_SOURCES = $(lib_sources)
 @BUILD_NORMAL_TRUE@libSU2_a_CXXFLAGS = ${lib_cxxflags}
@@ -631,7 +717,21 @@ clean-noinstLIBRARIES:
 	@: > ../src/$(DEPDIR)/$(am__dirstamp)
 ../src/libSU2_a-config_structure.$(OBJEXT): ../src/$(am__dirstamp) \
 	../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2_a-dense_matrix_product.$(OBJEXT):  \
+	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
 ../src/libSU2_a-dual_grid_structure.$(OBJEXT): ../src/$(am__dirstamp) \
+	../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2_a-fem_geometry_structure.$(OBJEXT):  \
+	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2_a-fem_integration_rules.$(OBJEXT):  \
+	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2_a-fem_standard_element.$(OBJEXT):  \
+	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2_a-fem_wall_distance.$(OBJEXT): ../src/$(am__dirstamp) \
+	../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2_a-fem_work_estimate_metis.$(OBJEXT):  \
+	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2_a-gelite.$(OBJEXT): ../src/$(am__dirstamp) \
 	../src/$(DEPDIR)/$(am__dirstamp)
 ../src/libSU2_a-geometry_structure.$(OBJEXT): ../src/$(am__dirstamp) \
 	../src/$(DEPDIR)/$(am__dirstamp)
@@ -653,6 +753,8 @@ clean-noinstLIBRARIES:
 	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
 ../src/libSU2_a-ad_structure.$(OBJEXT): ../src/$(am__dirstamp) \
 	../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2_a-gauss_jacobi_quadrature.$(OBJEXT):  \
+	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
 ../src/libSU2_a-gauss_structure.$(OBJEXT): ../src/$(am__dirstamp) \
 	../src/$(DEPDIR)/$(am__dirstamp)
 ../src/libSU2_a-element_structure.$(OBJEXT): ../src/$(am__dirstamp) \
@@ -669,8 +771,22 @@ libSU2.a: $(libSU2_a_OBJECTS) $(libSU2_a_DEPENDENCIES) $(EXTRA_libSU2_a_DEPENDEN
 	$(AM_V_at)$(RANLIB) libSU2.a
 ../src/libSU2_AD_a-config_structure.$(OBJEXT): ../src/$(am__dirstamp) \
 	../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2_AD_a-dense_matrix_product.$(OBJEXT):  \
+	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
 ../src/libSU2_AD_a-dual_grid_structure.$(OBJEXT):  \
 	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2_AD_a-fem_geometry_structure.$(OBJEXT):  \
+	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2_AD_a-fem_integration_rules.$(OBJEXT):  \
+	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2_AD_a-fem_standard_element.$(OBJEXT):  \
+	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2_AD_a-fem_wall_distance.$(OBJEXT):  \
+	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2_AD_a-fem_work_estimate_metis.$(OBJEXT):  \
+	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2_AD_a-gelite.$(OBJEXT): ../src/$(am__dirstamp) \
+	../src/$(DEPDIR)/$(am__dirstamp)
 ../src/libSU2_AD_a-geometry_structure.$(OBJEXT):  \
 	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
 ../src/libSU2_AD_a-grid_adaptation_structure.$(OBJEXT):  \
@@ -691,6 +807,8 @@ libSU2.a: $(libSU2_a_OBJECTS) $(libSU2_a_DEPENDENCIES) $(EXTRA_libSU2_a_DEPENDEN
 	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
 ../src/libSU2_AD_a-ad_structure.$(OBJEXT): ../src/$(am__dirstamp) \
 	../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2_AD_a-gauss_jacobi_quadrature.$(OBJEXT):  \
+	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
 ../src/libSU2_AD_a-gauss_structure.$(OBJEXT): ../src/$(am__dirstamp) \
 	../src/$(DEPDIR)/$(am__dirstamp)
 ../src/libSU2_AD_a-element_structure.$(OBJEXT):  \
@@ -707,8 +825,22 @@ libSU2_AD.a: $(libSU2_AD_a_OBJECTS) $(libSU2_AD_a_DEPENDENCIES) $(EXTRA_libSU2_A
 	$(AM_V_at)$(RANLIB) libSU2_AD.a
 ../src/libSU2_DIRECTDIFF_a-config_structure.$(OBJEXT):  \
 	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2_DIRECTDIFF_a-dense_matrix_product.$(OBJEXT):  \
+	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
 ../src/libSU2_DIRECTDIFF_a-dual_grid_structure.$(OBJEXT):  \
 	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2_DIRECTDIFF_a-fem_geometry_structure.$(OBJEXT):  \
+	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2_DIRECTDIFF_a-fem_integration_rules.$(OBJEXT):  \
+	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2_DIRECTDIFF_a-fem_standard_element.$(OBJEXT):  \
+	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2_DIRECTDIFF_a-fem_wall_distance.$(OBJEXT):  \
+	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2_DIRECTDIFF_a-fem_work_estimate_metis.$(OBJEXT):  \
+	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2_DIRECTDIFF_a-gelite.$(OBJEXT): ../src/$(am__dirstamp) \
+	../src/$(DEPDIR)/$(am__dirstamp)
 ../src/libSU2_DIRECTDIFF_a-geometry_structure.$(OBJEXT):  \
 	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
 ../src/libSU2_DIRECTDIFF_a-grid_adaptation_structure.$(OBJEXT):  \
@@ -728,6 +860,8 @@ libSU2_AD.a: $(libSU2_AD_a_OBJECTS) $(libSU2_AD_a_DEPENDENCIES) $(EXTRA_libSU2_A
 ../src/libSU2_DIRECTDIFF_a-linear_solvers_structure_b.$(OBJEXT):  \
 	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
 ../src/libSU2_DIRECTDIFF_a-ad_structure.$(OBJEXT):  \
+	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2_DIRECTDIFF_a-gauss_jacobi_quadrature.$(OBJEXT):  \
 	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
 ../src/libSU2_DIRECTDIFF_a-gauss_structure.$(OBJEXT):  \
 	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
@@ -754,10 +888,18 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_AD_a-ad_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_AD_a-adt_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_AD_a-config_structure.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_AD_a-dense_matrix_product.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_AD_a-dual_grid_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_AD_a-element_linear.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_AD_a-element_structure.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_AD_a-fem_geometry_structure.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_AD_a-fem_integration_rules.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_AD_a-fem_standard_element.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_AD_a-fem_wall_distance.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_AD_a-fem_work_estimate_metis.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_AD_a-gauss_jacobi_quadrature.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_AD_a-gauss_structure.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_AD_a-gelite.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_AD_a-geometry_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_AD_a-grid_adaptation_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_AD_a-grid_movement_structure.Po@am__quote@
@@ -771,10 +913,18 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-ad_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-adt_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-config_structure.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-dense_matrix_product.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-dual_grid_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-element_linear.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-element_structure.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_geometry_structure.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_integration_rules.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_standard_element.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_wall_distance.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_work_estimate_metis.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-gauss_jacobi_quadrature.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-gauss_structure.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-gelite.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-geometry_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-grid_adaptation_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-grid_movement_structure.Po@am__quote@
@@ -788,10 +938,18 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_a-ad_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_a-adt_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_a-config_structure.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_a-dense_matrix_product.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_a-dual_grid_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_a-element_linear.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_a-element_structure.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_a-fem_geometry_structure.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_a-fem_integration_rules.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_a-fem_standard_element.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_a-fem_wall_distance.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_a-fem_work_estimate_metis.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_a-gauss_jacobi_quadrature.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_a-gauss_structure.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_a-gelite.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_a-geometry_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_a-grid_adaptation_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_a-grid_movement_structure.Po@am__quote@
@@ -833,6 +991,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_a-config_structure.obj `if test -f '../src/config_structure.cpp'; then $(CYGPATH_W) '../src/config_structure.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/config_structure.cpp'; fi`
 
+../src/libSU2_a-dense_matrix_product.o: ../src/dense_matrix_product.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_a-dense_matrix_product.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_a-dense_matrix_product.Tpo -c -o ../src/libSU2_a-dense_matrix_product.o `test -f '../src/dense_matrix_product.cpp' || echo '$(srcdir)/'`../src/dense_matrix_product.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_a-dense_matrix_product.Tpo ../src/$(DEPDIR)/libSU2_a-dense_matrix_product.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/dense_matrix_product.cpp' object='../src/libSU2_a-dense_matrix_product.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_a-dense_matrix_product.o `test -f '../src/dense_matrix_product.cpp' || echo '$(srcdir)/'`../src/dense_matrix_product.cpp
+
+../src/libSU2_a-dense_matrix_product.obj: ../src/dense_matrix_product.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_a-dense_matrix_product.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2_a-dense_matrix_product.Tpo -c -o ../src/libSU2_a-dense_matrix_product.obj `if test -f '../src/dense_matrix_product.cpp'; then $(CYGPATH_W) '../src/dense_matrix_product.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/dense_matrix_product.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_a-dense_matrix_product.Tpo ../src/$(DEPDIR)/libSU2_a-dense_matrix_product.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/dense_matrix_product.cpp' object='../src/libSU2_a-dense_matrix_product.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_a-dense_matrix_product.obj `if test -f '../src/dense_matrix_product.cpp'; then $(CYGPATH_W) '../src/dense_matrix_product.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/dense_matrix_product.cpp'; fi`
+
 ../src/libSU2_a-dual_grid_structure.o: ../src/dual_grid_structure.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_a-dual_grid_structure.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_a-dual_grid_structure.Tpo -c -o ../src/libSU2_a-dual_grid_structure.o `test -f '../src/dual_grid_structure.cpp' || echo '$(srcdir)/'`../src/dual_grid_structure.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_a-dual_grid_structure.Tpo ../src/$(DEPDIR)/libSU2_a-dual_grid_structure.Po
@@ -846,6 +1018,90 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/dual_grid_structure.cpp' object='../src/libSU2_a-dual_grid_structure.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_a-dual_grid_structure.obj `if test -f '../src/dual_grid_structure.cpp'; then $(CYGPATH_W) '../src/dual_grid_structure.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/dual_grid_structure.cpp'; fi`
+
+../src/libSU2_a-fem_geometry_structure.o: ../src/fem_geometry_structure.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_a-fem_geometry_structure.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_a-fem_geometry_structure.Tpo -c -o ../src/libSU2_a-fem_geometry_structure.o `test -f '../src/fem_geometry_structure.cpp' || echo '$(srcdir)/'`../src/fem_geometry_structure.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_a-fem_geometry_structure.Tpo ../src/$(DEPDIR)/libSU2_a-fem_geometry_structure.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_geometry_structure.cpp' object='../src/libSU2_a-fem_geometry_structure.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_a-fem_geometry_structure.o `test -f '../src/fem_geometry_structure.cpp' || echo '$(srcdir)/'`../src/fem_geometry_structure.cpp
+
+../src/libSU2_a-fem_geometry_structure.obj: ../src/fem_geometry_structure.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_a-fem_geometry_structure.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2_a-fem_geometry_structure.Tpo -c -o ../src/libSU2_a-fem_geometry_structure.obj `if test -f '../src/fem_geometry_structure.cpp'; then $(CYGPATH_W) '../src/fem_geometry_structure.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_geometry_structure.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_a-fem_geometry_structure.Tpo ../src/$(DEPDIR)/libSU2_a-fem_geometry_structure.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_geometry_structure.cpp' object='../src/libSU2_a-fem_geometry_structure.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_a-fem_geometry_structure.obj `if test -f '../src/fem_geometry_structure.cpp'; then $(CYGPATH_W) '../src/fem_geometry_structure.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_geometry_structure.cpp'; fi`
+
+../src/libSU2_a-fem_integration_rules.o: ../src/fem_integration_rules.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_a-fem_integration_rules.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_a-fem_integration_rules.Tpo -c -o ../src/libSU2_a-fem_integration_rules.o `test -f '../src/fem_integration_rules.cpp' || echo '$(srcdir)/'`../src/fem_integration_rules.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_a-fem_integration_rules.Tpo ../src/$(DEPDIR)/libSU2_a-fem_integration_rules.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_integration_rules.cpp' object='../src/libSU2_a-fem_integration_rules.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_a-fem_integration_rules.o `test -f '../src/fem_integration_rules.cpp' || echo '$(srcdir)/'`../src/fem_integration_rules.cpp
+
+../src/libSU2_a-fem_integration_rules.obj: ../src/fem_integration_rules.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_a-fem_integration_rules.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2_a-fem_integration_rules.Tpo -c -o ../src/libSU2_a-fem_integration_rules.obj `if test -f '../src/fem_integration_rules.cpp'; then $(CYGPATH_W) '../src/fem_integration_rules.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_integration_rules.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_a-fem_integration_rules.Tpo ../src/$(DEPDIR)/libSU2_a-fem_integration_rules.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_integration_rules.cpp' object='../src/libSU2_a-fem_integration_rules.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_a-fem_integration_rules.obj `if test -f '../src/fem_integration_rules.cpp'; then $(CYGPATH_W) '../src/fem_integration_rules.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_integration_rules.cpp'; fi`
+
+../src/libSU2_a-fem_standard_element.o: ../src/fem_standard_element.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_a-fem_standard_element.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_a-fem_standard_element.Tpo -c -o ../src/libSU2_a-fem_standard_element.o `test -f '../src/fem_standard_element.cpp' || echo '$(srcdir)/'`../src/fem_standard_element.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_a-fem_standard_element.Tpo ../src/$(DEPDIR)/libSU2_a-fem_standard_element.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_standard_element.cpp' object='../src/libSU2_a-fem_standard_element.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_a-fem_standard_element.o `test -f '../src/fem_standard_element.cpp' || echo '$(srcdir)/'`../src/fem_standard_element.cpp
+
+../src/libSU2_a-fem_standard_element.obj: ../src/fem_standard_element.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_a-fem_standard_element.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2_a-fem_standard_element.Tpo -c -o ../src/libSU2_a-fem_standard_element.obj `if test -f '../src/fem_standard_element.cpp'; then $(CYGPATH_W) '../src/fem_standard_element.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_standard_element.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_a-fem_standard_element.Tpo ../src/$(DEPDIR)/libSU2_a-fem_standard_element.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_standard_element.cpp' object='../src/libSU2_a-fem_standard_element.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_a-fem_standard_element.obj `if test -f '../src/fem_standard_element.cpp'; then $(CYGPATH_W) '../src/fem_standard_element.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_standard_element.cpp'; fi`
+
+../src/libSU2_a-fem_wall_distance.o: ../src/fem_wall_distance.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_a-fem_wall_distance.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_a-fem_wall_distance.Tpo -c -o ../src/libSU2_a-fem_wall_distance.o `test -f '../src/fem_wall_distance.cpp' || echo '$(srcdir)/'`../src/fem_wall_distance.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_a-fem_wall_distance.Tpo ../src/$(DEPDIR)/libSU2_a-fem_wall_distance.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_wall_distance.cpp' object='../src/libSU2_a-fem_wall_distance.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_a-fem_wall_distance.o `test -f '../src/fem_wall_distance.cpp' || echo '$(srcdir)/'`../src/fem_wall_distance.cpp
+
+../src/libSU2_a-fem_wall_distance.obj: ../src/fem_wall_distance.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_a-fem_wall_distance.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2_a-fem_wall_distance.Tpo -c -o ../src/libSU2_a-fem_wall_distance.obj `if test -f '../src/fem_wall_distance.cpp'; then $(CYGPATH_W) '../src/fem_wall_distance.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_wall_distance.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_a-fem_wall_distance.Tpo ../src/$(DEPDIR)/libSU2_a-fem_wall_distance.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_wall_distance.cpp' object='../src/libSU2_a-fem_wall_distance.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_a-fem_wall_distance.obj `if test -f '../src/fem_wall_distance.cpp'; then $(CYGPATH_W) '../src/fem_wall_distance.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_wall_distance.cpp'; fi`
+
+../src/libSU2_a-fem_work_estimate_metis.o: ../src/fem_work_estimate_metis.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_a-fem_work_estimate_metis.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_a-fem_work_estimate_metis.Tpo -c -o ../src/libSU2_a-fem_work_estimate_metis.o `test -f '../src/fem_work_estimate_metis.cpp' || echo '$(srcdir)/'`../src/fem_work_estimate_metis.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_a-fem_work_estimate_metis.Tpo ../src/$(DEPDIR)/libSU2_a-fem_work_estimate_metis.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_work_estimate_metis.cpp' object='../src/libSU2_a-fem_work_estimate_metis.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_a-fem_work_estimate_metis.o `test -f '../src/fem_work_estimate_metis.cpp' || echo '$(srcdir)/'`../src/fem_work_estimate_metis.cpp
+
+../src/libSU2_a-fem_work_estimate_metis.obj: ../src/fem_work_estimate_metis.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_a-fem_work_estimate_metis.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2_a-fem_work_estimate_metis.Tpo -c -o ../src/libSU2_a-fem_work_estimate_metis.obj `if test -f '../src/fem_work_estimate_metis.cpp'; then $(CYGPATH_W) '../src/fem_work_estimate_metis.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_work_estimate_metis.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_a-fem_work_estimate_metis.Tpo ../src/$(DEPDIR)/libSU2_a-fem_work_estimate_metis.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_work_estimate_metis.cpp' object='../src/libSU2_a-fem_work_estimate_metis.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_a-fem_work_estimate_metis.obj `if test -f '../src/fem_work_estimate_metis.cpp'; then $(CYGPATH_W) '../src/fem_work_estimate_metis.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_work_estimate_metis.cpp'; fi`
+
+../src/libSU2_a-gelite.o: ../src/gelite.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_a-gelite.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_a-gelite.Tpo -c -o ../src/libSU2_a-gelite.o `test -f '../src/gelite.cpp' || echo '$(srcdir)/'`../src/gelite.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_a-gelite.Tpo ../src/$(DEPDIR)/libSU2_a-gelite.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/gelite.cpp' object='../src/libSU2_a-gelite.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_a-gelite.o `test -f '../src/gelite.cpp' || echo '$(srcdir)/'`../src/gelite.cpp
+
+../src/libSU2_a-gelite.obj: ../src/gelite.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_a-gelite.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2_a-gelite.Tpo -c -o ../src/libSU2_a-gelite.obj `if test -f '../src/gelite.cpp'; then $(CYGPATH_W) '../src/gelite.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/gelite.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_a-gelite.Tpo ../src/$(DEPDIR)/libSU2_a-gelite.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/gelite.cpp' object='../src/libSU2_a-gelite.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_a-gelite.obj `if test -f '../src/gelite.cpp'; then $(CYGPATH_W) '../src/gelite.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/gelite.cpp'; fi`
 
 ../src/libSU2_a-geometry_structure.o: ../src/geometry_structure.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_a-geometry_structure.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_a-geometry_structure.Tpo -c -o ../src/libSU2_a-geometry_structure.o `test -f '../src/geometry_structure.cpp' || echo '$(srcdir)/'`../src/geometry_structure.cpp
@@ -987,6 +1243,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_a-ad_structure.obj `if test -f '../src/ad_structure.cpp'; then $(CYGPATH_W) '../src/ad_structure.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/ad_structure.cpp'; fi`
 
+../src/libSU2_a-gauss_jacobi_quadrature.o: ../src/gauss_jacobi_quadrature.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_a-gauss_jacobi_quadrature.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_a-gauss_jacobi_quadrature.Tpo -c -o ../src/libSU2_a-gauss_jacobi_quadrature.o `test -f '../src/gauss_jacobi_quadrature.cpp' || echo '$(srcdir)/'`../src/gauss_jacobi_quadrature.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_a-gauss_jacobi_quadrature.Tpo ../src/$(DEPDIR)/libSU2_a-gauss_jacobi_quadrature.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/gauss_jacobi_quadrature.cpp' object='../src/libSU2_a-gauss_jacobi_quadrature.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_a-gauss_jacobi_quadrature.o `test -f '../src/gauss_jacobi_quadrature.cpp' || echo '$(srcdir)/'`../src/gauss_jacobi_quadrature.cpp
+
+../src/libSU2_a-gauss_jacobi_quadrature.obj: ../src/gauss_jacobi_quadrature.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_a-gauss_jacobi_quadrature.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2_a-gauss_jacobi_quadrature.Tpo -c -o ../src/libSU2_a-gauss_jacobi_quadrature.obj `if test -f '../src/gauss_jacobi_quadrature.cpp'; then $(CYGPATH_W) '../src/gauss_jacobi_quadrature.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/gauss_jacobi_quadrature.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_a-gauss_jacobi_quadrature.Tpo ../src/$(DEPDIR)/libSU2_a-gauss_jacobi_quadrature.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/gauss_jacobi_quadrature.cpp' object='../src/libSU2_a-gauss_jacobi_quadrature.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_a-gauss_jacobi_quadrature.obj `if test -f '../src/gauss_jacobi_quadrature.cpp'; then $(CYGPATH_W) '../src/gauss_jacobi_quadrature.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/gauss_jacobi_quadrature.cpp'; fi`
+
 ../src/libSU2_a-gauss_structure.o: ../src/gauss_structure.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_a-gauss_structure.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_a-gauss_structure.Tpo -c -o ../src/libSU2_a-gauss_structure.o `test -f '../src/gauss_structure.cpp' || echo '$(srcdir)/'`../src/gauss_structure.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_a-gauss_structure.Tpo ../src/$(DEPDIR)/libSU2_a-gauss_structure.Po
@@ -1071,6 +1341,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_AD_a-config_structure.obj `if test -f '../src/config_structure.cpp'; then $(CYGPATH_W) '../src/config_structure.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/config_structure.cpp'; fi`
 
+../src/libSU2_AD_a-dense_matrix_product.o: ../src/dense_matrix_product.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_AD_a-dense_matrix_product.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_AD_a-dense_matrix_product.Tpo -c -o ../src/libSU2_AD_a-dense_matrix_product.o `test -f '../src/dense_matrix_product.cpp' || echo '$(srcdir)/'`../src/dense_matrix_product.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_AD_a-dense_matrix_product.Tpo ../src/$(DEPDIR)/libSU2_AD_a-dense_matrix_product.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/dense_matrix_product.cpp' object='../src/libSU2_AD_a-dense_matrix_product.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_AD_a-dense_matrix_product.o `test -f '../src/dense_matrix_product.cpp' || echo '$(srcdir)/'`../src/dense_matrix_product.cpp
+
+../src/libSU2_AD_a-dense_matrix_product.obj: ../src/dense_matrix_product.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_AD_a-dense_matrix_product.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2_AD_a-dense_matrix_product.Tpo -c -o ../src/libSU2_AD_a-dense_matrix_product.obj `if test -f '../src/dense_matrix_product.cpp'; then $(CYGPATH_W) '../src/dense_matrix_product.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/dense_matrix_product.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_AD_a-dense_matrix_product.Tpo ../src/$(DEPDIR)/libSU2_AD_a-dense_matrix_product.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/dense_matrix_product.cpp' object='../src/libSU2_AD_a-dense_matrix_product.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_AD_a-dense_matrix_product.obj `if test -f '../src/dense_matrix_product.cpp'; then $(CYGPATH_W) '../src/dense_matrix_product.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/dense_matrix_product.cpp'; fi`
+
 ../src/libSU2_AD_a-dual_grid_structure.o: ../src/dual_grid_structure.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_AD_a-dual_grid_structure.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_AD_a-dual_grid_structure.Tpo -c -o ../src/libSU2_AD_a-dual_grid_structure.o `test -f '../src/dual_grid_structure.cpp' || echo '$(srcdir)/'`../src/dual_grid_structure.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_AD_a-dual_grid_structure.Tpo ../src/$(DEPDIR)/libSU2_AD_a-dual_grid_structure.Po
@@ -1084,6 +1368,90 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/dual_grid_structure.cpp' object='../src/libSU2_AD_a-dual_grid_structure.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_AD_a-dual_grid_structure.obj `if test -f '../src/dual_grid_structure.cpp'; then $(CYGPATH_W) '../src/dual_grid_structure.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/dual_grid_structure.cpp'; fi`
+
+../src/libSU2_AD_a-fem_geometry_structure.o: ../src/fem_geometry_structure.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_AD_a-fem_geometry_structure.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_AD_a-fem_geometry_structure.Tpo -c -o ../src/libSU2_AD_a-fem_geometry_structure.o `test -f '../src/fem_geometry_structure.cpp' || echo '$(srcdir)/'`../src/fem_geometry_structure.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_AD_a-fem_geometry_structure.Tpo ../src/$(DEPDIR)/libSU2_AD_a-fem_geometry_structure.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_geometry_structure.cpp' object='../src/libSU2_AD_a-fem_geometry_structure.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_AD_a-fem_geometry_structure.o `test -f '../src/fem_geometry_structure.cpp' || echo '$(srcdir)/'`../src/fem_geometry_structure.cpp
+
+../src/libSU2_AD_a-fem_geometry_structure.obj: ../src/fem_geometry_structure.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_AD_a-fem_geometry_structure.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2_AD_a-fem_geometry_structure.Tpo -c -o ../src/libSU2_AD_a-fem_geometry_structure.obj `if test -f '../src/fem_geometry_structure.cpp'; then $(CYGPATH_W) '../src/fem_geometry_structure.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_geometry_structure.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_AD_a-fem_geometry_structure.Tpo ../src/$(DEPDIR)/libSU2_AD_a-fem_geometry_structure.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_geometry_structure.cpp' object='../src/libSU2_AD_a-fem_geometry_structure.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_AD_a-fem_geometry_structure.obj `if test -f '../src/fem_geometry_structure.cpp'; then $(CYGPATH_W) '../src/fem_geometry_structure.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_geometry_structure.cpp'; fi`
+
+../src/libSU2_AD_a-fem_integration_rules.o: ../src/fem_integration_rules.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_AD_a-fem_integration_rules.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_AD_a-fem_integration_rules.Tpo -c -o ../src/libSU2_AD_a-fem_integration_rules.o `test -f '../src/fem_integration_rules.cpp' || echo '$(srcdir)/'`../src/fem_integration_rules.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_AD_a-fem_integration_rules.Tpo ../src/$(DEPDIR)/libSU2_AD_a-fem_integration_rules.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_integration_rules.cpp' object='../src/libSU2_AD_a-fem_integration_rules.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_AD_a-fem_integration_rules.o `test -f '../src/fem_integration_rules.cpp' || echo '$(srcdir)/'`../src/fem_integration_rules.cpp
+
+../src/libSU2_AD_a-fem_integration_rules.obj: ../src/fem_integration_rules.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_AD_a-fem_integration_rules.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2_AD_a-fem_integration_rules.Tpo -c -o ../src/libSU2_AD_a-fem_integration_rules.obj `if test -f '../src/fem_integration_rules.cpp'; then $(CYGPATH_W) '../src/fem_integration_rules.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_integration_rules.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_AD_a-fem_integration_rules.Tpo ../src/$(DEPDIR)/libSU2_AD_a-fem_integration_rules.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_integration_rules.cpp' object='../src/libSU2_AD_a-fem_integration_rules.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_AD_a-fem_integration_rules.obj `if test -f '../src/fem_integration_rules.cpp'; then $(CYGPATH_W) '../src/fem_integration_rules.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_integration_rules.cpp'; fi`
+
+../src/libSU2_AD_a-fem_standard_element.o: ../src/fem_standard_element.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_AD_a-fem_standard_element.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_AD_a-fem_standard_element.Tpo -c -o ../src/libSU2_AD_a-fem_standard_element.o `test -f '../src/fem_standard_element.cpp' || echo '$(srcdir)/'`../src/fem_standard_element.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_AD_a-fem_standard_element.Tpo ../src/$(DEPDIR)/libSU2_AD_a-fem_standard_element.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_standard_element.cpp' object='../src/libSU2_AD_a-fem_standard_element.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_AD_a-fem_standard_element.o `test -f '../src/fem_standard_element.cpp' || echo '$(srcdir)/'`../src/fem_standard_element.cpp
+
+../src/libSU2_AD_a-fem_standard_element.obj: ../src/fem_standard_element.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_AD_a-fem_standard_element.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2_AD_a-fem_standard_element.Tpo -c -o ../src/libSU2_AD_a-fem_standard_element.obj `if test -f '../src/fem_standard_element.cpp'; then $(CYGPATH_W) '../src/fem_standard_element.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_standard_element.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_AD_a-fem_standard_element.Tpo ../src/$(DEPDIR)/libSU2_AD_a-fem_standard_element.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_standard_element.cpp' object='../src/libSU2_AD_a-fem_standard_element.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_AD_a-fem_standard_element.obj `if test -f '../src/fem_standard_element.cpp'; then $(CYGPATH_W) '../src/fem_standard_element.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_standard_element.cpp'; fi`
+
+../src/libSU2_AD_a-fem_wall_distance.o: ../src/fem_wall_distance.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_AD_a-fem_wall_distance.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_AD_a-fem_wall_distance.Tpo -c -o ../src/libSU2_AD_a-fem_wall_distance.o `test -f '../src/fem_wall_distance.cpp' || echo '$(srcdir)/'`../src/fem_wall_distance.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_AD_a-fem_wall_distance.Tpo ../src/$(DEPDIR)/libSU2_AD_a-fem_wall_distance.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_wall_distance.cpp' object='../src/libSU2_AD_a-fem_wall_distance.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_AD_a-fem_wall_distance.o `test -f '../src/fem_wall_distance.cpp' || echo '$(srcdir)/'`../src/fem_wall_distance.cpp
+
+../src/libSU2_AD_a-fem_wall_distance.obj: ../src/fem_wall_distance.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_AD_a-fem_wall_distance.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2_AD_a-fem_wall_distance.Tpo -c -o ../src/libSU2_AD_a-fem_wall_distance.obj `if test -f '../src/fem_wall_distance.cpp'; then $(CYGPATH_W) '../src/fem_wall_distance.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_wall_distance.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_AD_a-fem_wall_distance.Tpo ../src/$(DEPDIR)/libSU2_AD_a-fem_wall_distance.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_wall_distance.cpp' object='../src/libSU2_AD_a-fem_wall_distance.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_AD_a-fem_wall_distance.obj `if test -f '../src/fem_wall_distance.cpp'; then $(CYGPATH_W) '../src/fem_wall_distance.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_wall_distance.cpp'; fi`
+
+../src/libSU2_AD_a-fem_work_estimate_metis.o: ../src/fem_work_estimate_metis.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_AD_a-fem_work_estimate_metis.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_AD_a-fem_work_estimate_metis.Tpo -c -o ../src/libSU2_AD_a-fem_work_estimate_metis.o `test -f '../src/fem_work_estimate_metis.cpp' || echo '$(srcdir)/'`../src/fem_work_estimate_metis.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_AD_a-fem_work_estimate_metis.Tpo ../src/$(DEPDIR)/libSU2_AD_a-fem_work_estimate_metis.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_work_estimate_metis.cpp' object='../src/libSU2_AD_a-fem_work_estimate_metis.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_AD_a-fem_work_estimate_metis.o `test -f '../src/fem_work_estimate_metis.cpp' || echo '$(srcdir)/'`../src/fem_work_estimate_metis.cpp
+
+../src/libSU2_AD_a-fem_work_estimate_metis.obj: ../src/fem_work_estimate_metis.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_AD_a-fem_work_estimate_metis.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2_AD_a-fem_work_estimate_metis.Tpo -c -o ../src/libSU2_AD_a-fem_work_estimate_metis.obj `if test -f '../src/fem_work_estimate_metis.cpp'; then $(CYGPATH_W) '../src/fem_work_estimate_metis.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_work_estimate_metis.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_AD_a-fem_work_estimate_metis.Tpo ../src/$(DEPDIR)/libSU2_AD_a-fem_work_estimate_metis.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_work_estimate_metis.cpp' object='../src/libSU2_AD_a-fem_work_estimate_metis.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_AD_a-fem_work_estimate_metis.obj `if test -f '../src/fem_work_estimate_metis.cpp'; then $(CYGPATH_W) '../src/fem_work_estimate_metis.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_work_estimate_metis.cpp'; fi`
+
+../src/libSU2_AD_a-gelite.o: ../src/gelite.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_AD_a-gelite.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_AD_a-gelite.Tpo -c -o ../src/libSU2_AD_a-gelite.o `test -f '../src/gelite.cpp' || echo '$(srcdir)/'`../src/gelite.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_AD_a-gelite.Tpo ../src/$(DEPDIR)/libSU2_AD_a-gelite.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/gelite.cpp' object='../src/libSU2_AD_a-gelite.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_AD_a-gelite.o `test -f '../src/gelite.cpp' || echo '$(srcdir)/'`../src/gelite.cpp
+
+../src/libSU2_AD_a-gelite.obj: ../src/gelite.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_AD_a-gelite.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2_AD_a-gelite.Tpo -c -o ../src/libSU2_AD_a-gelite.obj `if test -f '../src/gelite.cpp'; then $(CYGPATH_W) '../src/gelite.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/gelite.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_AD_a-gelite.Tpo ../src/$(DEPDIR)/libSU2_AD_a-gelite.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/gelite.cpp' object='../src/libSU2_AD_a-gelite.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_AD_a-gelite.obj `if test -f '../src/gelite.cpp'; then $(CYGPATH_W) '../src/gelite.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/gelite.cpp'; fi`
 
 ../src/libSU2_AD_a-geometry_structure.o: ../src/geometry_structure.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_AD_a-geometry_structure.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_AD_a-geometry_structure.Tpo -c -o ../src/libSU2_AD_a-geometry_structure.o `test -f '../src/geometry_structure.cpp' || echo '$(srcdir)/'`../src/geometry_structure.cpp
@@ -1225,6 +1593,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_AD_a-ad_structure.obj `if test -f '../src/ad_structure.cpp'; then $(CYGPATH_W) '../src/ad_structure.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/ad_structure.cpp'; fi`
 
+../src/libSU2_AD_a-gauss_jacobi_quadrature.o: ../src/gauss_jacobi_quadrature.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_AD_a-gauss_jacobi_quadrature.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_AD_a-gauss_jacobi_quadrature.Tpo -c -o ../src/libSU2_AD_a-gauss_jacobi_quadrature.o `test -f '../src/gauss_jacobi_quadrature.cpp' || echo '$(srcdir)/'`../src/gauss_jacobi_quadrature.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_AD_a-gauss_jacobi_quadrature.Tpo ../src/$(DEPDIR)/libSU2_AD_a-gauss_jacobi_quadrature.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/gauss_jacobi_quadrature.cpp' object='../src/libSU2_AD_a-gauss_jacobi_quadrature.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_AD_a-gauss_jacobi_quadrature.o `test -f '../src/gauss_jacobi_quadrature.cpp' || echo '$(srcdir)/'`../src/gauss_jacobi_quadrature.cpp
+
+../src/libSU2_AD_a-gauss_jacobi_quadrature.obj: ../src/gauss_jacobi_quadrature.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_AD_a-gauss_jacobi_quadrature.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2_AD_a-gauss_jacobi_quadrature.Tpo -c -o ../src/libSU2_AD_a-gauss_jacobi_quadrature.obj `if test -f '../src/gauss_jacobi_quadrature.cpp'; then $(CYGPATH_W) '../src/gauss_jacobi_quadrature.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/gauss_jacobi_quadrature.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_AD_a-gauss_jacobi_quadrature.Tpo ../src/$(DEPDIR)/libSU2_AD_a-gauss_jacobi_quadrature.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/gauss_jacobi_quadrature.cpp' object='../src/libSU2_AD_a-gauss_jacobi_quadrature.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_AD_a-gauss_jacobi_quadrature.obj `if test -f '../src/gauss_jacobi_quadrature.cpp'; then $(CYGPATH_W) '../src/gauss_jacobi_quadrature.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/gauss_jacobi_quadrature.cpp'; fi`
+
 ../src/libSU2_AD_a-gauss_structure.o: ../src/gauss_structure.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_AD_a-gauss_structure.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_AD_a-gauss_structure.Tpo -c -o ../src/libSU2_AD_a-gauss_structure.o `test -f '../src/gauss_structure.cpp' || echo '$(srcdir)/'`../src/gauss_structure.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_AD_a-gauss_structure.Tpo ../src/$(DEPDIR)/libSU2_AD_a-gauss_structure.Po
@@ -1309,6 +1691,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_DIRECTDIFF_a-config_structure.obj `if test -f '../src/config_structure.cpp'; then $(CYGPATH_W) '../src/config_structure.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/config_structure.cpp'; fi`
 
+../src/libSU2_DIRECTDIFF_a-dense_matrix_product.o: ../src/dense_matrix_product.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_DIRECTDIFF_a-dense_matrix_product.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-dense_matrix_product.Tpo -c -o ../src/libSU2_DIRECTDIFF_a-dense_matrix_product.o `test -f '../src/dense_matrix_product.cpp' || echo '$(srcdir)/'`../src/dense_matrix_product.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-dense_matrix_product.Tpo ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-dense_matrix_product.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/dense_matrix_product.cpp' object='../src/libSU2_DIRECTDIFF_a-dense_matrix_product.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_DIRECTDIFF_a-dense_matrix_product.o `test -f '../src/dense_matrix_product.cpp' || echo '$(srcdir)/'`../src/dense_matrix_product.cpp
+
+../src/libSU2_DIRECTDIFF_a-dense_matrix_product.obj: ../src/dense_matrix_product.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_DIRECTDIFF_a-dense_matrix_product.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-dense_matrix_product.Tpo -c -o ../src/libSU2_DIRECTDIFF_a-dense_matrix_product.obj `if test -f '../src/dense_matrix_product.cpp'; then $(CYGPATH_W) '../src/dense_matrix_product.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/dense_matrix_product.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-dense_matrix_product.Tpo ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-dense_matrix_product.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/dense_matrix_product.cpp' object='../src/libSU2_DIRECTDIFF_a-dense_matrix_product.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_DIRECTDIFF_a-dense_matrix_product.obj `if test -f '../src/dense_matrix_product.cpp'; then $(CYGPATH_W) '../src/dense_matrix_product.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/dense_matrix_product.cpp'; fi`
+
 ../src/libSU2_DIRECTDIFF_a-dual_grid_structure.o: ../src/dual_grid_structure.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_DIRECTDIFF_a-dual_grid_structure.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-dual_grid_structure.Tpo -c -o ../src/libSU2_DIRECTDIFF_a-dual_grid_structure.o `test -f '../src/dual_grid_structure.cpp' || echo '$(srcdir)/'`../src/dual_grid_structure.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-dual_grid_structure.Tpo ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-dual_grid_structure.Po
@@ -1322,6 +1718,90 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/dual_grid_structure.cpp' object='../src/libSU2_DIRECTDIFF_a-dual_grid_structure.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_DIRECTDIFF_a-dual_grid_structure.obj `if test -f '../src/dual_grid_structure.cpp'; then $(CYGPATH_W) '../src/dual_grid_structure.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/dual_grid_structure.cpp'; fi`
+
+../src/libSU2_DIRECTDIFF_a-fem_geometry_structure.o: ../src/fem_geometry_structure.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_DIRECTDIFF_a-fem_geometry_structure.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_geometry_structure.Tpo -c -o ../src/libSU2_DIRECTDIFF_a-fem_geometry_structure.o `test -f '../src/fem_geometry_structure.cpp' || echo '$(srcdir)/'`../src/fem_geometry_structure.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_geometry_structure.Tpo ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_geometry_structure.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_geometry_structure.cpp' object='../src/libSU2_DIRECTDIFF_a-fem_geometry_structure.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_DIRECTDIFF_a-fem_geometry_structure.o `test -f '../src/fem_geometry_structure.cpp' || echo '$(srcdir)/'`../src/fem_geometry_structure.cpp
+
+../src/libSU2_DIRECTDIFF_a-fem_geometry_structure.obj: ../src/fem_geometry_structure.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_DIRECTDIFF_a-fem_geometry_structure.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_geometry_structure.Tpo -c -o ../src/libSU2_DIRECTDIFF_a-fem_geometry_structure.obj `if test -f '../src/fem_geometry_structure.cpp'; then $(CYGPATH_W) '../src/fem_geometry_structure.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_geometry_structure.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_geometry_structure.Tpo ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_geometry_structure.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_geometry_structure.cpp' object='../src/libSU2_DIRECTDIFF_a-fem_geometry_structure.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_DIRECTDIFF_a-fem_geometry_structure.obj `if test -f '../src/fem_geometry_structure.cpp'; then $(CYGPATH_W) '../src/fem_geometry_structure.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_geometry_structure.cpp'; fi`
+
+../src/libSU2_DIRECTDIFF_a-fem_integration_rules.o: ../src/fem_integration_rules.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_DIRECTDIFF_a-fem_integration_rules.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_integration_rules.Tpo -c -o ../src/libSU2_DIRECTDIFF_a-fem_integration_rules.o `test -f '../src/fem_integration_rules.cpp' || echo '$(srcdir)/'`../src/fem_integration_rules.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_integration_rules.Tpo ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_integration_rules.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_integration_rules.cpp' object='../src/libSU2_DIRECTDIFF_a-fem_integration_rules.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_DIRECTDIFF_a-fem_integration_rules.o `test -f '../src/fem_integration_rules.cpp' || echo '$(srcdir)/'`../src/fem_integration_rules.cpp
+
+../src/libSU2_DIRECTDIFF_a-fem_integration_rules.obj: ../src/fem_integration_rules.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_DIRECTDIFF_a-fem_integration_rules.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_integration_rules.Tpo -c -o ../src/libSU2_DIRECTDIFF_a-fem_integration_rules.obj `if test -f '../src/fem_integration_rules.cpp'; then $(CYGPATH_W) '../src/fem_integration_rules.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_integration_rules.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_integration_rules.Tpo ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_integration_rules.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_integration_rules.cpp' object='../src/libSU2_DIRECTDIFF_a-fem_integration_rules.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_DIRECTDIFF_a-fem_integration_rules.obj `if test -f '../src/fem_integration_rules.cpp'; then $(CYGPATH_W) '../src/fem_integration_rules.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_integration_rules.cpp'; fi`
+
+../src/libSU2_DIRECTDIFF_a-fem_standard_element.o: ../src/fem_standard_element.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_DIRECTDIFF_a-fem_standard_element.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_standard_element.Tpo -c -o ../src/libSU2_DIRECTDIFF_a-fem_standard_element.o `test -f '../src/fem_standard_element.cpp' || echo '$(srcdir)/'`../src/fem_standard_element.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_standard_element.Tpo ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_standard_element.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_standard_element.cpp' object='../src/libSU2_DIRECTDIFF_a-fem_standard_element.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_DIRECTDIFF_a-fem_standard_element.o `test -f '../src/fem_standard_element.cpp' || echo '$(srcdir)/'`../src/fem_standard_element.cpp
+
+../src/libSU2_DIRECTDIFF_a-fem_standard_element.obj: ../src/fem_standard_element.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_DIRECTDIFF_a-fem_standard_element.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_standard_element.Tpo -c -o ../src/libSU2_DIRECTDIFF_a-fem_standard_element.obj `if test -f '../src/fem_standard_element.cpp'; then $(CYGPATH_W) '../src/fem_standard_element.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_standard_element.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_standard_element.Tpo ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_standard_element.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_standard_element.cpp' object='../src/libSU2_DIRECTDIFF_a-fem_standard_element.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_DIRECTDIFF_a-fem_standard_element.obj `if test -f '../src/fem_standard_element.cpp'; then $(CYGPATH_W) '../src/fem_standard_element.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_standard_element.cpp'; fi`
+
+../src/libSU2_DIRECTDIFF_a-fem_wall_distance.o: ../src/fem_wall_distance.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_DIRECTDIFF_a-fem_wall_distance.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_wall_distance.Tpo -c -o ../src/libSU2_DIRECTDIFF_a-fem_wall_distance.o `test -f '../src/fem_wall_distance.cpp' || echo '$(srcdir)/'`../src/fem_wall_distance.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_wall_distance.Tpo ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_wall_distance.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_wall_distance.cpp' object='../src/libSU2_DIRECTDIFF_a-fem_wall_distance.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_DIRECTDIFF_a-fem_wall_distance.o `test -f '../src/fem_wall_distance.cpp' || echo '$(srcdir)/'`../src/fem_wall_distance.cpp
+
+../src/libSU2_DIRECTDIFF_a-fem_wall_distance.obj: ../src/fem_wall_distance.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_DIRECTDIFF_a-fem_wall_distance.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_wall_distance.Tpo -c -o ../src/libSU2_DIRECTDIFF_a-fem_wall_distance.obj `if test -f '../src/fem_wall_distance.cpp'; then $(CYGPATH_W) '../src/fem_wall_distance.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_wall_distance.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_wall_distance.Tpo ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_wall_distance.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_wall_distance.cpp' object='../src/libSU2_DIRECTDIFF_a-fem_wall_distance.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_DIRECTDIFF_a-fem_wall_distance.obj `if test -f '../src/fem_wall_distance.cpp'; then $(CYGPATH_W) '../src/fem_wall_distance.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_wall_distance.cpp'; fi`
+
+../src/libSU2_DIRECTDIFF_a-fem_work_estimate_metis.o: ../src/fem_work_estimate_metis.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_DIRECTDIFF_a-fem_work_estimate_metis.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_work_estimate_metis.Tpo -c -o ../src/libSU2_DIRECTDIFF_a-fem_work_estimate_metis.o `test -f '../src/fem_work_estimate_metis.cpp' || echo '$(srcdir)/'`../src/fem_work_estimate_metis.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_work_estimate_metis.Tpo ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_work_estimate_metis.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_work_estimate_metis.cpp' object='../src/libSU2_DIRECTDIFF_a-fem_work_estimate_metis.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_DIRECTDIFF_a-fem_work_estimate_metis.o `test -f '../src/fem_work_estimate_metis.cpp' || echo '$(srcdir)/'`../src/fem_work_estimate_metis.cpp
+
+../src/libSU2_DIRECTDIFF_a-fem_work_estimate_metis.obj: ../src/fem_work_estimate_metis.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_DIRECTDIFF_a-fem_work_estimate_metis.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_work_estimate_metis.Tpo -c -o ../src/libSU2_DIRECTDIFF_a-fem_work_estimate_metis.obj `if test -f '../src/fem_work_estimate_metis.cpp'; then $(CYGPATH_W) '../src/fem_work_estimate_metis.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_work_estimate_metis.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_work_estimate_metis.Tpo ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-fem_work_estimate_metis.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/fem_work_estimate_metis.cpp' object='../src/libSU2_DIRECTDIFF_a-fem_work_estimate_metis.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_DIRECTDIFF_a-fem_work_estimate_metis.obj `if test -f '../src/fem_work_estimate_metis.cpp'; then $(CYGPATH_W) '../src/fem_work_estimate_metis.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/fem_work_estimate_metis.cpp'; fi`
+
+../src/libSU2_DIRECTDIFF_a-gelite.o: ../src/gelite.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_DIRECTDIFF_a-gelite.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-gelite.Tpo -c -o ../src/libSU2_DIRECTDIFF_a-gelite.o `test -f '../src/gelite.cpp' || echo '$(srcdir)/'`../src/gelite.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-gelite.Tpo ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-gelite.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/gelite.cpp' object='../src/libSU2_DIRECTDIFF_a-gelite.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_DIRECTDIFF_a-gelite.o `test -f '../src/gelite.cpp' || echo '$(srcdir)/'`../src/gelite.cpp
+
+../src/libSU2_DIRECTDIFF_a-gelite.obj: ../src/gelite.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_DIRECTDIFF_a-gelite.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-gelite.Tpo -c -o ../src/libSU2_DIRECTDIFF_a-gelite.obj `if test -f '../src/gelite.cpp'; then $(CYGPATH_W) '../src/gelite.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/gelite.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-gelite.Tpo ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-gelite.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/gelite.cpp' object='../src/libSU2_DIRECTDIFF_a-gelite.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_DIRECTDIFF_a-gelite.obj `if test -f '../src/gelite.cpp'; then $(CYGPATH_W) '../src/gelite.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/gelite.cpp'; fi`
 
 ../src/libSU2_DIRECTDIFF_a-geometry_structure.o: ../src/geometry_structure.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_DIRECTDIFF_a-geometry_structure.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-geometry_structure.Tpo -c -o ../src/libSU2_DIRECTDIFF_a-geometry_structure.o `test -f '../src/geometry_structure.cpp' || echo '$(srcdir)/'`../src/geometry_structure.cpp
@@ -1462,6 +1942,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/ad_structure.cpp' object='../src/libSU2_DIRECTDIFF_a-ad_structure.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_DIRECTDIFF_a-ad_structure.obj `if test -f '../src/ad_structure.cpp'; then $(CYGPATH_W) '../src/ad_structure.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/ad_structure.cpp'; fi`
+
+../src/libSU2_DIRECTDIFF_a-gauss_jacobi_quadrature.o: ../src/gauss_jacobi_quadrature.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_DIRECTDIFF_a-gauss_jacobi_quadrature.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-gauss_jacobi_quadrature.Tpo -c -o ../src/libSU2_DIRECTDIFF_a-gauss_jacobi_quadrature.o `test -f '../src/gauss_jacobi_quadrature.cpp' || echo '$(srcdir)/'`../src/gauss_jacobi_quadrature.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-gauss_jacobi_quadrature.Tpo ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-gauss_jacobi_quadrature.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/gauss_jacobi_quadrature.cpp' object='../src/libSU2_DIRECTDIFF_a-gauss_jacobi_quadrature.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_DIRECTDIFF_a-gauss_jacobi_quadrature.o `test -f '../src/gauss_jacobi_quadrature.cpp' || echo '$(srcdir)/'`../src/gauss_jacobi_quadrature.cpp
+
+../src/libSU2_DIRECTDIFF_a-gauss_jacobi_quadrature.obj: ../src/gauss_jacobi_quadrature.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_DIRECTDIFF_a-gauss_jacobi_quadrature.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-gauss_jacobi_quadrature.Tpo -c -o ../src/libSU2_DIRECTDIFF_a-gauss_jacobi_quadrature.obj `if test -f '../src/gauss_jacobi_quadrature.cpp'; then $(CYGPATH_W) '../src/gauss_jacobi_quadrature.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/gauss_jacobi_quadrature.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-gauss_jacobi_quadrature.Tpo ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-gauss_jacobi_quadrature.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/gauss_jacobi_quadrature.cpp' object='../src/libSU2_DIRECTDIFF_a-gauss_jacobi_quadrature.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_DIRECTDIFF_a-gauss_jacobi_quadrature.obj `if test -f '../src/gauss_jacobi_quadrature.cpp'; then $(CYGPATH_W) '../src/gauss_jacobi_quadrature.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/gauss_jacobi_quadrature.cpp'; fi`
 
 ../src/libSU2_DIRECTDIFF_a-gauss_structure.o: ../src/gauss_structure.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_DIRECTDIFF_a-gauss_structure.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-gauss_structure.Tpo -c -o ../src/libSU2_DIRECTDIFF_a-gauss_structure.o `test -f '../src/gauss_structure.cpp' || echo '$(srcdir)/'`../src/gauss_structure.cpp
