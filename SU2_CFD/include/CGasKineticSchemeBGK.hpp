@@ -141,6 +141,9 @@ protected:
    */
   std::vector<su2double> PsiPsiMaxwell(State state);
 
+  std::vector<su2double> DerPsiMaxwell(State state, IntLimits lim,
+      std::vector<su2double> coeff, std::vector<unsigned short> multipFactor);
+
   /*!
    * \brief calculate time/space derivatives of the distribution function
    * @param state define the state for which the derivative are needed.

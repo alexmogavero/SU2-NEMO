@@ -61,6 +61,9 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
     val_residual[iVar] = Dt_inv*(int_I*Flux_I[iVar] + int_ij*(Flux_i[iVar] + Flux_j[iVar]))*Area;
   }
 
+  DerPsiMaxwell(LEFT, ALL,
+      std::vector<su2double>(nVar-1,0), std::vector<unsigned short>(nVar-1, 0));
+
   if(config->GetViscous()){
     std::vector<std::vector<su2double> > vFlux_i, vFlux_j; //u*u*Psi, u*v*Psi, u*w*Psi
     for(unsigned short i=0; i<nDim; i++){
@@ -112,6 +115,36 @@ void CGasKineticSchemeBGK::CalculateInterface(){
   if (!RightSol) {
     node_I->SetNon_Physical(true);
   }
+}
+
+std::vector<su2double> CGasKineticSchemeBGK::DerPsiMaxwell(State state, IntLimits lim,
+    std::vector<su2double> coeff, std::vector<unsigned short> multipFactor){
+  if(coeff.size()!=nVar-1) throw std::logic_error("Error: coeff must be of size nVar-1");
+  if(multipFactor.size()!=nVar-1) throw std::logic_error("Error: multipFactor must be of size nVar-1");
+
+  std::vector<unsigned short> exponents(multipFactor);
+  std::vector<std::vector<su2double> > out(nVar, std::vector<su2double>(nVar, 0));
+
+  out[0] = PsiMaxwell(state, lim, exponents);
+
+  for(unsigned short iDim=0; iDim<nDim; iDim++){
+    exponents = multipFactor;
+    exponents[iDim] += 1;
+    out[iDim+1] = PsiMaxwell(state, lim, exponents);
+  }
+
+  for(unsigned short iDim=0; iDim<nDim; iDim++){
+    exponents = multipFactor;
+    exponents[iDim] += 2;
+    out[nVar-1] += PsiMaxwell(state, lim, exponents);
+  }
+  exponents = multipFactor;
+  exponents[nVar-2] += 2;
+  out[nVar-1] += PsiMaxwell(state, lim, exponents);
+  out[nVar-1] /= 2;
+
+  std::vector<su2double> check = PsiPsiMaxwell(state);
+  check.back();
 }
 
 std::vector<su2double> CGasKineticSchemeBGK::PsiMaxwell(State state, IntLimits lim,
