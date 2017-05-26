@@ -178,13 +178,15 @@ std::vector<su2double> CGasKineticSchemeBGK::PsiMaxwell(State state, IntLimits l
 }
 
 std::vector<su2double> CGasKineticSchemeBGK::PsiPsiMaxwell(State state, std::vector<unsigned short> exponents){
-  std::vector<su2double> out(nVar*nVar, 0);
-  
-  std::vector<std::vector<su2double> > mat = PsiPsiMaxwell(state, ALL, exponents);
+  return MatrixToVector(PsiPsiMaxwell(state, ALL, exponents));
+}
 
-  for(unsigned short i=0; i<nVar; i++){
-    for(unsigned short j=0; j<nVar; j++){
-      out[i*nVar + j] = mat[i][j];
+std::vector<su2double> CGasKineticSchemeBGK::MatrixToVector(const std::vector<std::vector<su2double> >& mat){
+  std::vector<su2double> out(mat.size()*mat[0].size(), 0);
+  
+  for(std::size_t i=0; i<mat.size(); i++){
+    for(std::size_t j=0; j<mat[0].size(); j++){
+      out[i*mat[0].size() + j] = mat[i][j];
     }
   }
 

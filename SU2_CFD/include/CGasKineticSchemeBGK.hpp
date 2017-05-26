@@ -39,6 +39,13 @@ private:
    */
   void rotate(CVariable* node)const;
 
+  /*!
+   * \brief Unfold a matrix into a vector row wise
+   * @param mat matrix to be unfolded
+   * @return a vector composed by the concatenation of the rows of the matrix
+   */
+  static std::vector<su2double> MatrixToVector(const std::vector<std::vector<su2double> >& mat);
+
 protected:
   /*!
    * \brief define the integration limits
