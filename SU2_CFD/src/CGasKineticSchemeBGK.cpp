@@ -155,12 +155,12 @@ std::vector<su2double> CGasKineticSchemeBGK::PsiPsiMaxwell(State state){
   std::vector<unsigned short> exponents(nVar-1, 0);
   
   std::vector<su2double> tmprow = PsiMaxwell(state, ALL, false); //1*psi
-  for(unsigned short i=1; i<nVar; i++){
+  for(unsigned short i=0; i<nVar; i++){
     out[i] = tmprow[i];
   }
   
   tmprow = PsiMaxwell(state, ALL, true); //u*psi
-  for(unsigned short i=1; i<nVar; i++){
+  for(unsigned short i=0; i<nVar; i++){
     out[nVar+i] = tmprow[i];
   }
 
@@ -216,7 +216,7 @@ std::vector<su2double> CGasKineticSchemeBGK::PsiPsiMaxwell(State state){
   //Build the symmetrical part of the matrix
   for(unsigned short i=2; i<nVar; i++){
     for(unsigned short j=0; j<i; j++){
-      out[i + nVar*j] = out[j + nVar*i];
+      out[j + nVar*i] = out[i + nVar*j];
     }
   }
 
