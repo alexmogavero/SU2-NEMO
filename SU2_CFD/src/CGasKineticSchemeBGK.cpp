@@ -472,6 +472,8 @@ std::vector<su2double> operator/=(std::vector<su2double>& a, const su2double& b)
 }
 
 std::vector<su2double> operator*(const std::vector<su2double>& a, const std::vector<std::vector<su2double> >& b){
+  if(a.size() != b.size()) throw std::logic_error("Error: members of operation must be of compatible sizes.");
+
   std::vector<su2double> out(b[0].size(), 0);
 
   for(std::size_t i=0; i<a.size(); i++){
