@@ -449,3 +449,31 @@ void CGasKineticSchemeBGK::Clear(){
     mom[i]->xi.clear();
   }
 }
+
+std::vector<su2double> operator+(const std::vector<su2double>& a, const std::vector<su2double>& b){
+  std::vector<su2double> out(a);
+  out += b;
+  return out;
+}
+
+std::vector<su2double> operator+=(std::vector<su2double>& a, const std::vector<su2double>& b){
+  if(a.size() != b.size()) throw std::logic_error("Error: members of operation must be of the same size.");
+
+  for(std::size_t i=0; i<a.size(); i++){
+    a[i] += b[i];
+  }
+  return a;
+}
+
+std::vector<su2double> operator*=(std::vector<su2double>& a, const su2double& b){
+  for(std::size_t i=0; i<a.size(); i++){
+    a[i] *= b;
+  }
+  return a;
+}
+
+std::vector<su2double> operator/=(std::vector<su2double>& a, const su2double& b){
+  su2double b_inv = 1/b;
+  a *= b_inv;
+  return a;
+}

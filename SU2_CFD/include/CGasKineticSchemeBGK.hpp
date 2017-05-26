@@ -190,3 +190,11 @@ public:
    */
   virtual void SetNormal(su2double *val_normal);
 };
+
+/*!
+ * \brief Operators that defines algebra of vectors.
+ */
+std::vector<su2double> operator+(const std::vector<su2double>& a, const std::vector<su2double>& b);
+std::vector<su2double> operator+=(std::vector<su2double>& a, const std::vector<su2double>& b);
+std::vector<su2double> operator*=(std::vector<su2double>& a, const su2double& b);
+std::vector<su2double> operator/=(std::vector<su2double>& a, const su2double& b);
