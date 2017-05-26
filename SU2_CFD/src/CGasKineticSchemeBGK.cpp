@@ -140,7 +140,7 @@ std::vector<su2double> CGasKineticSchemeBGK::DerPsiMaxwell(State state, IntLimit
   out[nVar-1] += PsiMaxwell(state, lim, exponents);
   out[nVar-1] /= 2;
 
-  std::vector<su2double> check = PsiPsiMaxwell(state);
+  std::vector<su2double> check = PsiPsiMaxwell(state, std::vector<unsigned short>(nVar-1,0));
   check.back();
 }
 
