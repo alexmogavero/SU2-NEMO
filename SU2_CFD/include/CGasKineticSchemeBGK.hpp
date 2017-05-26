@@ -131,18 +131,23 @@ protected:
   std::vector<su2double> PsiMaxwell(State state, IntLimits lim, std::vector<unsigned short> multipFactor);
 
   /*!
-   * \brief Calculate the moments of the Maxwellian distribution with function \f$ \varphi=\mathbf{\psi} \otimes \mathbf{\psi}\f$ .
-   * \details \f$\psi\f$ is defined so to calculate the conserved quantities.
-   *  \f[
-   *    \mathbf{w} = \iint_{-\infty}^{+\infty} \mathbf{\psi} f d\mathbf{u}\mathbf{\xi}
-   *  \f]
-   * @param state identify the state for wich the momemnts will be calculated
-   * @return a matrix of size nVar x nVar.
+   * \brief Calculate the moments of the Maxwellian distribution with function \f$ \varphi=K\mathbf{\psi} \otimes \mathbf{\psi}\f$ .
+   * \details the integration is performed on all the real numbers
+   * @param state identify the state for which the moments will be calculated
+   * @param multipFactor exponents that define K
+   * @return a vector of size nVar*nVar.
    */
   std::vector<su2double> PsiPsiMaxwell(State state, std::vector<unsigned short> multipFactor);
 
-  std::vector<su2double> DerPsiMaxwell(State state, IntLimits lim,
-      std::vector<su2double> coeff, std::vector<unsigned short> multipFactor);
+  /*!
+   * \brief Calculate the moments of the Maxwellian distribution with function \f$ \varphi=K\mathbf{\psi} \otimes \mathbf{\psi}\f$ .
+   * @param state identify the state for which the moments will be calculated
+   * @param lim defines the integration limits
+   * @param multipFactor exponents that define K
+   * @return a matrix of size nVar x nVar.
+   */
+  std::vector<std::vector<su2double> > PsiPsiMaxwell(State state, IntLimits lim,
+      std::vector<unsigned short> multipFactor);
 
   /*!
    * \brief calculate time/space derivatives of the distribution function

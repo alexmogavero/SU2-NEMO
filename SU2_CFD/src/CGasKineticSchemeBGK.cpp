@@ -61,8 +61,7 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
     val_residual[iVar] = Dt_inv*(int_I*Flux_I[iVar] + int_ij*(Flux_i[iVar] + Flux_j[iVar]))*Area;
   }
 
-  DerPsiMaxwell(LEFT, ALL,
-      std::vector<su2double>(nVar-1,0), std::vector<unsigned short>(nVar-1, 0));
+  PsiPsiMaxwell(LEFT, ALL, std::vector<unsigned short>(nVar-1, 0));
 
   if(config->GetViscous()){
     std::vector<std::vector<su2double> > vFlux_i, vFlux_j; //u*u*Psi, u*v*Psi, u*w*Psi
@@ -114,9 +113,8 @@ void CGasKineticSchemeBGK::CalculateInterface(){
   }
 }
 
-std::vector<su2double> CGasKineticSchemeBGK::DerPsiMaxwell(State state, IntLimits lim,
-    std::vector<su2double> coeff, std::vector<unsigned short> multipFactor){
-  if(coeff.size()!=nVar-1) throw std::logic_error("Error: coeff must be of size nVar-1");
+std::vector<std::vector<su2double> > CGasKineticSchemeBGK::PsiPsiMaxwell(State state, IntLimits lim,
+    std::vector<unsigned short> multipFactor){
   if(multipFactor.size()!=nVar-1) throw std::logic_error("Error: multipFactor must be of size nVar-1");
 
   std::vector<unsigned short> exponents(multipFactor);
@@ -140,8 +138,7 @@ std::vector<su2double> CGasKineticSchemeBGK::DerPsiMaxwell(State state, IntLimit
   out[nVar-1] += PsiMaxwell(state, lim, exponents);
   out[nVar-1] /= 2;
 
-  std::vector<su2double> check = PsiPsiMaxwell(state, std::vector<unsigned short>(nVar-1,0));
-  check.back();
+  return out;
 }
 
 std::vector<su2double> CGasKineticSchemeBGK::PsiMaxwell(State state, IntLimits lim,
@@ -183,54 +180,11 @@ std::vector<su2double> CGasKineticSchemeBGK::PsiMaxwell(State state, IntLimits l
 std::vector<su2double> CGasKineticSchemeBGK::PsiPsiMaxwell(State state, std::vector<unsigned short> exponents){
   std::vector<su2double> out(nVar*nVar, 0);
   
-  std::vector<su2double> tmprow = PsiMaxwell(state, ALL, exponents); //1*psi
+  std::vector<std::vector<su2double> > mat = PsiPsiMaxwell(state, ALL, exponents);
+
   for(unsigned short i=0; i<nVar; i++){
-    out[i] = tmprow[i];
-  }
-  
-  std::vector<unsigned short> tmp_exponents;
-  
-  for(unsigned short j=0; j<nDim; j++){ //u*psi, v*psi, w*psi
-    tmp_exponents = exponents;
-    tmp_exponents[j] += 1;
-    tmprow = PsiMaxwell(state, ALL, tmp_exponents);
-    for(unsigned short i=0; i<nVar; i++){
-      out[(j+1)*nVar+i] = tmprow[i];
-    }
-  }
-
-  /*xi*psi that actually is only the component xi*xi
-    the formula for 3D is:
-      (1/4)*(u^4 + v^4 + w^4 + 2*u^2*v^2 + 2*u^2*w^2 + 2*v^2*w^2 +
-        2*u^2*xi^2 + 2*v^2*xi^2 + 2*w^2*xi^2 + xi^4) */
-  tmp_exponents = exponents;
-  for(unsigned short i=0; i<nDim; i++){
-    tmp_exponents = exponents;
-    tmp_exponents[i] += 4;
-    out[nVar-1 + nVar*(nVar-1)] += MomentsMaxwellian(tmp_exponents, state, ALL);
-
-    for(unsigned short j=i+1; j<nDim; j++){
-      tmp_exponents = exponents;
-      tmp_exponents[i] += 2;
-      tmp_exponents[j] += 2;
-      out[nVar-1 + nVar*(nVar-1)] += 2*MomentsMaxwellian(tmp_exponents, state, ALL);
-    }
-
-    tmp_exponents = exponents;
-    tmp_exponents[i] += 2;
-    tmp_exponents[nVar-2] += 2;
-    out[nVar-1 + nVar*(nVar-1)] += 2*MomentsMaxwellian(tmp_exponents, state, ALL);
-  }
-
-  tmp_exponents = exponents;
-  tmp_exponents[nVar-2] += 4;
-  out[nVar-1 + nVar*(nVar-1)] += MomentsMaxwellian(tmp_exponents, state, ALL);
-  out[nVar-1 + nVar*(nVar-1)] /= 4;
-
-  //Build the symmetrical part of the matrix
-  for(unsigned short i=2; i<nVar; i++){
-    for(unsigned short j=0; j<i; j++){
-      out[j + nVar*i] = out[i + nVar*j];
+    for(unsigned short j=0; j<nVar; j++){
+      out[i*nVar + j] = mat[i][j];
     }
   }
 
