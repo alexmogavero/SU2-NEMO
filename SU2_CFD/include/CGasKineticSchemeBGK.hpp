@@ -139,7 +139,7 @@ protected:
    * @param state identify the state for wich the momemnts will be calculated
    * @return a matrix of size nVar x nVar.
    */
-  std::vector<su2double> PsiPsiMaxwell(State state);
+  std::vector<su2double> PsiPsiMaxwell(State state, std::vector<unsigned short> multipFactor);
 
   std::vector<su2double> DerPsiMaxwell(State state, IntLimits lim,
       std::vector<su2double> coeff, std::vector<unsigned short> multipFactor);
@@ -150,7 +150,7 @@ protected:
    * @return a vector of size nDim+1 where the first nDim components are space derivatives
    *  and the last one is time derivative
    */
-  std::vector<su2double> Derivatives(State state);
+  void Derivatives(State state, std::vector<std::vector<su2double> > G, std::vector<su2double> Ft);
 
   /*!
    * \brief Calculates the state at the interface.
