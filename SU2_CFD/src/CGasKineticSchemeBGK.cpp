@@ -482,3 +482,12 @@ std::vector<su2double> operator*(const std::vector<su2double>& a, const su2doubl
   out *= b;
   return out;
 }
+
+std::vector<su2double> operator-=(std::vector<su2double>& a, const std::vector<su2double>& b){
+  if(a.size() != b.size()) throw std::logic_error("Error: members of operation must be of the same size.");
+
+  for(std::size_t i=0; i<a.size(); i++){
+    a[i] -= b[i];
+  }
+  return a;
+}
