@@ -61,28 +61,31 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
     val_residual[iVar] = Dt_inv*(int_I*Flux_I[iVar] + int_ij*(Flux_i[iVar] + Flux_j[iVar]))*Area;
   }
 
-  PsiPsiMaxwell(LEFT, ALL, std::vector<unsigned short>(nVar-1, 0));
-
   if(config->GetViscous()){
-    std::vector<std::vector<su2double> > vFlux_i, vFlux_j; //u*u*Psi, u*v*Psi, u*w*Psi
+    std::vector<std::vector<su2double> > a_i(nDim, std::vector<su2double>(nVar, 1)); //space derivatives
+    std::vector<std::vector<su2double> > a_j(nDim, std::vector<su2double>(nVar, 1)); //space derivatives
+    std::vector<su2double> A_i(nVar, 1); //Time derivatives
+    std::vector<su2double> A_j(nVar, 1); //Time derivatives
+    Derivatives(LEFT, a_i, A_i);
+    Derivatives(RIGHT, a_j, A_j);
+
+    Flux_i = std::vector<su2double>(nVar, 0);
+    Flux_j = std::vector<su2double>(nVar, 0);
+    std::vector<unsigned short> exponents;
     for(unsigned short i=0; i<nDim; i++){
-      std::vector<unsigned short> exponents(nVar-1, 0);
+      exponents.assign(nVar-1, 0);
       exponents[0]++;
       exponents[i]++;
-      vFlux_i.push_back(PsiMaxwell(LEFT, POSITIVE, exponents));
-      vFlux_j.push_back(PsiMaxwell(RIGHT, NEGATIVE, exponents));
+      Flux_i += a_i[i]*PsiPsiMaxwell(LEFT, POSITIVE, exponents);
+      Flux_j += a_j[i]*PsiPsiMaxwell(RIGHT, NEGATIVE, exponents);
     }
-
-    std::vector<su2double> der_i(nDim+1, 1); //TODO calculate derivatives
-    std::vector<su2double> der_j(nDim+1, 1); //TODO calculate derivatives
+    exponents.assign(nVar-1, 0);
+    exponents[0]++;
+    Flux_i += A_i*PsiPsiMaxwell(LEFT, POSITIVE, exponents);
+    Flux_j += A_j*PsiPsiMaxwell(RIGHT, NEGATIVE, exponents);
 
     for(unsigned short iVar=0; iVar<nVar; iVar++){
-      val_residual[iVar] += Dt_inv*tauColl*int_ij*(der_i[0]*Flux_i[iVar] + der_j[0]*Flux_j[iVar])*Area;
-
-      for(unsigned short iDim=0; iDim<nDim; iDim++){
-        val_residual[iVar] += Dt_inv*tauColl*int_ij*(der_i[iDim+1]*vFlux_i[iDim][iVar] +
-            der_j[iDim+1]*vFlux_j[iDim][iVar])*Area;
-      }
+      val_residual[iVar] += Dt_inv*tauColl*int_ij*(Flux_i[iVar] + Flux_j[iVar])*Area;
     }
   }
 
