@@ -193,7 +193,10 @@ std::vector<su2double> CGasKineticSchemeBGK::MatrixToVector(const std::vector<st
   return out;
 }
 
-void CGasKineticSchemeBGK::Derivatives(State state, std::vector<std::vector<su2double> > G, std::vector<su2double> Ft){
+void CGasKineticSchemeBGK::Derivatives(State state, std::vector<std::vector<su2double> >& G, std::vector<su2double>& Ft){
+  if(G.size() != nDim) throw std::logic_error("Error: G must be a matrix of size nDim x nVar.");
+  if(G[0].size() != nVar) throw std::logic_error("Error: G must be a matrix of size nDim x nVar.");
+  if(Ft.size() != nVar) throw std::logic_error("Error: Ft must be a vector of size nVar.");
   
   std::vector<su2double> M;
   std::vector<su2double> sysM;
@@ -205,7 +208,7 @@ void CGasKineticSchemeBGK::Derivatives(State state, std::vector<std::vector<su2d
   
   CVariable* node;
   
-    switch (state){
+  switch (state){
     case LEFT:
       node = node_iLoc;
       break;
@@ -233,11 +236,9 @@ void CGasKineticSchemeBGK::Derivatives(State state, std::vector<std::vector<su2d
   // std::vector<su2double> Ft(nVar, 0);
   for (unsigned int j=0; j++; j<nDim){
     exponents.assign(nVar-1,0);
-    exponents[j+1] = 1;
-    sysM = PsiPsiMaxwell(state, exponents);
-    
-    // Compute product of sysM by G[j] <<<<< TODO
-    // Ft -= matmul(sysM, G[j]);
+    exponents[j] = 1;
+
+    Ft -= G[j]*PsiPsiMaxwell(state, ALL, exponents);
   }
   
   int ipiv[nVar];

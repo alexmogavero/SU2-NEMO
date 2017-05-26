@@ -162,7 +162,7 @@ protected:
    * @return a vector of size nDim+1 where the first nDim components are space derivatives
    *  and the last one is time derivative
    */
-  void Derivatives(State state, std::vector<std::vector<su2double> > G, std::vector<su2double> Ft);
+  void Derivatives(State state, std::vector<std::vector<su2double> >& G, std::vector<su2double>& Ft);
 
   /*!
    * \brief Calculates the state at the interface.
