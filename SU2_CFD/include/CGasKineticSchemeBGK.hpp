@@ -204,5 +204,7 @@ public:
  */
 std::vector<su2double> operator+(const std::vector<su2double>& a, const std::vector<su2double>& b);
 std::vector<su2double> operator+=(std::vector<su2double>& a, const std::vector<su2double>& b);
+std::vector<su2double> operator*(const std::vector<su2double>& a, const su2double& b);
 std::vector<su2double> operator*=(std::vector<su2double>& a, const su2double& b);
 std::vector<su2double> operator/=(std::vector<su2double>& a, const su2double& b);
+std::vector<su2double> operator*(const std::vector<su2double>& a, const std::vector<std::vector<su2double> >& b);

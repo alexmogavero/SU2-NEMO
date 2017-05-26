@@ -467,3 +467,18 @@ std::vector<su2double> operator/=(std::vector<su2double>& a, const su2double& b)
   a *= b_inv;
   return a;
 }
+
+std::vector<su2double> operator*(const std::vector<su2double>& a, const std::vector<std::vector<su2double> >& b){
+  std::vector<su2double> out(b[0].size(), 0);
+
+  for(std::size_t i=0; i<a.size(); i++){
+    out += b[i]*a[i];
+  }
+  return out;
+}
+
+std::vector<su2double> operator*(const std::vector<su2double>& a, const su2double& b){
+  std::vector<su2double> out(a);
+  out *= b;
+  return out;
+}
