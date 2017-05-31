@@ -3189,6 +3189,9 @@ else
 fi
 
 
+  # Add commit hash as variable
+  GIT_VERSION=$(git rev-parse HEAD)
+  CPPFLAGS="-DGITVERSION=\\\"$GIT_VERSION\\\" $CPPFLAGS"
 
   # --------------------------------------------------------------
   # look for a decent C++ compiler or honor --with-cxx=...
