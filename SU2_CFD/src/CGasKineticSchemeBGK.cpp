@@ -225,8 +225,8 @@ void CGasKineticSchemeBGK::Derivatives(State state, std::vector<std::vector<su2d
   
   // Space derivatives
   // std::vector<std::vector<su2double> > G(nDim, std::vector<su2double>(nVar, 0));
-  for (unsigned int j=0; j++; j<nDim){
-    for (unsigned int i=0; i++; i<nVar){
+  for (unsigned int j=0; j<nDim; j++){
+    for (unsigned int i=0; i<nVar; i++){
       G[j][i] = node->GetGradient(i, j);
     }
     
@@ -237,7 +237,7 @@ void CGasKineticSchemeBGK::Derivatives(State state, std::vector<std::vector<su2d
   
   //Time derivatives
   // std::vector<su2double> Ft(nVar, 0);
-  for (unsigned int j=0; j++; j<nDim){
+  for (unsigned int j=0; j<nDim; j++){
     exponents.assign(nVar-1,0);
     exponents[j] = 1;
 
