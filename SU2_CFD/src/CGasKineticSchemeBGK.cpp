@@ -62,10 +62,10 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
   }
 
   if(config->GetViscous()){
-    std::vector<std::vector<su2double> > a_i(nDim, std::vector<su2double>(nVar, 1)); //space derivatives
-    std::vector<std::vector<su2double> > a_j(nDim, std::vector<su2double>(nVar, 1)); //space derivatives
-    std::vector<su2double> A_i(nVar, 1); //Time derivatives
-    std::vector<su2double> A_j(nVar, 1); //Time derivatives
+    std::vector<std::vector<su2double> > a_i(nDim, std::vector<su2double>(nVar, 0)); //space derivatives
+    std::vector<std::vector<su2double> > a_j(nDim, std::vector<su2double>(nVar, 0)); //space derivatives
+    std::vector<su2double> A_i(nVar, 0); //Time derivatives
+    std::vector<su2double> A_j(nVar, 0); //Time derivatives
     Derivatives(LEFT, a_i, A_i);
     Derivatives(RIGHT, a_j, A_j);
 
