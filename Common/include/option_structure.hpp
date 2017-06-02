@@ -587,7 +587,8 @@ enum ENUM_UPWIND {
   AUSMPWPLUS = 9,             /*!< \brief AUSMPW+ numerical method. */
   CUSP = 10,                  /*!< \brief Convective upwind and split pressure numerical method. */
   VAN_LEER = 11,              /*!< \brief Van Leer method. */
-  CONVECTIVE_TEMPLATE = 12    /*!< \brief Template for new numerical method . */
+  CONVECTIVE_TEMPLATE = 12,    /*!< \brief Template for new numerical method . */
+  GKS_BGK_U = 13
 };
 static const map<string, ENUM_UPWIND> Upwind_Map = CCreateMap<string, ENUM_UPWIND>
 ("NONE", NO_UPWIND)
@@ -602,7 +603,8 @@ static const map<string, ENUM_UPWIND> Upwind_Map = CCreateMap<string, ENUM_UPWIN
 ("CUSP", CUSP)
 ("VAN_LEER", VAN_LEER)
 ("SCALAR_UPWIND", SCALAR_UPWIND)
-("CONVECTIVE_TEMPLATE", CONVECTIVE_TEMPLATE);
+("CONVECTIVE_TEMPLATE", CONVECTIVE_TEMPLATE)
+("GKS_BGK_U", GKS_BGK_U);
 
 /*!
  * \brief types of FEM spatial discretizations

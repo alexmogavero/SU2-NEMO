@@ -4463,6 +4463,7 @@ void CConfig::SetOutput(unsigned short val_software, unsigned short val_izone) {
           case AUSMPWPLUS:    cout << "AUSMPW+ solver inviscid fluxes over the faces" << endl; break;
           case HLLC:          cout << "HLLC solver inviscid fluxes over the faces" << endl; break;
           case VAN_LEER:      cout << "Van Leer solver inviscid fluxes over the faces" << endl; break;
+          case GKS_BGK_U:      cout << "Gas Kinetic Scheme solver inviscid fluxes over the faces" << endl; break;
         }
 
         if(Kind_Solver != FEM_EULER)

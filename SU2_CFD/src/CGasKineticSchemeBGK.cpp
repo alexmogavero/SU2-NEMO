@@ -15,7 +15,7 @@ CGasKineticSchemeBGK::CGasKineticSchemeBGK(unsigned short val_nDim, unsigned sho
   for(unsigned short i=0; i<nVar; i++){
     U[i] = 0;
   }
-  node_I = new CKineticVariable(U, nDim, nVar, config);
+  node_I = new CEulerVariable(U, nDim, nVar, config);
 }
 
 CGasKineticSchemeBGK::~CGasKineticSchemeBGK(void) {
@@ -28,6 +28,10 @@ CGasKineticSchemeBGK::~CGasKineticSchemeBGK(void) {
   if(node_jLoc){
     delete node_jLoc;
   }
+}
+
+void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, su2double **val_Jacobian_i, su2double **val_Jacobian_j, CConfig *config){
+  ComputeResidual(val_residual, config);
 }
 
 void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *config){

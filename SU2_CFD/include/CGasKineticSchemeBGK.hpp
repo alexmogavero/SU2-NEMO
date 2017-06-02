@@ -66,7 +66,7 @@ protected:
     INTERFACE //!< left side of the edge i.e. I
   };
 
-  CKineticVariable* node_I; //!< Node that stores all the variables at the interface
+  CEulerVariable* node_I; //!< Node that stores all the variables at the interface
   CVariable* node_iLoc; //!<Node at left of interface in the local reference frame
   CVariable* node_jLoc; //!<Node at right of interface in the local reference frame
 
@@ -169,6 +169,8 @@ public:
    * \brief Destructor of the class.
    */
   ~CGasKineticSchemeBGK(void);
+  
+  void ComputeResidual(su2double *val_residual, su2double **val_Jacobian_i, su2double **val_Jacobian_j, CConfig *config);
 
   /*!
    * \brief Compute the flow residual using the GKS BGK method.

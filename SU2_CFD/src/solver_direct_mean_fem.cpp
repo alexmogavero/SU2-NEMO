@@ -30,6 +30,7 @@
  */
 
 #include "../include/solver_structure.hpp"
+#include "../include/CKineticVariable.hpp"
 
 CFEM_DG_EulerSolver::CFEM_DG_EulerSolver(void) : CSolver() {
 
@@ -4295,11 +4296,37 @@ void CFEM_DG_EulerSolver::ComputeInviscidFluxesFace(CConfig             *config,
 
     /*--- Load the primitive states into the numerics class. ---*/
     numerics->SetPrimitive(Prim_L, Prim_R);
+    numerics->SetFluidModel(FluidModel);
+    
+    su2double ULt[nVar];
+    su2double URt[nVar];
+    for(unsigned int i=0; i<nVar; i++){
+      ULt[i] = UL[i];
+      URt[i] = UR[i];
+    }
+
+    CEulerVariable *node_L = new CEulerVariable(ULt, nDim, nVar, config);
+    CEulerVariable *node_R = new CEulerVariable(URt, nDim, nVar, config);
+    
+    bool LeftSol = node_L->SetPrimVar(FluidModel);
+    bool RightSol = node_R->SetPrimVar(FluidModel);
+    
+    /*--- Recreate nodes ---*/ 
+
+    if (!RightSol) {
+      node_R->SetNon_Physical(true);
+    }
+    if (!LeftSol) {
+      node_L->SetNon_Physical(true);
+    }
+    numerics->SetNodes(node_L, node_R);
 
     /*--- Now simply call the ComputeResidual() function to calculate
      the flux using the chosen approximate Riemann solver. Note that
      the Jacobian arrays here are just dummies for now (no implicit). ---*/
     numerics->ComputeResidual(flux, Jacobian_i, Jacobian_j, config);
+    delete node_R;
+    delete node_L;
   }
 
   for (unsigned short iVar = 0; iVar < nVar; iVar++) {

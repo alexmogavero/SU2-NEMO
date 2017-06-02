@@ -1781,6 +1781,13 @@ void CDriver::Numerics_Preprocessing(CNumerics ****numerics_container,
         }
         break;
         
+     case GKS_BGK_U:
+         for (iMGlevel = 0; iMGlevel <= config->GetnMGLevels(); iMGlevel++) {
+          numerics_container[iMGlevel][FLOW_SOL][CONV_TERM] = new CGasKineticSchemeBGK(nDim, nVar_Flow, config);
+          numerics_container[iMGlevel][FLOW_SOL][CONV_BOUND_TERM] = new CGasKineticSchemeBGK(nDim, nVar_Flow, config);
+        }
+        break;
+        
       default : cout << "Riemann solver not implemented." << endl; exit(EXIT_FAILURE); break;
     }
     
@@ -4772,4 +4779,3 @@ void CFSIDriver::Update(unsigned short ZONE_FLOW, unsigned short ZONE_STRUCT) {
   /*----------- Store the solution_pred as solution_pred_old --------------*/
 
 }
-
