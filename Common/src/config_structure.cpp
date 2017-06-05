@@ -32,6 +32,7 @@
  */
 
 #include "../include/config_structure.hpp"
+#include "../include/debug_tracking.hpp"
 
 
 CConfig::CConfig(char case_filename[MAX_STRING_SIZE], unsigned short val_software, unsigned short val_iZone, unsigned short val_nZone, unsigned short val_nDim, unsigned short verb_level) {
@@ -3641,7 +3642,7 @@ void CConfig::SetOutput(unsigned short val_software, unsigned short val_izone) {
   }
 
   cout << "|                                                                       |" << endl;
-  cout << " Git commit: " << GITVERSION   << endl;
+  printGitVersion(cout);
   //cout << "|   Local date and time: " << dt << "                      |" << endl;
   cout <<"-------------------------------------------------------------------------" << endl;
   cout << "| SU2 Lead Dev.: Dr. Francisco Palacios, Francisco.D.Palacios@boeing.com|" << endl;

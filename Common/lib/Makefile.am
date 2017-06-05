@@ -105,7 +105,9 @@ lib_sources = \
   ../src/element_structure.cpp \
   ../src/element_linear.cpp \
   ../src/interpolation_structure.cpp \
-  ../src/adt_structure.cpp
+  ../src/adt_structure.cpp \
+  ../include/debug_tracking.hpp \
+  ../src/debug_tracking.cpp
 
 lib_cxxflags = -fPIC
 lib_ldadd =

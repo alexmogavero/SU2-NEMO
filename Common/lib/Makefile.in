@@ -154,7 +154,8 @@ am__libSU2_a_SOURCES_DIST =  \
 	../src/linear_solvers_structure_b.cpp ../src/ad_structure.cpp \
 	../src/gauss_structure.cpp ../src/element_structure.cpp \
 	../src/element_linear.cpp ../src/interpolation_structure.cpp \
-	../src/adt_structure.cpp
+	../src/adt_structure.cpp ../include/debug_tracking.hpp \
+	../src/debug_tracking.cpp
 am__dirstamp = $(am__leading_dot)dirstamp
 am__objects_1 = ../src/libSU2_a-config_structure.$(OBJEXT) \
 	../src/libSU2_a-dual_grid_structure.$(OBJEXT) \
@@ -172,7 +173,8 @@ am__objects_1 = ../src/libSU2_a-config_structure.$(OBJEXT) \
 	../src/libSU2_a-element_structure.$(OBJEXT) \
 	../src/libSU2_a-element_linear.$(OBJEXT) \
 	../src/libSU2_a-interpolation_structure.$(OBJEXT) \
-	../src/libSU2_a-adt_structure.$(OBJEXT)
+	../src/libSU2_a-adt_structure.$(OBJEXT) \
+	../src/libSU2_a-debug_tracking.$(OBJEXT)
 @BUILD_NORMAL_TRUE@am_libSU2_a_OBJECTS = $(am__objects_1)
 libSU2_a_OBJECTS = $(am_libSU2_a_OBJECTS)
 libSU2_AD_a_AR = $(AR) $(ARFLAGS)
@@ -219,7 +221,8 @@ am__libSU2_AD_a_SOURCES_DIST =  \
 	../src/linear_solvers_structure_b.cpp ../src/ad_structure.cpp \
 	../src/gauss_structure.cpp ../src/element_structure.cpp \
 	../src/element_linear.cpp ../src/interpolation_structure.cpp \
-	../src/adt_structure.cpp
+	../src/adt_structure.cpp ../include/debug_tracking.hpp \
+	../src/debug_tracking.cpp
 am__objects_2 = ../src/libSU2_AD_a-config_structure.$(OBJEXT) \
 	../src/libSU2_AD_a-dual_grid_structure.$(OBJEXT) \
 	../src/libSU2_AD_a-geometry_structure.$(OBJEXT) \
@@ -236,7 +239,8 @@ am__objects_2 = ../src/libSU2_AD_a-config_structure.$(OBJEXT) \
 	../src/libSU2_AD_a-element_structure.$(OBJEXT) \
 	../src/libSU2_AD_a-element_linear.$(OBJEXT) \
 	../src/libSU2_AD_a-interpolation_structure.$(OBJEXT) \
-	../src/libSU2_AD_a-adt_structure.$(OBJEXT)
+	../src/libSU2_AD_a-adt_structure.$(OBJEXT) \
+	../src/libSU2_AD_a-debug_tracking.$(OBJEXT)
 @BUILD_REVERSE_TRUE@am_libSU2_AD_a_OBJECTS = $(am__objects_2)
 libSU2_AD_a_OBJECTS = $(am_libSU2_AD_a_OBJECTS)
 libSU2_DIRECTDIFF_a_AR = $(AR) $(ARFLAGS)
@@ -284,7 +288,8 @@ am__libSU2_DIRECTDIFF_a_SOURCES_DIST =  \
 	../src/linear_solvers_structure_b.cpp ../src/ad_structure.cpp \
 	../src/gauss_structure.cpp ../src/element_structure.cpp \
 	../src/element_linear.cpp ../src/interpolation_structure.cpp \
-	../src/adt_structure.cpp
+	../src/adt_structure.cpp ../include/debug_tracking.hpp \
+	../src/debug_tracking.cpp
 am__objects_3 = ../src/libSU2_DIRECTDIFF_a-config_structure.$(OBJEXT) \
 	../src/libSU2_DIRECTDIFF_a-dual_grid_structure.$(OBJEXT) \
 	../src/libSU2_DIRECTDIFF_a-geometry_structure.$(OBJEXT) \
@@ -301,7 +306,8 @@ am__objects_3 = ../src/libSU2_DIRECTDIFF_a-config_structure.$(OBJEXT) \
 	../src/libSU2_DIRECTDIFF_a-element_structure.$(OBJEXT) \
 	../src/libSU2_DIRECTDIFF_a-element_linear.$(OBJEXT) \
 	../src/libSU2_DIRECTDIFF_a-interpolation_structure.$(OBJEXT) \
-	../src/libSU2_DIRECTDIFF_a-adt_structure.$(OBJEXT)
+	../src/libSU2_DIRECTDIFF_a-adt_structure.$(OBJEXT) \
+	../src/libSU2_DIRECTDIFF_a-debug_tracking.$(OBJEXT)
 @BUILD_DIRECTDIFF_TRUE@am_libSU2_DIRECTDIFF_a_OBJECTS =  \
 @BUILD_DIRECTDIFF_TRUE@	$(am__objects_3)
 libSU2_DIRECTDIFF_a_OBJECTS = $(am_libSU2_DIRECTDIFF_a_OBJECTS)
@@ -555,7 +561,9 @@ lib_sources = \
   ../src/element_structure.cpp \
   ../src/element_linear.cpp \
   ../src/interpolation_structure.cpp \
-  ../src/adt_structure.cpp
+  ../src/adt_structure.cpp \
+  ../include/debug_tracking.hpp \
+  ../src/debug_tracking.cpp
 
 
 # always link to built dependencies from ./externals
@@ -664,6 +672,8 @@ clean-noinstLIBRARIES:
 	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
 ../src/libSU2_a-adt_structure.$(OBJEXT): ../src/$(am__dirstamp) \
 	../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2_a-debug_tracking.$(OBJEXT): ../src/$(am__dirstamp) \
+	../src/$(DEPDIR)/$(am__dirstamp)
 libSU2.a: $(libSU2_a_OBJECTS) $(libSU2_a_DEPENDENCIES) $(EXTRA_libSU2_a_DEPENDENCIES) 
 	$(AM_V_at)-rm -f libSU2.a
 	$(AM_V_AR)$(libSU2_a_AR) libSU2.a $(libSU2_a_OBJECTS) $(libSU2_a_LIBADD)
@@ -701,6 +711,8 @@ libSU2.a: $(libSU2_a_OBJECTS) $(libSU2_a_DEPENDENCIES) $(EXTRA_libSU2_a_DEPENDEN
 ../src/libSU2_AD_a-interpolation_structure.$(OBJEXT):  \
 	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
 ../src/libSU2_AD_a-adt_structure.$(OBJEXT): ../src/$(am__dirstamp) \
+	../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2_AD_a-debug_tracking.$(OBJEXT): ../src/$(am__dirstamp) \
 	../src/$(DEPDIR)/$(am__dirstamp)
 libSU2_AD.a: $(libSU2_AD_a_OBJECTS) $(libSU2_AD_a_DEPENDENCIES) $(EXTRA_libSU2_AD_a_DEPENDENCIES) 
 	$(AM_V_at)-rm -f libSU2_AD.a
@@ -740,6 +752,8 @@ libSU2_AD.a: $(libSU2_AD_a_OBJECTS) $(libSU2_AD_a_DEPENDENCIES) $(EXTRA_libSU2_A
 	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
 ../src/libSU2_DIRECTDIFF_a-adt_structure.$(OBJEXT):  \
 	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
+../src/libSU2_DIRECTDIFF_a-debug_tracking.$(OBJEXT):  \
+	../src/$(am__dirstamp) ../src/$(DEPDIR)/$(am__dirstamp)
 libSU2_DIRECTDIFF.a: $(libSU2_DIRECTDIFF_a_OBJECTS) $(libSU2_DIRECTDIFF_a_DEPENDENCIES) $(EXTRA_libSU2_DIRECTDIFF_a_DEPENDENCIES) 
 	$(AM_V_at)-rm -f libSU2_DIRECTDIFF.a
 	$(AM_V_AR)$(libSU2_DIRECTDIFF_a_AR) libSU2_DIRECTDIFF.a $(libSU2_DIRECTDIFF_a_OBJECTS) $(libSU2_DIRECTDIFF_a_LIBADD)
@@ -755,6 +769,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_AD_a-ad_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_AD_a-adt_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_AD_a-config_structure.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_AD_a-debug_tracking.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_AD_a-dual_grid_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_AD_a-element_linear.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_AD_a-element_structure.Po@am__quote@
@@ -772,6 +787,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-ad_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-adt_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-config_structure.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-debug_tracking.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-dual_grid_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-element_linear.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-element_structure.Po@am__quote@
@@ -789,6 +805,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_a-ad_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_a-adt_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_a-config_structure.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_a-debug_tracking.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_a-dual_grid_structure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_a-element_linear.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/libSU2_a-element_structure.Po@am__quote@
@@ -1058,6 +1075,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_a-adt_structure.obj `if test -f '../src/adt_structure.cpp'; then $(CYGPATH_W) '../src/adt_structure.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/adt_structure.cpp'; fi`
 
+../src/libSU2_a-debug_tracking.o: ../src/debug_tracking.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_a-debug_tracking.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_a-debug_tracking.Tpo -c -o ../src/libSU2_a-debug_tracking.o `test -f '../src/debug_tracking.cpp' || echo '$(srcdir)/'`../src/debug_tracking.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_a-debug_tracking.Tpo ../src/$(DEPDIR)/libSU2_a-debug_tracking.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/debug_tracking.cpp' object='../src/libSU2_a-debug_tracking.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_a-debug_tracking.o `test -f '../src/debug_tracking.cpp' || echo '$(srcdir)/'`../src/debug_tracking.cpp
+
+../src/libSU2_a-debug_tracking.obj: ../src/debug_tracking.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_a-debug_tracking.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2_a-debug_tracking.Tpo -c -o ../src/libSU2_a-debug_tracking.obj `if test -f '../src/debug_tracking.cpp'; then $(CYGPATH_W) '../src/debug_tracking.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/debug_tracking.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_a-debug_tracking.Tpo ../src/$(DEPDIR)/libSU2_a-debug_tracking.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/debug_tracking.cpp' object='../src/libSU2_a-debug_tracking.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_a-debug_tracking.obj `if test -f '../src/debug_tracking.cpp'; then $(CYGPATH_W) '../src/debug_tracking.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/debug_tracking.cpp'; fi`
+
 ../src/libSU2_AD_a-config_structure.o: ../src/config_structure.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_AD_a-config_structure.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_AD_a-config_structure.Tpo -c -o ../src/libSU2_AD_a-config_structure.o `test -f '../src/config_structure.cpp' || echo '$(srcdir)/'`../src/config_structure.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_AD_a-config_structure.Tpo ../src/$(DEPDIR)/libSU2_AD_a-config_structure.Po
@@ -1296,6 +1327,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_AD_a-adt_structure.obj `if test -f '../src/adt_structure.cpp'; then $(CYGPATH_W) '../src/adt_structure.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/adt_structure.cpp'; fi`
 
+../src/libSU2_AD_a-debug_tracking.o: ../src/debug_tracking.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_AD_a-debug_tracking.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_AD_a-debug_tracking.Tpo -c -o ../src/libSU2_AD_a-debug_tracking.o `test -f '../src/debug_tracking.cpp' || echo '$(srcdir)/'`../src/debug_tracking.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_AD_a-debug_tracking.Tpo ../src/$(DEPDIR)/libSU2_AD_a-debug_tracking.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/debug_tracking.cpp' object='../src/libSU2_AD_a-debug_tracking.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_AD_a-debug_tracking.o `test -f '../src/debug_tracking.cpp' || echo '$(srcdir)/'`../src/debug_tracking.cpp
+
+../src/libSU2_AD_a-debug_tracking.obj: ../src/debug_tracking.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_AD_a-debug_tracking.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2_AD_a-debug_tracking.Tpo -c -o ../src/libSU2_AD_a-debug_tracking.obj `if test -f '../src/debug_tracking.cpp'; then $(CYGPATH_W) '../src/debug_tracking.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/debug_tracking.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_AD_a-debug_tracking.Tpo ../src/$(DEPDIR)/libSU2_AD_a-debug_tracking.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/debug_tracking.cpp' object='../src/libSU2_AD_a-debug_tracking.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_AD_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_AD_a-debug_tracking.obj `if test -f '../src/debug_tracking.cpp'; then $(CYGPATH_W) '../src/debug_tracking.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/debug_tracking.cpp'; fi`
+
 ../src/libSU2_DIRECTDIFF_a-config_structure.o: ../src/config_structure.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_DIRECTDIFF_a-config_structure.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-config_structure.Tpo -c -o ../src/libSU2_DIRECTDIFF_a-config_structure.o `test -f '../src/config_structure.cpp' || echo '$(srcdir)/'`../src/config_structure.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-config_structure.Tpo ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-config_structure.Po
@@ -1533,6 +1578,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/adt_structure.cpp' object='../src/libSU2_DIRECTDIFF_a-adt_structure.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_DIRECTDIFF_a-adt_structure.obj `if test -f '../src/adt_structure.cpp'; then $(CYGPATH_W) '../src/adt_structure.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/adt_structure.cpp'; fi`
+
+../src/libSU2_DIRECTDIFF_a-debug_tracking.o: ../src/debug_tracking.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_DIRECTDIFF_a-debug_tracking.o -MD -MP -MF ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-debug_tracking.Tpo -c -o ../src/libSU2_DIRECTDIFF_a-debug_tracking.o `test -f '../src/debug_tracking.cpp' || echo '$(srcdir)/'`../src/debug_tracking.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-debug_tracking.Tpo ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-debug_tracking.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/debug_tracking.cpp' object='../src/libSU2_DIRECTDIFF_a-debug_tracking.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_DIRECTDIFF_a-debug_tracking.o `test -f '../src/debug_tracking.cpp' || echo '$(srcdir)/'`../src/debug_tracking.cpp
+
+../src/libSU2_DIRECTDIFF_a-debug_tracking.obj: ../src/debug_tracking.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -MT ../src/libSU2_DIRECTDIFF_a-debug_tracking.obj -MD -MP -MF ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-debug_tracking.Tpo -c -o ../src/libSU2_DIRECTDIFF_a-debug_tracking.obj `if test -f '../src/debug_tracking.cpp'; then $(CYGPATH_W) '../src/debug_tracking.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/debug_tracking.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-debug_tracking.Tpo ../src/$(DEPDIR)/libSU2_DIRECTDIFF_a-debug_tracking.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../src/debug_tracking.cpp' object='../src/libSU2_DIRECTDIFF_a-debug_tracking.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libSU2_DIRECTDIFF_a_CXXFLAGS) $(CXXFLAGS) -c -o ../src/libSU2_DIRECTDIFF_a-debug_tracking.obj `if test -f '../src/debug_tracking.cpp'; then $(CYGPATH_W) '../src/debug_tracking.cpp'; else $(CYGPATH_W) '$(srcdir)/../src/debug_tracking.cpp'; fi`
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
