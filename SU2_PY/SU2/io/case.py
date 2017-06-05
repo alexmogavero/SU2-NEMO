@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-## \file test_matrix.py
-#  \brief show the test matrix of a group of test cases.
-#  \author A. Mogavero
+## \file case.py
+#  \brief python package for CFD test case handling
+#  \author T. Lukaczyk, F. Palacios
 #  \version 5.0.0 "Raven"
 #
 # SU2 Lead Developers: Dr. Francisco Palacios (Francisco.D.Palacios@boeing.com).
@@ -31,25 +31,42 @@
 # You should have received a copy of the GNU Lesser General Public
 # License along with SU2. If not, see <http://www.gnu.org/licenses/>.
 
-from SU2 import io
-import shutil, os
+# ----------------------------------------------------------------------
+#  Imports
+# ----------------------------------------------------------------------
 
-def read_cases(root_dir):
-    confs = []
-    for (dirpath, dirnames, filenames) in os.walk(root_dir):
-        conf_files = [f for f in filenames if '.cfg' == f[-4:]]
-        for c in conf_files:
-            try:
-                case = io.Case(filename=os.path.join(dirpath, c))
-                confs.append(case)
-            except:
-                pass
-                         
-    return confs
+import os, sys, shutil, copy
+import numpy as np
+from .tools import *
+from config_options import *
+from config import Config
 
-if __name__=="__main__":
+inf = 1.0e20
+
+
+class Case(Config):
+    """ config = SU2.io.Case(filename="")
+        
+        Starts a case class, an extension of 
+        Config()
+    """
     
-    confs = read_cases("/home/trb12187/Documents/kinetic/Tests/flatplate")
+    def __init__(self,*args,**kwarg):
+        super(Case, self).__init__(*args, **kwarg)
+        
+        self.name = os.path.basename(self._filename)
     
-    print(confs[0].diff(confs[1:]))
+    @property
+    def root(self):
+        return os.path.dirname(self._filename) 
     
+    def diff(self, konfig):
+        out = super(Case, self).diff(konfig)
+        if out.keys():
+            out.name = [k.name for k in konfig]
+            
+        return out
+        
+        
+
+

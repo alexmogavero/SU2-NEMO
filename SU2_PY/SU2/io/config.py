@@ -223,7 +223,7 @@ class Config(ordered_bunch):
         for k in konfig:
             keys.update( k.keys() )
         
-        konfig_diff = Config()
+        konfig_diff = self.__class__()
         
         for key in keys:
             value1 = self.get(key,None)
