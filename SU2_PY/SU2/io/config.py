@@ -214,18 +214,22 @@ class Config(ordered_bunch):
                 config_diff.MATH_PROBLEM = ['DIRECT','CONTINUOUS_ADJOINT']
                 
         """
+        if not isinstance(konfig, list):
+            konfig = [konfig]
         
         keys = set([])
         keys.update( self.keys() )
-        keys.update( konfig.keys() )
+        
+        for k in konfig:
+            keys.update( k.keys() )
         
         konfig_diff = Config()
         
         for key in keys:
             value1 = self.get(key,None)
-            value2 = konfig.get(key,None)
-            if not value1 == value2:
-                konfig_diff[key] = [value1,value2]
+            value2 = [k.get(key,None) for k in konfig]
+            if any([v != value1 for v in value2]):
+                konfig_diff[key] = [value1] + value2
         
         return konfig_diff
     
