@@ -35,7 +35,7 @@
 #  Imports
 # ----------------------------------------------------------------------
 
-import os, sys, shutil, copy
+import os, sys, shutil, copy, re
 import numpy as np
 from .tools import *
 from config_options import *
@@ -56,12 +56,26 @@ class Case(Config):
         
         self.name = os.path.splitext(os.path.basename(self._filename))[0]
         self.root = os.path.dirname(self._filename) 
+        
+        self.commit = None
+        if os.path.isdir(self.root):
+            log_file = [f for f in os.listdir(self.root) if os.path.isfile(os.path.join(self.root, f))]
+            log_file = [f for f in log_file if 'log' in f]
+            
+            log_file = open(os.path.join(self.root, log_file[0]), "r")
+            for l in log_file:
+                mt = re.match('.*Git commit: *([0-9a-z]*)', l)
+                if mt:
+                    self.commit = mt.group(1)
+                    break
+            log_file.close()
     
     def diff(self, konfig):
         out = super(Case, self).diff(konfig)
         if out.keys():
             out.name = [k.name for k in konfig]
             out.root = [k.root for k in konfig]
+            out.commit = [k.commit for k in konfig]
             
         return out
         
