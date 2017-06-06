@@ -32,7 +32,7 @@
 # License along with SU2. If not, see <http://www.gnu.org/licenses/>.
 
 from SU2 import io
-import shutil, os
+import shutil, os, sys, getopt
 
 def read_cases(root_dir):
     confs = []
@@ -47,9 +47,45 @@ def read_cases(root_dir):
                          
     return confs
 
+def print_matrix(diffs):
+    fmt = ''
+    for k in diffs.keys():
+        n = max([len(str(diffs[k][i])) for i in range(len(diffs.name))] + [len(k)])
+        fmt = fmt + '{:' + str(n) + '} '
+     
+    out = fmt.format(*diffs.keys()) + '\n'
+    for i in range(len(diffs.name)):
+        out += fmt.format(*[diffs[k][i] for k in diffs.keys()]) + '\n'
+        
+    return out
+            
+
 if __name__=="__main__":
     
-    confs = read_cases("/home/trb12187/Documents/kinetic/Tests/flatplate")
+    rootDir = os.path.curdir
+    outputfile = None
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:],"hr:o:",["root-dir=", "ofile="])
+    except getopt.GetoptError:
+        print 'test_matrix.py [-r <root directory>] [-o <outputfile>]'
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt == '-h':
+           print 'test_matrix.py [-r <root directory>] [-o <outputfile>]'
+           sys.exit()
+        elif opt in ("-r", "--root-dir"):
+           rootDir = arg
+        elif opt in ("-o", "--ofile"):
+           outputfile = arg
+
+    confs = read_cases(rootDir)
     
-    print(confs[0].diff(confs[1:]))
+    mtx = print_matrix(confs[0].diff(confs[1:]))
+    if outputfile:
+        out_file = open(outputfile, "w")
+        out_file.write(mtx)
+        out_file.close()
+    else:
+        print(mtx)
     
