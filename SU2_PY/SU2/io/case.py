@@ -54,16 +54,14 @@ class Case(Config):
     def __init__(self,*args,**kwarg):
         super(Case, self).__init__(*args, **kwarg)
         
-        self.name = os.path.basename(self._filename)
-    
-    @property
-    def root(self):
-        return os.path.dirname(self._filename) 
+        self.name = os.path.splitext(os.path.basename(self._filename))[0]
+        self.root = os.path.dirname(self._filename) 
     
     def diff(self, konfig):
         out = super(Case, self).diff(konfig)
         if out.keys():
             out.name = [k.name for k in konfig]
+            out.root = [k.root for k in konfig]
             
         return out
         
