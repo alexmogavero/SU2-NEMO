@@ -53,12 +53,13 @@ def read_cases(root_dir):
 def print_matrix(diffs):
     fmt = ''
     for k in diffs.keys():
-        n = max([len(str(diffs[k][i])) for i in range(len(diffs.name))] + [len(k)])
-        fmt = fmt + '{:' + str(n) + '} '
+        if diffs[k] is not None:
+            n = max([len(str(diffs[k][i])) for i in range(len(diffs.name))] + [len(k)])
+            fmt = fmt + '{:' + str(n) + '} '
      
-    out = fmt.format(*diffs.keys()) + '\n'
+    out = fmt.format(*[k for k in diffs.keys() if diffs[k] is not None]) + '\n'
     for i in range(len(diffs.name)):
-        out += fmt.format(*[diffs[k][i] for k in diffs.keys()]) + '\n'
+        out += fmt.format(*[diffs[k][i] for k in diffs.keys() if diffs[k] is not None]) + '\n'
         
     return out
             
