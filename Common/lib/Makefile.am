@@ -109,7 +109,7 @@ lib_sources = \
   ../include/debug_tracking.hpp \
   ../src/debug_tracking.cpp
 
-lib_cxxflags = -fPIC
+lib_cxxflags = -fPIC -DGITVERSION=\"$(shell git rev-parse HEAD)\"
 lib_ldadd =
 
 # always link to built dependencies from ./externals
