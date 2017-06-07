@@ -42,8 +42,11 @@ def read_cases(root_dir):
             try:
                 case = io.Case(filename=os.path.join(dirpath, c))
                 confs.append(case)
-            except:
-                pass
+            except Exception as e:
+                print('While reading file: ' + os.path.join(dirpath, c))
+                print(e)
+                print('  skipping')
+                print('')
                          
     return confs
 

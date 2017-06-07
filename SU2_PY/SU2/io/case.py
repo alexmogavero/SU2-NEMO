@@ -62,22 +62,14 @@ class Case(Config):
             log_file = [f for f in os.listdir(self.root) if os.path.isfile(os.path.join(self.root, f))]
             log_file = [f for f in log_file if 'log' in f]
             
-            log_file = open(os.path.join(self.root, log_file[0]), "r")
-            for l in log_file:
-                mt = re.match('.*Git commit: *([0-9a-z]*)', l)
-                if mt:
-                    self.commit = mt.group(1)
-                    break
-            log_file.close()
-    
-    def diff(self, konfig):
-        out = super(Case, self).diff(konfig)
-        if out.keys():
-            out.name = [k.name for k in konfig]
-            out.root = [k.root for k in konfig]
-            out.commit = [k.commit for k in konfig]
-            
-        return out
+            if len(log_file):
+                log_file = open(os.path.join(self.root, log_file[0]), "r")
+                for l in log_file:
+                    mt = re.match('.*Git commit: *([0-9a-z]*)', l)
+                    if mt:
+                        self.commit = mt.group(1)
+                        break
+                log_file.close()
         
         
 
