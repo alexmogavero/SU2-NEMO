@@ -230,6 +230,8 @@ class Config(ordered_bunch):
             value2 = [k.get(key,None) for k in konfig]
             if any([v != value1 for v in value2]):
                 konfig_diff[key] = [value1] + value2
+                
+        konfig_diff.name = [self.name] + [k.name for k in konfig] 
         
         return konfig_diff
     
