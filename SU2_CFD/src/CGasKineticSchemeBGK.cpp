@@ -91,7 +91,7 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
     Flux_j += A_j*PsiPsiMaxwell(RIGHT, NEGATIVE, exponents);
 
     for(unsigned short iVar=0; iVar<nVar; iVar++){
-      val_residual[iVar] += Dt_inv*tauColl*int_ij*(Flux_i[iVar] + Flux_j[iVar])*Area;
+      val_residual[iVar] -= Dt_inv*tauColl*int_ij*(Flux_i[iVar] + Flux_j[iVar])*Area;
     }
   }
 
@@ -192,7 +192,7 @@ std::vector<su2double> CGasKineticSchemeBGK::PsiPsiMaxwell(State state, std::vec
 
 std::vector<su2double> CGasKineticSchemeBGK::MatrixToVector(const std::vector<std::vector<su2double> >& mat){
   std::vector<su2double> out(mat.size()*mat[0].size(), 0);
-  
+
   for(std::size_t i=0; i<mat.size(); i++){
     for(std::size_t j=0; j<mat[0].size(); j++){
       out[i*mat[0].size() + j] = mat[i][j];
@@ -206,17 +206,17 @@ void CGasKineticSchemeBGK::Derivatives(State state, std::vector<std::vector<su2d
   if(G.size() != nDim) throw std::logic_error("Error: G must be a matrix of size nDim x nVar.");
   if(G[0].size() != nVar) throw std::logic_error("Error: G must be a matrix of size nDim x nVar.");
   if(Ft.size() != nVar) throw std::logic_error("Error: Ft must be a vector of size nVar.");
-  
+
   std::vector<su2double> M;
   std::vector<su2double> sysM;
-  
+
   std::vector<unsigned short> exponents(nVar-1, 0);
   M = PsiPsiMaxwell(state, exponents);
-  
+
   std::vector<su2double> out;
-  
+
   CVariable* node;
-  
+
   switch (state){
     case LEFT:
       node = node_iLoc;
@@ -227,20 +227,20 @@ void CGasKineticSchemeBGK::Derivatives(State state, std::vector<std::vector<su2d
     case INTERFACE:
       node = node_I;
       break;
-  }  
-  
+  }
+
   // Space derivatives
   // std::vector<std::vector<su2double> > G(nDim, std::vector<su2double>(nVar, 0));
   for (unsigned int j=0; j<nDim; j++){
     for (unsigned int i=0; i<nVar; i++){
       G[j][i] = node->GetGradient(i, j);
     }
-    
+
     int ipiv[nVar];
     sysM = M;
     LAPACKE_dsysv(LAPACK_COL_MAJOR, 'U', nVar, 1, sysM.data(), nVar, ipiv, G[j].data(), nVar);
   }
-  
+
   //Time derivatives
   // std::vector<su2double> Ft(nVar, 0);
   for (unsigned int j=0; j<nDim; j++){
@@ -249,20 +249,20 @@ void CGasKineticSchemeBGK::Derivatives(State state, std::vector<std::vector<su2d
 
     Ft -= G[j]*PsiPsiMaxwell(state, ALL, exponents);
   }
-  
+
   int ipiv[nVar];
   sysM = M;
   LAPACKE_dsysv(LAPACK_COL_MAJOR, 'U', nVar, 1, sysM.data(), nVar, ipiv, Ft.data(), nVar);
-  
+
   return;
 }
 
 su2double CGasKineticSchemeBGK::MomentsMaxwellian(std::vector<unsigned short> exponents, State state, IntLimits lim){
   su2double mp, rho;
-  
+
   moments_struct* moments;
   CVariable* node;
-  
+
   switch (state){
     case LEFT:
       node = node_iLoc;
@@ -277,9 +277,9 @@ su2double CGasKineticSchemeBGK::MomentsMaxwellian(std::vector<unsigned short> ex
       moments = &moments_I;
     break;
   }
-  
+
   if (moments->xi.empty()) CGasKineticSchemeBGK::ComputeMaxwellianMoments(node, moments);
-  
+
   mp = 1.0;
   switch (lim) {
     case ALL:
@@ -292,12 +292,12 @@ su2double CGasKineticSchemeBGK::MomentsMaxwellian(std::vector<unsigned short> ex
       mp *= moments->P[0][exponents[0]];
       break;
   }
-  
+
   for (unsigned short i = 1; i<nDim; i++){
     mp *= moments->A[i][exponents[i]];
   }
   mp *= moments->xi[exponents[nDim]];
-  
+
   rho = node->GetDensity();
   return mp*rho;
 }
@@ -305,37 +305,37 @@ su2double CGasKineticSchemeBGK::MomentsMaxwellian(std::vector<unsigned short> ex
 void CGasKineticSchemeBGK::ComputeMaxwellianMoments(CVariable* node, moments_struct*  moments){
   double K = (5.0 - 3.0*Gamma) / (Gamma - 1.0) + (3.0 - nDim);
   double l = (K+nDim) / (4.0*(node->GetEnergy() - 0.5*node->GetVelocity2()));
-  
+
   moments->A.resize(nDim);
   moments->P.resize(nDim);
   moments->N.resize(nDim);
-  
+
   for(unsigned short i = 0; i<nDim ; i++){
     moments->A[i].resize(9,1.0);
     moments->P[i].resize(9,1.0);
     moments->N[i].resize(9,1.0);
   }
-  
-  moments->xi.resize(7,1.0);  
+
+  moments->xi.resize(7,1.0);
 
   for(unsigned short i = 0; i<nDim; i++){
     su2double U = node->GetVelocity(i);
-    
+
     moments->A[i][0] = 1;
     moments->P[i][0] = 0.5*erfc(-sqrt(l)*U);
     moments->N[i][0] = 0.5*erfc(sqrt(l)*U);
-    
+
     moments->A[i][1] = U;
     moments->P[i][1] = U*moments->P[i][0] + 0.5*exp(-l*U*U)/sqrt(M_PI*l);
     moments->N[i][1] = U*moments->N[i][0] - 0.5*exp(-l*U*U)/sqrt(M_PI*l);
-    
+
     for(unsigned int n =0; n<7; n++){
       moments->A[i][n+2] = U*moments->A[i][n+1] + (n+1)/(2*l)*moments->A[i][n];
       moments->P[i][n+2] = U*moments->P[i][n+1] + (n+1)/(2*l)*moments->P[i][n];
       moments->N[i][n+2] = U*moments->N[i][n+1] + (n+1)/(2*l)*moments->N[i][n];
     }
   }
-  
+
   moments->xi[2] = 0.5 * K / l;
   moments->xi[4] = 0.5 * moments->xi[2] * (K+2)/ l;
   moments->xi[6] = 0.5 * moments->xi[4] * (K+4)/ l;
