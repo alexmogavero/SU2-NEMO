@@ -11990,6 +11990,8 @@ void CEulerSolver::BC_Outlet(CGeometry *geometry, CSolver **solver_container,
                     (config->GetKind_Turb_Model() == SST));
   su2double *Normal = new su2double[nDim];
   
+  CVariable* nodeB = NULL;
+
   /*--- Loop over all the vertices on this boundary marker ---*/
   for (iVertex = 0; iVertex < geometry->nVertex[val_marker]; iVertex++) {
     
@@ -12088,11 +12090,29 @@ void CEulerSolver::BC_Outlet(CGeometry *geometry, CSolver **solver_container,
       /*--- Set various quantities in the solver class ---*/
       conv_numerics->SetPrimitive(V_domain, V_outlet);
       
+      conv_numerics->SetFluidModel(FluidModel);
+
+      nodeB = node[iPoint]->duplicate();
+      nodeB->SetSolution(0, Density);
+      for(iDim=0; iDim<nDim; iDim++){
+        nodeB->SetSolution(iDim+1, Density*Velocity[iDim]);
+      }
+      nodeB->SetSolution(nVar-1, Density*Energy);
+      nodeB->SetNon_Physical(false);
+      bool RightSol = nodeB->SetPrimVar(FluidModel);
+      if (!RightSol) nodeB->SetNon_Physical(true);
+
+      conv_numerics->SetNodes(node[iPoint], nodeB);
+
       if (grid_movement)
         conv_numerics->SetGridVel(geometry->node[iPoint]->GetGridVel(), geometry->node[iPoint]->GetGridVel());
       
       /*--- Compute the residual using an upwind scheme ---*/
-      conv_numerics->ComputeResidual(Residual, Jacobian_i, Jacobian_j, config);
+      if (implicit){
+        conv_numerics->ComputeResidual(Residual, Jacobian_i, Jacobian_j, config);
+      }else{
+        conv_numerics->ComputeResidual(Residual, config);
+      }
       
       /*--- Update residual value ---*/
       LinSysRes.AddBlock(iPoint, Residual);
@@ -12107,7 +12127,7 @@ void CEulerSolver::BC_Outlet(CGeometry *geometry, CSolver **solver_container,
         node[iPoint]->SetPreconditioner_Beta(conv_numerics->GetPrecond_Beta());
       
       /*--- Viscous contribution ---*/
-      if (viscous) {
+      if (viscous && visc_numerics) {
         
         /*--- Set laminar and eddy viscosity at the infinity ---*/
         V_outlet[nDim+5] = node[iPoint]->GetLaminarViscosity();
