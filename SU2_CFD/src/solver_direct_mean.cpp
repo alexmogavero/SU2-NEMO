@@ -12108,11 +12108,7 @@ void CEulerSolver::BC_Outlet(CGeometry *geometry, CSolver **solver_container,
         conv_numerics->SetGridVel(geometry->node[iPoint]->GetGridVel(), geometry->node[iPoint]->GetGridVel());
       
       /*--- Compute the residual using an upwind scheme ---*/
-      if (implicit){
-        conv_numerics->ComputeResidual(Residual, Jacobian_i, Jacobian_j, config);
-      }else{
-        conv_numerics->ComputeResidual(Residual, config);
-      }
+      conv_numerics->ComputeResidual(Residual, Jacobian_i, Jacobian_j, config);
       
       /*--- Update residual value ---*/
       LinSysRes.AddBlock(iPoint, Residual);

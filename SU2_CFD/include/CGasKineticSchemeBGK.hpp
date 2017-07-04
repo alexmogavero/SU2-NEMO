@@ -199,6 +199,17 @@ public:
   void ComputeResidual(su2double *val_residual, CConfig *config);
 
   /*!
+   * \brief Compute the flow residual using the GKS BGK method.
+   * \param[out] val_residual - Pointer to the convective residual.
+   * \param[out] val_Jacobian_i - Jacobian for node i.
+   * \param[out] val_Jacobian_j - Jacobian for node j.
+   * \param[in] config - Definition of the particular problem.
+   * \details This function for now just call the implementation without the Jacobian
+   * and it throws an error in case the calculation is implicit.
+   */
+  void ComputeResidual(su2double *val_residual, su2double** val_Jacobian_i, su2double** val_Jacobian_j, CConfig *config);
+
+  /*!
    * \brief Extend the default implementation calculating also the area
    *  and the local reference frame
    * \param[in] val_normal - Normal vector, the norm of the vector is the area of the face.

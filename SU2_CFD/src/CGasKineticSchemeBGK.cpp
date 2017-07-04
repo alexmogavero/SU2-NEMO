@@ -102,6 +102,11 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
 
 //  fedisableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
 }
+
+void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, su2double** val_Jacobian_i, su2double** val_Jacobian_j, CConfig *config){
+  if (config->GetKind_TimeIntScheme_Flow() == EULER_IMPLICIT) throw std::logic_error("Error: Implicit computation not implemented in GKS_BGK.");
+
+  ComputeResidual(val_residual, config);
 }
 
 void CGasKineticSchemeBGK::CalculateInterface(){
