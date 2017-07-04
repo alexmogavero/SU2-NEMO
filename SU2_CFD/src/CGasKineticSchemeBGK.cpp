@@ -1,6 +1,7 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include "lapacke.h"
+#include <fenv.h>
 #include "../include/CGasKineticSchemeBGK.hpp"
 #include "../include/CKineticVariable.hpp"
 
@@ -31,6 +32,8 @@ CGasKineticSchemeBGK::~CGasKineticSchemeBGK(void) {
 }
 
 void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *config){
+//  feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
+
   Clear();
 
   //Rotate Reference Frame
@@ -96,6 +99,9 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
   }
 
   rotate(val_residual + 1, true);
+
+//  fedisableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
+}
 }
 
 void CGasKineticSchemeBGK::CalculateInterface(){
