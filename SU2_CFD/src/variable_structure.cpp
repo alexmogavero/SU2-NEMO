@@ -156,6 +156,8 @@ CVariable::CVariable(const CVariable& obj):
   Res_TruncError = copyArray(obj.Res_TruncError, nVar);;
   Residual_Old = copyArray(obj.Residual_Old, nVar);
   Residual_Sum = copyArray(obj.Residual_Sum, nVar);
+
+  Delta_Time = obj.Delta_Time;
 }
 
 su2double* CVariable::copyArray(const su2double* arr, unsigned short size){
