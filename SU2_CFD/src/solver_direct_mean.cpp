@@ -12205,6 +12205,8 @@ void CEulerSolver::BC_Supersonic_Inlet(CGeometry *geometry, CSolver **solver_con
   Energy = Pressure/(Density*Gamma_Minus_One)+0.5*Velocity2;
   if (tkeNeeded) Energy += GetTke_Inf();
   
+  CVariable* nodeB = NULL;
+
   /*--- Loop over all the vertices on this boundary marker ---*/
   
   for (iVertex = 0; iVertex < geometry->nVertex[val_marker]; iVertex++) {
@@ -12246,6 +12248,20 @@ void CEulerSolver::BC_Supersonic_Inlet(CGeometry *geometry, CSolver **solver_con
       conv_numerics->SetNormal(Normal);
       conv_numerics->SetPrimitive(V_domain, V_inlet);
       
+      conv_numerics->SetFluidModel(FluidModel);
+
+      nodeB = node[iPoint]->duplicate();
+      nodeB->SetSolution(0, Density);
+      for(iDim=0; iDim<nDim; iDim++){
+        nodeB->SetSolution(iDim+1, Density*Velocity[iDim]);
+      }
+      nodeB->SetSolution(nVar-1, Density*Energy);
+      nodeB->SetNon_Physical(false);
+      bool RightSol = nodeB->SetPrimVar(FluidModel);
+      if (!RightSol) nodeB->SetNon_Physical(true);
+
+      conv_numerics->SetNodes(node[iPoint], nodeB);
+
       if (grid_movement)
         conv_numerics->SetGridVel(geometry->node[iPoint]->GetGridVel(),
                                   geometry->node[iPoint]->GetGridVel());
@@ -12262,7 +12278,7 @@ void CEulerSolver::BC_Supersonic_Inlet(CGeometry *geometry, CSolver **solver_con
       
       /*--- Viscous contribution ---*/
       
-      if (viscous) {
+      if (viscous  && visc_numerics) {
         
         /*--- Set laminar and eddy viscosity at the infinity ---*/
         
@@ -12295,6 +12311,7 @@ void CEulerSolver::BC_Supersonic_Inlet(CGeometry *geometry, CSolver **solver_con
           Jacobian.SubtractBlock(iPoint, iPoint, Jacobian_i);
       }
       
+      delete nodeB;
     }
   }
   
