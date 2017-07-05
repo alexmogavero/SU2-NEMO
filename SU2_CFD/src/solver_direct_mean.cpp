@@ -12151,6 +12151,7 @@ void CEulerSolver::BC_Outlet(CGeometry *geometry, CSolver **solver_container,
         
       }
       
+      delete nodeB;
     }
   }
   
