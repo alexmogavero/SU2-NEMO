@@ -217,6 +217,30 @@ public:
    * \param[in] val_normal - Normal vector, the norm of the vector is the area of the face.
    */
   virtual void SetNormal(su2double *val_normal);
+
+  /*!
+   * \brief Calculates the fluxes based on a single node
+   * \param[out] val_residual - Fluxes of the conserved quantities.
+   * \details This function calculates the fluxed using the node_i only.
+   * The node_j should be left to NULL when using this function.
+   * Also the normal needs to be set.
+   */
+  virtual void GetInviscidProjFlux(su2double* val_residual);
+
+  /*!
+   * \brief Calculates the fluxes based on a single node
+   * \param[in] Density_b - Dummy, not used.
+   * \param[in] Velocity_b - Dummy, not used.
+   * \param[in] Pressure_b - Dummy, not used.
+   * \param[in] Enthalpy_b - Dummy, not used.
+   * \param[in] NormalArea - normal where the fluxes have to be projected. Its magnitude is the Area.
+   * \param[out] val_residual - Fluxes of the conserved quantities.
+   * \details This function overrides the default implementation.
+   * Contrary to the name it calculates the full fluxes convective + viscous.
+   * node_j needs to be set before using this function.
+   */
+  virtual void GetInviscidProjFlux(su2double* Density_b, su2double* Velocity_b, su2double* Pressure_b,
+      su2double* Enthalpy_b, su2double* NormalArea, su2double* val_residual);
 };
 
 /*!

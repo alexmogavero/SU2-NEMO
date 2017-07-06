@@ -9897,6 +9897,8 @@ void CEulerSolver::BC_Euler_Wall(CGeometry *geometry, CSolver **solver_container
     DubDu[iVar] = new su2double[nVar];
   }
   
+  CVariable* nodeB = NULL;
+
   /*--- Loop over all the vertices on this boundary marker ---*/
   
   for (iVertex = 0; iVertex < geometry->nVertex[val_marker]; iVertex++) {
@@ -9960,6 +9962,30 @@ void CEulerSolver::BC_Euler_Wall(CGeometry *geometry, CSolver **solver_container
       Chi_b = FluidModel->GetdPdrho_e() - Kappa_b * StaticEnergy_b;
       Pressure_b = FluidModel->GetPressure();
       Enthalpy_b = Energy_b + Pressure_b/Density_b;
+
+      //Assign to boundary node
+      nodeB = node[iPoint]->duplicate();
+      nodeB->SetSolution(0, Density_b);
+      for(iDim=0; iDim<nDim; iDim++){
+        nodeB->SetSolution(iDim+1, Density_b*Velocity_b[iDim]);
+      }
+      nodeB->SetSolution(nVar-1, Density_b*Energy_b);
+      nodeB->SetNon_Physical(false);
+      bool RightSol = nodeB->SetPrimVar(FluidModel);
+      if (!RightSol) nodeB->SetNon_Physical(true);
+
+      //Remove normal component to gradients
+      for(iVar=0; iVar<nVar; iVar++){
+        su2double ProjGrad_b = 0;
+        for (iDim = 0; iDim < nDim; iDim++) {
+          ProjGrad_b += nodeB->GetGradient(iVar, iDim)*UnitNormal[iDim];
+        }
+        for (iDim = 0; iDim < nDim; iDim++) {
+          nodeB->SetGradient(iVar, iDim, nodeB->GetGradient(iVar, iDim) - ProjGrad_b*UnitNormal[iDim]);
+        }
+      }
+
+      numerics->SetNodes(nodeB, NULL);
 
       numerics->GetInviscidProjFlux(&Density_b, Velocity_b, &Pressure_b, &Enthalpy_b, NormalArea, Residual);
 
@@ -10033,6 +10059,8 @@ void CEulerSolver::BC_Euler_Wall(CGeometry *geometry, CSolver **solver_container
         Jacobian.AddBlock(iPoint, iPoint, Jacobian_i);
 
       }
+
+      delete nodeB;
     }
   }
   

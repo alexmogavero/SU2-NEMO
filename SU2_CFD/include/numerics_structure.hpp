@@ -776,7 +776,7 @@ public:
    * \param[in] val_normal - Normal vector, the norm of the vector is the area of the face.
    * \param[out] val_Proj_Flux - Pointer to the projected flux.
    */
-  void GetInviscidProjFlux(su2double *val_density, su2double *val_velocity,
+  virtual void GetInviscidProjFlux(su2double *val_density, su2double *val_velocity,
                            su2double *val_pressure, su2double *val_enthalpy,
                            su2double *val_normal, su2double *val_Proj_Flux);
     
