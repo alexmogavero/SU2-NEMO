@@ -48,13 +48,7 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
   su2double Dt = 0.5*(node_i->GetDelta_Time() + node_j->GetDelta_Time());
 
   //Calculate the mean collision time
-  su2double tauColl = node_I->GetLaminarViscosity()/node_I->GetPressure();
-  double K = (5.0 - 3.0*Gamma) / (Gamma - 1.0) + (3.0 - nDim);
-  double lL = (K+nDim) / (4.0*(node_iLoc->GetEnergy() - 0.5*node_iLoc->GetVelocity2()));
-  double lR = (K+nDim) / (4.0*(node_jLoc->GetEnergy() - 0.5*node_jLoc->GetVelocity2()));
-  double rho_lamL = node_iLoc->GetDensity()/lL;
-  double rho_lamR = node_jLoc->GetDensity()/lR;
-  tauColl += Dt*abs(rho_lamL - rho_lamR)/abs(rho_lamL + rho_lamR);
+  su2double tauColl = CalculateTau(Dt);
 
   std::vector<su2double> Flux_i, Flux_j, Flux_I;
   Flux_I = PsiMaxwell(INTERFACE, ALL, true);
@@ -107,6 +101,20 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, su2double** 
   if (config->GetKind_TimeIntScheme_Flow() == EULER_IMPLICIT) throw std::logic_error("Error: Implicit computation not implemented in GKS_BGK.");
 
   ComputeResidual(val_residual, config);
+}
+
+su2double CGasKineticSchemeBGK::CalculateTau(su2double Dt)const{
+  su2double tauColl = node_I->GetLaminarViscosity()/node_I->GetPressure();
+
+  double K = (5.0 - 3.0*Gamma) / (Gamma - 1.0) + (3.0 - nDim);
+  double lL = (K+nDim) / (4.0*(node_iLoc->GetEnergy() - 0.5*node_iLoc->GetVelocity2()));
+  double lR = (K+nDim) / (4.0*(node_jLoc->GetEnergy() - 0.5*node_jLoc->GetVelocity2()));
+  double rho_lamL = node_iLoc->GetDensity()/lL;
+  double rho_lamR = node_jLoc->GetDensity()/lR;
+
+  tauColl += Dt*abs(rho_lamL - rho_lamR)/abs(rho_lamL + rho_lamR);
+
+  return tauColl;
 }
 
 void CGasKineticSchemeBGK::CalculateInterface(){

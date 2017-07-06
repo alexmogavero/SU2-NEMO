@@ -176,6 +176,8 @@ protected:
    */
   void Clear();
 
+  su2double CalculateTau(su2double Dt)const;
+
 public:
 
   /*!
