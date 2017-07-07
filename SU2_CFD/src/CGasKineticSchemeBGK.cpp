@@ -103,7 +103,7 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, su2double** 
   ComputeResidual(val_residual, config);
 }
 
-void CGasKineticSchemeBGK::GetInviscidProjFlux(su2double* val_residual){
+void CGasKineticSchemeBGK::GetInviscidProjFlux(su2double* val_residual, IntLimits lim){
   Clear();
 
   //Rotate Reference Frame
@@ -115,7 +115,7 @@ void CGasKineticSchemeBGK::GetInviscidProjFlux(su2double* val_residual){
   //Calculate the mean collision time
   su2double tauColl = node_iLoc->GetLaminarViscosity()/node_iLoc->GetPressure();
 
-  std::vector<su2double> Flux_i = PsiMaxwell(LEFT, ALL, true);
+  std::vector<su2double> Flux_i = PsiMaxwell(LEFT, lim, true);
 
   std::vector<std::vector<su2double> > a_i(nDim, std::vector<su2double>(nVar, 0)); //space derivatives
   std::vector<su2double> A_i(nVar, 0); //Time derivatives
@@ -127,14 +127,14 @@ void CGasKineticSchemeBGK::GetInviscidProjFlux(su2double* val_residual){
     exponents.assign(nVar-1, 0);
     exponents[0]++;
     exponents[i]++;
-    Flux_i -= (a_i[i]*PsiPsiMaxwell(LEFT, ALL, exponents))*tauColl;
+    Flux_i -= (a_i[i]*PsiPsiMaxwell(LEFT, lim, exponents))*tauColl;
   }
 
   exponents.assign(nVar-1, 0);
   exponents[0]++;
-  std::vector<su2double> Af = A_i*PsiPsiMaxwell(LEFT, ALL, exponents);
+  std::vector<su2double> Af = A_i*PsiPsiMaxwell(LEFT, lim, exponents);
 
-  Flux_i += Af*Dt;
+  Flux_i += Af*(0.5*Dt);   //Because integral of t is t^2/2 and then everithing is divided by Dt
   Flux_i -= Af*tauColl;
 
   for(unsigned short iVar=0; iVar<nVar; iVar++){

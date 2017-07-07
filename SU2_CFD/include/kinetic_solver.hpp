@@ -40,10 +40,23 @@
  * \class CKineticSolver
  * \brief Main class for defining the solver using kinetics schemes.
  * \ingroup Navier_Stokes_Equations
- * \author F. Palacios
+ * \author A. Mogavero
  * \version 5.0.0 "Raven"
  */
 class CKineticSolver : public CNSSolver {
+  /*!
+   * \brief Impose the kinetic wall boundary condition.
+   * \param[in] geometry - Geometrical definition of the problem.
+   * \param[in] solver_container - Container vector with all the solutions.
+   * \param[in] conv_numerics - Description of the numerical method.
+   * \param[in] visc_numerics - Description of the numerical method.
+   * \param[in] config - Definition of the particular problem.
+   * \param[in] val_marker - Surface marker where the boundary condition is applied.
+   * \param[in] accom - accomodation coefficient 0=adiabatic 1=isothermal
+   */
+  void BC_Kinetic_Wall(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics,
+      CNumerics *visc_numerics, CConfig *config, unsigned short val_marker, su2double accom);
+
 public:
   /*!
    * \brief Constructor of the class.
@@ -75,4 +88,8 @@ public:
    */
   void Viscous_Residual(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics,
                                    CConfig *config, unsigned short iMesh, unsigned short iRKStep);
+
+  void BC_Isothermal_Wall(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics,
+      CNumerics *visc_numerics, CConfig *config, unsigned short val_marker);
+
 };

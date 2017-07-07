@@ -1,6 +1,7 @@
 
 #include "../include/kinetic_solver.hpp"
 #include "../include/CKineticVariable.hpp"
+#include "../include/CGasKineticSchemeBGK.hpp"
 
 CKineticSolver::CKineticSolver(void):
   CNSSolver(){
@@ -61,3 +62,100 @@ unsigned long CKineticSolver::SetPrimitive_Variables(
 void CKineticSolver::Viscous_Residual(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics,
                                    CConfig *config, unsigned short iMesh, unsigned short iRKStep){
 }
+
+void CKineticSolver::BC_Kinetic_Wall(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics,
+    CNumerics *visc_numerics, CConfig *config, unsigned short val_marker, su2double accom) {
+
+  unsigned short iDim;
+  unsigned long iVertex, iPoint;
+
+  su2double *Normal;
+  su2double Twall;
+
+  bool implicit = (config->GetKind_TimeIntScheme_Flow() == EULER_IMPLICIT);
+  bool grid_movement  = config->GetGrid_Movement();
+
+  /*--- Identify the boundary ---*/
+
+  string Marker_Tag = config->GetMarker_All_TagBound(val_marker);
+
+  /*--- Retrieve the specified wall temperature ---*/
+
+  Twall = config->GetIsothermal_Temperature(Marker_Tag)/config->GetTemperature_Ref();
+
+  CVariable* nodeB = NULL;
+
+  /*--- Loop over boundary points ---*/
+
+  for (iVertex = 0; iVertex < geometry->nVertex[val_marker]; iVertex++) {
+
+    iPoint = geometry->vertex[val_marker][iVertex]->GetNode();
+
+    if (geometry->node[iPoint]->GetDomain()) {
+
+      /*--- Compute dual-grid area and boundary normal ---*/
+
+      Normal = geometry->vertex[val_marker][iVertex]->GetNormal();
+
+      conv_numerics->SetNormal(Normal);
+      conv_numerics->SetNodes(node[iPoint], NULL);
+
+      static_cast<CGasKineticSchemeBGK*>(conv_numerics)->GetInviscidProjFlux(Res_Conv, CGasKineticSchemeBGK::POSITIVE);
+
+      LinSysRes.AddBlock(iPoint, Res_Conv);
+
+      // TODO put theta calculation in CKineticVar
+      double K = (5.0 - 3.0*Gamma) / (Gamma - 1.0) + (3.0 - nDim);
+      double l_i = (K+nDim) / (4.0*(node[iPoint]->GetEnergy() - 0.5*node[iPoint]->GetVelocity2()));
+
+      FluidModel->SetTDState_PT(node[iPoint]->GetPressure(), Twall);
+      su2double E_w = FluidModel->GetStaticEnergy();
+      double l_w = (K+nDim) / (4.0*E_w);
+
+      su2double rho_w = 2*sqrt(M_PI*l_w)*Res_Conv[0];
+
+      su2double rho_l_ref = accom*(rho_w/l_w) + 2*(Gamma-1)*(1-accom)*node[iPoint]->GetDensity()*node[iPoint]->GetEnergy();
+      su2double rho_ref = 4*M_PI*Res_Conv[0]/rho_l_ref;
+      su2double l_ref = rho_ref/rho_l_ref;
+      su2double E_ref = (K+nDim) / (4.0*l_ref);
+
+      //TODO check wether copying the gradients is ok
+      nodeB = node[iPoint]->duplicate();
+      nodeB->SetSolution(0, rho_ref);
+      for(iDim=0; iDim<nDim; iDim++){
+        nodeB->SetSolution(iDim+1, 0);
+      }
+      nodeB->SetSolution(nVar-1, rho_ref*E_ref);
+      nodeB->SetNon_Physical(false);
+      bool RightSol = nodeB->SetPrimVar(FluidModel);
+      if (!RightSol) nodeB->SetNon_Physical(true);
+
+      conv_numerics->SetNormal(Normal);
+      conv_numerics->SetNodes(nodeB, NULL);
+
+      static_cast<CGasKineticSchemeBGK*>(conv_numerics)->GetInviscidProjFlux(Res_Conv, CGasKineticSchemeBGK::NEGATIVE);
+
+      LinSysRes.AddBlock(iPoint, Res_Conv);
+
+      /*--- Calculate Jacobian for implicit time stepping ---*/
+
+      if (implicit) {
+        throw std::logic_error("Error: Implicit not implemented in kinetic solver.");
+      }
+
+      /*--- If the wall is moving, there are additional residual contributions
+       due to pressure (p v_wall.n) and shear stress (tau.v_wall.n). ---*/
+
+      if (grid_movement) {
+        throw std::logic_error("Error: grid movement not implemented in kinetic solver.");
+      }
+    }
+  }
+}
+
+void CKineticSolver::BC_Isothermal_Wall(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics,
+    CNumerics *visc_numerics, CConfig *config, unsigned short val_marker) {
+  BC_Kinetic_Wall(geometry, solver_container, conv_numerics,
+    visc_numerics, config, val_marker, 1);
+}
+

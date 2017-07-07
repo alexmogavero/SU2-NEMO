@@ -46,7 +46,8 @@ private:
    */
   static std::vector<su2double> MatrixToVector(const std::vector<std::vector<su2double> >& mat);
 
-protected:
+public:
+
   /*!
    * \brief define the integration limits
    */
@@ -55,6 +56,8 @@ protected:
     NEGATIVE,//!< from \f$-\infty\f$ to 0
     POSITIVE //!< from 0 to \f$+\infty\f$
   };
+
+protected:
   
   /*!
    * \brief define the structure that holds the Maxwellian moments
@@ -221,11 +224,12 @@ public:
   /*!
    * \brief Calculates the fluxes based on a single node
    * \param[out] val_residual - Fluxes of the conserved quantities.
+   * \param[in] lim - integration limits. ALL by default
    * \details This function calculates the fluxed using the node_i only.
    * The node_j should be left to NULL when using this function.
    * Also the normal needs to be set.
    */
-  virtual void GetInviscidProjFlux(su2double* val_residual);
+  virtual void GetInviscidProjFlux(su2double* val_residual, IntLimits lim = ALL);
 
   /*!
    * \brief Calculates the fluxes based on a single node
