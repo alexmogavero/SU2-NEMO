@@ -42,16 +42,22 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
 
   CalculateInterface();
 
+  su2double Dt = 0.5*(node_i->GetDelta_Time() + node_j->GetDelta_Time());
+
   //Calculate the mean collision time
-  //TODO check if it is ok to calculate it on the interface
   su2double tauColl = node_I->GetLaminarViscosity()/node_I->GetPressure();
+  double K = (5.0 - 3.0*Gamma) / (Gamma - 1.0) + (3.0 - nDim);
+  double lL = (K+nDim) / (4.0*(node_iLoc->GetEnergy() - 0.5*node_iLoc->GetVelocity2()));
+  double lR = (K+nDim) / (4.0*(node_jLoc->GetEnergy() - 0.5*node_jLoc->GetVelocity2()));
+  double rho_lamL = node_iLoc->GetDensity()/lL;
+  double rho_lamR = node_jLoc->GetDensity()/lR;
+  tauColl += Dt*abs(rho_lamL - rho_lamR)/abs(rho_lamL + rho_lamR);
 
   std::vector<su2double> Flux_i, Flux_j, Flux_I;
   Flux_I = PsiMaxwell(INTERFACE, ALL, true);
   Flux_i = PsiMaxwell(LEFT, POSITIVE, true);
   Flux_j = PsiMaxwell(RIGHT, NEGATIVE, true);
 
-  su2double Dt = 0.5*(node_i->GetDelta_Time() + node_j->GetDelta_Time());
   //calculate time integrals
   su2double int_ij = tauColl - tauColl*exp(-Dt/tauColl); //integral of exp(-Dt/tauColl)
   su2double int_I = Dt - int_ij;
