@@ -55,7 +55,7 @@ protected:
     NEGATIVE,//!< from \f$-\infty\f$ to 0
     POSITIVE //!< from 0 to \f$+\infty\f$
   };
-  
+
   /*!
    * \brief define the structure that holds the Maxwellian moments
    */
@@ -65,7 +65,7 @@ protected:
     std::vector<std::vector<double> > N;
     std::vector<double> xi;
   };
-  
+
   moments_struct moments_i; //!< Structure that stores the Maxwellian moments on the left size of the edge
   moments_struct moments_j; //!< Structure that stores the Maxwellian moments on the right size of the edge
   moments_struct moments_I; //!< Structure that stores the Maxwellian moments at the interface
@@ -102,9 +102,9 @@ protected:
    * @return
    */
   su2double MomentsMaxwellian(std::vector<unsigned short> exponents, State state, IntLimits lim);
-  
+
   /*!
-   * \brief Actual function that computes the Maxwellian moments for a node 
+   * \brief Actual function that computes the Maxwellian moments for a node
    */
   void ComputeMaxwellianMoments(CVariable* node, moments_struct*  moments);
 
@@ -165,6 +165,16 @@ protected:
   void Derivatives(State state, std::vector<std::vector<su2double> >& G, std::vector<su2double>& Ft);
 
   /*!
+   * \brief calculate time/space derivatives of the distribution function at the interface
+   */
+   void Interface_Derivatives(
+     std::vector<su2double>& ad_i, std::vector<su2double>& ad_j,
+     std::vector<std::vector<su2double> >& ad,
+     std::vector<su2double>& Ad,
+     std::vector<std::vector<su2double> >& a_i, std::vector<std::vector<su2double> >& a_j,
+     std::vector<su2double>& g);
+
+  /*!
    * \brief Calculates the state at the interface.
    * \details create the node `node_I` and calculate its primitive variables.
    */
@@ -213,6 +223,7 @@ std::vector<su2double> operator+(const std::vector<su2double>& a, const std::vec
 std::vector<su2double> operator+=(std::vector<su2double>& a, const std::vector<su2double>& b);
 std::vector<su2double> operator-=(std::vector<su2double>& a, const std::vector<su2double>& b);
 std::vector<su2double> operator*(const std::vector<su2double>& a, const su2double& b);
+std::vector<su2double> operator*(const su2double& a, const std::vector<su2double>& b);
 std::vector<su2double> operator*=(std::vector<su2double>& a, const su2double& b);
 std::vector<su2double> operator/=(std::vector<su2double>& a, const su2double& b);
 std::vector<su2double> operator*(const std::vector<su2double>& a, const std::vector<std::vector<su2double> >& b);

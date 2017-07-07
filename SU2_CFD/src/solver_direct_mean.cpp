@@ -4508,7 +4508,7 @@ void CEulerSolver::Centered_Residual(CGeometry *geometry, CSolver **solver_conta
     }
     
     /*--- Compute residuals, and Jacobians ---*/
-    
+    numerics->SetCoord(geometry->node[iPoint]->GetCoord(), geometry->node[jPoint]->GetCoord());
     if(implicit){
       numerics->ComputeResidual(Res_Conv, Jacobian_i, Jacobian_j, config);
     }else{

@@ -61,6 +61,63 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
     val_residual[iVar] = Dt_inv*(int_I*Flux_I[iVar] + int_ij*(Flux_i[iVar] + Flux_j[iVar]))*Area;
   }
 
+  if(config->GetSpatialOrder_Flow() == SECOND_ORDER){ // if second order
+    std::vector<su2double> Flux_i, Flux_j, Flux_I, Flux_I_t;
+    Flux_i = std::vector<su2double>(nVar, 0);
+    Flux_j = std::vector<su2double>(nVar, 0);
+    Flux_I = std::vector<su2double>(nVar, 0);
+
+    // compute space derivatives at i and j
+    std::vector<std::vector<su2double> > a_i(nDim, std::vector<su2double>(nVar, 0));
+    std::vector<std::vector<su2double> > a_j(nDim, std::vector<su2double>(nVar, 0));
+    std::vector<su2double> A_i(nVar, 0);
+    std::vector<su2double> A_j(nVar, 0);
+    Derivatives(LEFT, a_i, A_i); // Dont need time derivatives
+    Derivatives(RIGHT, a_j, A_j); // Dont need time derivatives
+
+    // compute space (and time) derivatives at the interface
+    std::vector<su2double> ad_i(nVar, 0);
+    std::vector<su2double> ad_j(nVar, 0);
+    std::vector<std::vector<su2double> > ad(nDim-1, std::vector<su2double>(nVar, 0));
+    std::vector<su2double> Ad(nVar, 0);
+
+    std::vector<su2double> g(5, 0);
+    g[0] = Dt - tauColl*(1-exp(-Dt/tauColl));
+    g[1] = -(1-exp(-Dt/tauColl))/g[0];
+    g[2] = (-Dt + 2*tauColl*(1-exp(-Dt/tauColl)) - Dt*exp(-Dt/tauColl))/g[0];
+    g[3] = (1-exp(-Dt/tauColl))/g[0];
+    g[4] = (Dt*exp(-Dt/tauColl) - tauColl*(1-exp(-Dt/tauColl)))/g[0];
+
+    Interface_Derivatives(ad_i, ad_j, ad, Ad, a_i, a_j, g);
+
+    // Assemble fluxes
+    std::vector<unsigned short> exponents;
+    exponents.assign(nVar-1, 0);
+    exponents[0]++;
+    Flux_I += ad_i*PsiPsiMaxwell(INTERFACE, POSITIVE, exponents);
+    Flux_I += ad_j*PsiPsiMaxwell(INTERFACE, NEGATIVE, exponents);
+    for(unsigned short i=1; i<nDim; i++){
+      exponents.assign(nVar-1, 0);
+      exponents[i]++;
+      Flux_I += ad[i-1]*PsiPsiMaxwell(INTERFACE, ALL, exponents);
+    }
+
+    Flux_I_t = Ad*PsiPsiMaxwell(INTERFACE, ALL, exponents);
+
+    for(unsigned short i=0; i<nDim; i++){
+      exponents.assign(nVar-1, 0);
+      exponents[i]++;
+      Flux_i -= a_i[i]*PsiPsiMaxwell(LEFT, POSITIVE, exponents);
+      Flux_j -= a_j[i]*PsiPsiMaxwell(RIGHT, NEGATIVE, exponents);
+    }
+
+    for(unsigned short iVar=0; iVar<nVar; iVar++){
+      val_residual[iVar] += Dt_inv * tauColl * (2*tauColl - Dt - exp(-Dt/tauColl) * (Dt-2*tauColl)) * Flux_I[iVar] * Area;
+      val_residual[iVar] += Dt_inv * tauColl * (pow(Dt,2)/(2*tauColl) - Dt + int_ij) * Flux_I_t[iVar] * Area;
+      val_residual[iVar] += Dt_inv * int_ij *(Flux_i[iVar] + Flux_j[iVar]) * Area;
+    }
+  }
+
   if(config->GetViscous()){
     std::vector<std::vector<su2double> > a_i(nDim, std::vector<su2double>(nVar, 0)); //space derivatives
     std::vector<std::vector<su2double> > a_j(nDim, std::vector<su2double>(nVar, 0)); //space derivatives
@@ -249,6 +306,77 @@ void CGasKineticSchemeBGK::Derivatives(State state, std::vector<std::vector<su2d
   LAPACKE_dsysv(LAPACK_COL_MAJOR, 'U', nVar, 1, sysM.data(), nVar, ipiv, Ft.data(), nVar);
 
   return;
+}
+
+void CGasKineticSchemeBGK::Interface_Derivatives(
+  std::vector<su2double>& ad_i, std::vector<su2double>& ad_j,
+  std::vector<std::vector<su2double> >& ad,
+  std::vector<su2double>& Ad,
+  std::vector<std::vector<su2double> >& a_i, std::vector<std::vector<su2double> >& a_j,
+  std::vector<su2double>& g){
+
+  std::vector<su2double> M;
+  std::vector<su2double> sysM;
+
+  std::vector<unsigned short> exponents(nVar-1, 0);
+  M = PsiPsiMaxwell(INTERFACE, exponents);
+
+  // Finite differences gradients MT C.19 (using interface at midpoint!!!)
+  su2double dist_ij = 0.0;
+  for (unsigned int i=0; i<nDim; i++)
+    dist_ij += (Coord_j[i]-Coord_i[i])*(Coord_j[i]-Coord_i[i]);
+  dist_ij = sqrt(dist_ij);
+
+  for (unsigned int i=0; i<nVar; i++){
+    ad_i[i] = (node_I->GetSolution(i)-node_iLoc->GetSolution(i))/(dist_ij/2); //Finite differences gradient left
+    ad_j[i] = (node_jLoc->GetSolution(i)-node_I->GetSolution(i))/(dist_ij/2); //Finite differences gradient right
+  }
+
+  //\overline{a}_L MT C.22
+  int ipiv[nVar];
+  sysM = M;
+  LAPACKE_dsysv(LAPACK_COL_MAJOR, 'U', nVar, 1, sysM.data(), nVar, ipiv, ad_i.data(), nVar);
+
+  //\overline{a}_R MT C.23
+  sysM = M;
+  LAPACKE_dsysv(LAPACK_COL_MAJOR, 'U', nVar, 1, sysM.data(), nVar, ipiv, ad_j.data(), nVar);
+
+  //\overline{b} \overline{c} MT C.25
+  std::vector<std::vector<su2double> > psi_i = PsiPsiMaxwell(LEFT, POSITIVE, exponents);
+  std::vector<std::vector<su2double> > psi_j = PsiPsiMaxwell(RIGHT, NEGATIVE, exponents);
+  for (unsigned int i=1; i<nDim; i++){
+    ad[i-1] = a_i[i] * psi_i +  a_j[i] * psi_j;
+
+    sysM = M;
+    LAPACKE_dsysv(LAPACK_COL_MAJOR, 'U', nVar, 1, sysM.data(), nVar, ipiv, ad[i-1].data(), nVar);
+  }
+
+  //\overline{A} VKI 4.37
+  Ad = g[0]*PsiMaxwell(INTERFACE, ALL, exponents);
+
+  exponents.assign(nVar-1, 0);
+  exponents[0]++;
+  Ad += g[2]*(ad_i*PsiPsiMaxwell(LEFT, POSITIVE, exponents) + ad_j*PsiPsiMaxwell(RIGHT, NEGATIVE, exponents));
+
+  for (unsigned int i=1; i<nDim; i++){
+    exponents.assign(nVar-1, 0);
+    exponents[i]++;
+    Ad += g[2]*ad[i-1]*PsiPsiMaxwell(INTERFACE, ALL, exponents);
+  }
+
+  exponents.assign(nVar-1, 0);
+  Ad += g[3]*(PsiMaxwell(LEFT, POSITIVE, exponents) + PsiMaxwell(RIGHT, NEGATIVE, exponents));
+
+  for (unsigned int i=0; i<nDim; i++){
+    exponents.assign(nVar-1, 0);
+    exponents[i]++;
+    Ad += g[4]*a_i[i]*PsiPsiMaxwell(LEFT, POSITIVE, exponents);
+    Ad += g[4]*a_j[i]*PsiPsiMaxwell(RIGHT, NEGATIVE, exponents);
+  }
+
+  sysM = M;
+  LAPACKE_dsysv(LAPACK_COL_MAJOR, 'U', nVar, 1, sysM.data(), nVar, ipiv, Ad.data(), nVar);
+
 }
 
 su2double CGasKineticSchemeBGK::MomentsMaxwellian(std::vector<unsigned short> exponents, State state, IntLimits lim){
@@ -488,6 +616,12 @@ std::vector<su2double> operator*(const std::vector<su2double>& a, const std::vec
 std::vector<su2double> operator*(const std::vector<su2double>& a, const su2double& b){
   std::vector<su2double> out(a);
   out *= b;
+  return out;
+}
+
+std::vector<su2double> operator*(const su2double& a, const std::vector<su2double>& b){
+  std::vector<su2double> out(b);
+  out *= a;
   return out;
 }
 
