@@ -364,11 +364,11 @@ void CGasKineticSchemeBGK::Interface_Derivatives(
   }
 
   //\overline{A} VKI 4.37
-  Ad = g[0]*PsiMaxwell(INTERFACE, ALL, exponents);
+  Ad = g[1]*PsiMaxwell(INTERFACE, ALL, exponents);
 
   exponents.assign(nVar-1, 0);
   exponents[0]++;
-  Ad += g[2]*(ad_i*PsiPsiMaxwell(LEFT, POSITIVE, exponents) + ad_j*PsiPsiMaxwell(RIGHT, NEGATIVE, exponents));
+  Ad += g[2]*(ad_i*PsiPsiMaxwell(INTERFACE, POSITIVE, exponents) + ad_j*PsiPsiMaxwell(INTERFACE, NEGATIVE, exponents));
 
   for (unsigned int i=1; i<nDim; i++){
     exponents.assign(nVar-1, 0);
