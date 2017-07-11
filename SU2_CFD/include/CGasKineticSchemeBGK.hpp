@@ -161,11 +161,20 @@ protected:
    * @param state define the state for which the derivative are needed.
    * @return a vector of size nDim+1 where the first nDim components are space derivatives
    *  and the last one is time derivative
+   *  TODO update this documentation
    */
   void Derivatives(State state, std::vector<std::vector<su2double> >& G, std::vector<su2double>& Ft);
 
   /*!
    * \brief calculate time/space derivatives of the distribution function at the interface
+   * @param[out] ad_i - x derivative at the left of interface
+   * @param[out] ad_j - x derivative at the right of interface
+   * @param[out] ad - y, z derivatives
+   * @param[out] Ad - time derivative
+   * @param[in] a_i - space derivative of the left state
+   * @param[in] a_j - space derivative of the right state
+   * @param[in] g - coefficients for the calculation of Ad
+   * TODO improve this documentation
    */
    void Interface_Derivatives(
      std::vector<su2double>& ad_i, std::vector<su2double>& ad_j,
