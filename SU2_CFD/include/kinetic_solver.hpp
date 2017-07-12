@@ -75,4 +75,7 @@ public:
    */
   void Viscous_Residual(CGeometry *geometry, CSolver **solver_container, CNumerics *numerics,
                                    CConfig *config, unsigned short iMesh, unsigned short iRKStep);
+
+  void Preprocessing(CGeometry *geometry, CSolver **solver_container, CConfig *config,
+      unsigned short iMesh, unsigned short iRKStep, unsigned short RunTime_EqSystem, bool Output);
 };
