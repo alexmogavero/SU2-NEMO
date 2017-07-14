@@ -357,8 +357,9 @@ void CGasKineticSchemeBGK::Interface_Derivatives(
   dist_ij = sqrt(dist_ij);
 
   for (unsigned int i=0; i<nVar; i++){
-    ad_i[i] = (node_I->GetSolution(i)-node_iLoc->GetSolution(i))/(dist_ij/2); //Finite differences gradient left
-    ad_j[i] = (node_jLoc->GetSolution(i)-node_I->GetSolution(i))/(dist_ij/2); //Finite differences gradient right
+    //To calculate the finite differences the non reconstructed node has to be used
+    ad_i[i] = (node_I->GetSolution(i)-node_iRot->GetSolution(i))/(dist_ij/2); //Finite differences gradient left
+    ad_j[i] = (node_jRot->GetSolution(i)-node_I->GetSolution(i))/(dist_ij/2); //Finite differences gradient right
   }
 
   //\overline{a}_L MT C.22
