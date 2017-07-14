@@ -593,7 +593,7 @@ CVariable* CGasKineticSchemeBGK::reconstruct(const CVariable* node, const su2dou
   CVariable* out = node->duplicate();
 
   su2double* v = out->GetSolution();
-  for(unsigned int iVar; iVar<nVar; iVar++){
+  for(unsigned int iVar=0; iVar<nVar; iVar++){
     v[iVar] += out->GetGradient(iVar, 0)*d;
   }
 
