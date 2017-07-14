@@ -49,13 +49,18 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
   rotate(node_jRot);
 
   //Reconstruct
-  su2double dist_ij = 0.0;
-  for (unsigned int i=0; i<nDim; i++)
-    dist_ij += (Coord_j[i]-Coord_i[i])*(Coord_j[i]-Coord_i[i]);
-  dist_ij = sqrt(dist_ij);
+  if(config->GetSpatialOrder_Flow() == SECOND_ORDER){
+    su2double dist_ij = 0.0;
+    for (unsigned int i=0; i<nDim; i++)
+      dist_ij += (Coord_j[i]-Coord_i[i])*(Coord_j[i]-Coord_i[i]);
+    dist_ij = sqrt(dist_ij);
 
-  node_iLoc = reconstruct(node_iRot, dist_ij*0.5);
-  node_jLoc = reconstruct(node_jRot, -dist_ij*0.5);
+    node_iLoc = reconstruct(node_iRot, dist_ij*0.5);
+    node_jLoc = reconstruct(node_jRot, -dist_ij*0.5);
+  }else{
+    node_iLoc = node_iRot->duplicate();
+    node_jLoc = node_jRot->duplicate();
+  }
 
   CalculateInterface();
 
