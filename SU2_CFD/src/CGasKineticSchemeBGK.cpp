@@ -9,6 +9,8 @@ CGasKineticSchemeBGK::CGasKineticSchemeBGK(unsigned short val_nDim, unsigned sho
   node_I(NULL),
   node_iLoc(NULL),
   node_jLoc(NULL),
+  node_iRot(NULL),
+  node_jRot(NULL),
   rotMatrix(),
   config(config){
   su2double U[nVar];
@@ -28,17 +30,32 @@ CGasKineticSchemeBGK::~CGasKineticSchemeBGK(void) {
   if(node_jLoc){
     delete node_jLoc;
   }
+  if(node_iRot){
+    delete node_iRot;
+  }
+  if(node_jRot){
+    delete node_jRot;
+  }
 }
 
 void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *config){
   Clear();
 
   //Rotate Reference Frame
-  node_iLoc = node_i->duplicate();
-  rotate(node_iLoc);
+  node_iRot = node_i->duplicate();
+  rotate(node_iRot);
 
-  node_jLoc = node_j->duplicate();
-  rotate(node_jLoc);
+  node_jRot = node_j->duplicate();
+  rotate(node_jRot);
+
+  //Reconstruct
+  su2double dist_ij = 0.0;
+  for (unsigned int i=0; i<nDim; i++)
+    dist_ij += (Coord_j[i]-Coord_i[i])*(Coord_j[i]-Coord_i[i]);
+  dist_ij = sqrt(dist_ij);
+
+  node_iLoc = reconstruct(node_iRot, dist_ij*0.5);
+  node_jLoc = reconstruct(node_jRot, -dist_ij*0.5);
 
   CalculateInterface();
 
@@ -571,11 +588,33 @@ void CGasKineticSchemeBGK::rotate(CVariable* node)const{
   rotate(++t);
 }
 
+CVariable* CGasKineticSchemeBGK::reconstruct(const CVariable* node, const su2double& d)const{
+  CVariable* out = node->duplicate();
+
+  su2double* v = out->GetSolution();
+  for(unsigned int iVar; iVar<nVar; iVar++){
+    v[iVar] += out->GetGradient(iVar, 0)*d;
+  }
+
+  out->SetNon_Physical(false);
+  bool RightSol = out->SetPrimVar(FluidModel);
+  if (!RightSol) {
+    delete out;
+    out = node->duplicate();
+  }
+
+  return out;
+}
+
 void CGasKineticSchemeBGK::Clear(){
   if(node_iLoc) delete node_iLoc;
   if(node_jLoc) delete node_jLoc;
   node_iLoc = NULL;
   node_jLoc = NULL;
+  if(node_iRot) delete node_iRot;
+  if(node_jRot) delete node_jRot;
+  node_iRot = NULL;
+  node_jRot = NULL;
 
   moments_struct* mom[3] = {&moments_i, &moments_j, &moments_I};
   for(unsigned short i=0; i<3; i++){

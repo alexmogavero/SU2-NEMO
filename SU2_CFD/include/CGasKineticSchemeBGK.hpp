@@ -40,6 +40,21 @@ private:
   void rotate(CVariable* node)const;
 
   /*!
+   * \brief recontruct the node values based on the solution gradient
+   * \details the reconstruction is made by means of the following;
+   *  \f[
+   *    \bar{w}_i = w_i + \frac{\partial w_i}{\partial x} * d
+   *  \f]
+   *  where \f$\bar{w}_i\f$ is the i-th conserved variable and x the the first
+   *  cartesian coordinate. Usually the input node is already rotated
+   *  in the local reference frame, so x is the coordinate along the edge.
+   * @param node node from which to make the reconstruction
+   * @param d signed distance used to make the reconstruction (usually half edge)
+   * @return a pointer to the reconstructed node
+   */
+  CVariable* reconstruct(const CVariable* node, const su2double& d)const;
+
+  /*!
    * \brief Unfold a matrix into a vector row wise
    * @param mat matrix to be unfolded
    * @return a vector composed by the concatenation of the rows of the matrix
@@ -80,8 +95,10 @@ protected:
   };
 
   CKineticVariable* node_I; //!< Node that stores all the variables at the interface
-  CVariable* node_iLoc; //!<Node at left of interface in the local reference frame
-  CVariable* node_jLoc; //!<Node at right of interface in the local reference frame
+  CVariable* node_iLoc; //!<Node at left of interface in the local reference frame, reconstructed if second order
+  CVariable* node_jLoc; //!<Node at right of interface in the local reference frame, reconstructed if second order
+  CVariable* node_iRot; //!<Node at left of interface in the local reference frame
+  CVariable* node_jRot; //!<Node at right of interface in the local reference frame
 
   /*!
    * \brief calculates the moments of the Maxwellian distribution
