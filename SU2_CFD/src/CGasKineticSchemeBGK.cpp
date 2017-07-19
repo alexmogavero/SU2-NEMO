@@ -95,12 +95,13 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
   Flux_j = PsiMaxwell(RIGHT, NEGATIVE, true);
 
   //calculate time integrals
-  su2double int_ij = tauColl - tauColl*exp(-Dt/tauColl); //integral of exp(-Dt/tauColl)
-  su2double int_I = Dt - int_ij;
-
+  su2double e_dt = exp(-Dt/tauColl);
+  su2double int_e_dt = tauColl*(1 - e_dt); //integral of exp(-Dt/tauColl)
+  su2double int_1_e_dt = Dt - int_e_dt;
   su2double Dt_inv = 1/Dt;
+
   for(unsigned short iVar=0; iVar<nVar; iVar++){
-    val_residual[iVar] = Dt_inv*(int_I*Flux_I[iVar] + int_ij*(Flux_i[iVar] + Flux_j[iVar]))*Area;
+    val_residual[iVar] = Dt_inv*(int_1_e_dt*Flux_I[iVar] + int_e_dt*(Flux_i[iVar] + Flux_j[iVar]))*Area;
   }
 
   if(config->GetSpatialOrder_Flow() == SECOND_ORDER ||
@@ -125,11 +126,11 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
     std::vector<su2double> Ad(nVar, 0);
 
     std::vector<su2double> g(5, 0);
-    g[0] = Dt - tauColl*(1-exp(-Dt/tauColl));
-    g[1] = -(1-exp(-Dt/tauColl))/g[0];
-    g[2] = (-Dt + 2*tauColl*(1-exp(-Dt/tauColl)) - Dt*exp(-Dt/tauColl))/g[0];
-    g[3] = (1-exp(-Dt/tauColl))/g[0];
-    g[4] = (Dt*exp(-Dt/tauColl) - tauColl*(1-exp(-Dt/tauColl)))/g[0];
+    g[0] = int_1_e_dt;
+    g[1] = (e_dt - 1)/g[0];
+    g[2] = (-Dt + 2*int_e_dt - Dt*e_dt)/g[0];
+    g[3] = (1-e_dt)/g[0];
+    g[4] = (Dt*e_dt - int_e_dt)/g[0];
 
     Interface_Derivatives(ad_i, ad_j, ad, Ad, a_i, a_j, g);
 
@@ -158,12 +159,15 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
       Flux_j -= a_j[i]*PsiPsiMaxwell(RIGHT, NEGATIVE, exponents);
     }
 
-    su2double int_t_exp = tauColl*(tauColl - (Dt + tauColl)*exp(-Dt/tauColl)); //integral of t*exp(-t/tauColl)
+    su2double int_t_e_dt = tauColl*(tauColl - (Dt + tauColl)*e_dt); //integral of t*exp(-t/tauColl)
+
+    su2double int_A = int_t_e_dt - tauColl*int_1_e_dt; //integral of t*exp(-t/tauColl) - tauColl*(1-exp(-t/tauColl))
+    su2double int_B = 0.5*pow(Dt,2) - tauColl*int_1_e_dt; //integral of t - tauColl*(1-exp(-t/tauColl))
 
     for(unsigned short iVar=0; iVar<nVar; iVar++){
-      val_residual[iVar] += Dt_inv * tauColl * (2*tauColl - Dt - exp(-Dt/tauColl) * (Dt+2*tauColl)) * Flux_I[iVar] * Area;
-      val_residual[iVar] += Dt_inv * tauColl * (pow(Dt,2)/(2*tauColl) - Dt + int_ij) * Flux_I_t[iVar] * Area;
-      val_residual[iVar] += Dt_inv * int_t_exp *(Flux_i[iVar] + Flux_j[iVar]) * Area;
+      val_residual[iVar] += Dt_inv * int_A * Flux_I[iVar] * Area;
+      val_residual[iVar] += Dt_inv * int_B * Flux_I_t[iVar] * Area;
+      val_residual[iVar] += Dt_inv * int_t_e_dt *(Flux_i[iVar] + Flux_j[iVar]) * Area;
     }
   }
 
@@ -191,7 +195,7 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
     Flux_j += A_j*PsiPsiMaxwell(RIGHT, NEGATIVE, exponents);
 
     for(unsigned short iVar=0; iVar<nVar; iVar++){
-      val_residual[iVar] -= Dt_inv*tauColl*int_ij*(Flux_i[iVar] + Flux_j[iVar])*Area;
+      val_residual[iVar] -= Dt_inv*tauColl*int_e_dt*(Flux_i[iVar] + Flux_j[iVar])*Area;
     }
   }
 
