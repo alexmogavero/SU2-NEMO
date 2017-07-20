@@ -16432,7 +16432,12 @@ void CNSSolver::BC_Isothermal_Wall(CGeometry *geometry, CSolver **solver_contain
       /*--- Apply a weak boundary condition for the energy equation.
        Compute the residual due to the prescribed heat flux. ---*/
       
-      Res_Visc[nDim+1] = thermal_conductivity * dTdn * Area;
+      node[iPoint]->SetTemperature_Old(Twall, FluidModel);
+      su2double deltaDens = LinSysRes.GetBlock(iPoint, 0);
+      su2double resEnergy = deltaDens*node[iPoint]->GetSolution_Old(nVar-1)/node[iPoint]->GetDensity();
+      LinSysRes.SetBlock(iPoint, nVar-1, resEnergy);
+      node[iPoint]->SetVal_ResTruncError_Zero(nVar-1);
+//      Res_Visc[nDim+1] = thermal_conductivity * dTdn * Area;
       
       /*--- Calculate Jacobian for implicit time stepping ---*/
       

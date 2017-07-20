@@ -68,9 +68,9 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
     if(config->GetSpatialOrder_Flow() == SECOND_ORDER_LIMITER) limit(node_jLoc, RIGHT);
     reconstruct(node_jLoc, -dist_ij*0.5);
     if(node_jLoc->GetNon_Physical()){
-		delete node_jLoc;
-		node_jLoc = node_jRot->duplicate();
-	}
+      delete node_jLoc;
+      node_jLoc = node_jRot->duplicate();
+    }
   }else{
     node_iLoc = node_iRot->duplicate();
     node_jLoc = node_jRot->duplicate();

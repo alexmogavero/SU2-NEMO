@@ -462,6 +462,10 @@ void CVariable::GetResTruncError(su2double *val_trunc_error) {
   
 }
 
+void CVariable::SetTemperature_Old(su2double temperature, CFluidModel *FluidModel){
+  throw std::logic_error("Error: method SetTemperature_Old not implemented.");
+}
+
 CBaselineVariable::CBaselineVariable(void) : CVariable() { }
 
 CBaselineVariable::CBaselineVariable(su2double *val_solution, unsigned short val_nvar, CConfig *config) : CVariable(val_nvar, config) {

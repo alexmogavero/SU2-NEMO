@@ -1069,6 +1069,16 @@ public:
   virtual bool SetPrimVar(CFluidModel *FluidModel);
   
   /*!
+   * \brief Set the temperature for the old solution
+   * @param temperature temperature to be set
+   * @param FluidModel thermodynamic model
+   * \details the energy component of the Vector Solution_Old is
+   * updated accordingly to this new temperature.
+   * It must be reimplemented. The default implementation throws an error.
+   */
+  virtual void SetTemperature_Old(su2double temperature, CFluidModel *FluidModel);
+
+  /*!
    * \brief A virtual member.
    */
   virtual void SetSecondaryVar(CFluidModel *FluidModel);
@@ -2930,6 +2940,15 @@ public:
    */
   bool SetPrimVar(CFluidModel *FluidModel);
   
+  /*!
+   * \brief Set the temperature for the old solution
+   * @param temperature temperature to be set
+   * @param FluidModel thermodynamic model
+   * \details the energy component of the Vector Solution_Old is
+   * updated accordingly to this new temperature
+   */
+  void SetTemperature_Old(su2double temperature, CFluidModel *FluidModel);
+
   /*!
    * \brief A virtual member.
    */
