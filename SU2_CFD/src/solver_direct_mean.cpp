@@ -9979,13 +9979,31 @@ void CEulerSolver::BC_Euler_Wall(CGeometry *geometry, CSolver **solver_container
           Residual[iDim+1] += (2.0/3.0)*Density_b*turb_ke*NormalArea[iDim];
       }
       
-      /*--- Add value to the residual ---*/
+      if(config->GetStrongBC()){
+        node[iPoint]->SetVelocity_Old(Velocity_b);
+
+        su2double* totRes = LinSysRes.GetBlock(iPoint);
+
+        su2double ProjTotRes = 0;
+        for (iDim = 0; iDim < nDim; iDim++) {
+          ProjTotRes += totRes[iDim+1]*UnitNormal[iDim];
+        }
+        for (iDim = 0; iDim < nDim; iDim++){
+          totRes[iDim+1] -= ProjTotRes * UnitNormal[iDim];
+        }
+      }else{
       
-      LinSysRes.AddBlock(iPoint, Residual);
+        /*--- Add value to the residual ---*/
+
+        LinSysRes.AddBlock(iPoint, Residual);
+      }
       
       /*--- Form Jacobians for implicit computations ---*/
       
       if (implicit) {
+        if(config->GetStrongBC()){
+          throw std::logic_error("Error: Strong BC not implemented for implicit formulation.");
+        }
         
         /*--- Initialize Jacobian ---*/
         
@@ -16445,6 +16463,9 @@ void CNSSolver::BC_Isothermal_Wall(CGeometry *geometry, CSolver **solver_contain
       /*--- Calculate Jacobian for implicit time stepping ---*/
       
       if (implicit) {
+        if(config->GetStrongBC()){
+          throw std::logic_error("Error: Strong BC not implemented for implicit formulation.");
+        }
         
         for (iVar = 0; iVar < nVar; iVar ++)
           for (jVar = 0; jVar < nVar; jVar ++)
