@@ -126,7 +126,8 @@ private:
   Frozen_Visc,			/*!< \brief Flag for adjoint problem with/without frozen viscosity. */
   Sens_Remove_Sharp,			/*!< \brief Flag for removing or not the sharp edges from the sensitivity computation. */
   Hold_GridFixed,	/*!< \brief Flag hold fixed some part of the mesh during the deformation. */
-  Axisymmetric; /*!< \brief Flag for axisymmetric calculations */
+  Axisymmetric, /*!< \brief Flag for axisymmetric calculations */
+  StrongBC; /*!< \brief Flag imposing strong boundary conditions */
   su2double Damp_Engine_Inflow;	/*!< \brief Damping factor for the engine inlet. */
   su2double Damp_Engine_Exhaust;	/*!< \brief Damping factor for the engine exhaust. */
   su2double Damp_Res_Restric,	/*!< \brief Damping factor for the residual restriction. */
@@ -4798,6 +4799,11 @@ public:
    * \return Periodic information of the boundary in the config information of the marker <i>val_marker</i>.
    */
   unsigned short GetMarker_CfgFile_PerBound(string val_marker);
+
+  /*!
+   * \brief Get whether the boundary conditions shall be imposed in the strong form.
+   */
+  bool GetStrongBC()const;
   
   /*!
    * \brief  Get the name of the marker <i>val_marker</i>.
