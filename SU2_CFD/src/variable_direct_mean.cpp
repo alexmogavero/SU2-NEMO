@@ -506,6 +506,18 @@ bool CEulerVariable::SetPrimVar(CFluidModel *FluidModel) {
   
 }
 
+void CEulerVariable::SetTemperature_Old(su2double temperature, CFluidModel *FluidModel) {
+  su2double density = Solution[0];
+  FluidModel->SetTDState_rhoT(density, temperature);
+
+  su2double V2 = 0;
+  for(unsigned short iDim=0; iDim<nDim; iDim++){
+    V2 += pow(Solution_Old[iDim+1]/density, 2);
+  }
+
+  Solution_Old[nVar-1] = density*(FluidModel->GetStaticEnergy() + 0.5*V2);
+}
+
 void CEulerVariable::SetSecondaryVar(CFluidModel *FluidModel) {
 
    /*--- Compute secondary thermo-physical properties (partial derivatives...) ---*/

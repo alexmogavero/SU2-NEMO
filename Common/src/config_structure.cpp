@@ -818,6 +818,8 @@ void CConfig::SetConfig_Options(unsigned short val_iZone, unsigned short val_nZo
   /*!\brief MARKER_OUTLET  \n DESCRIPTION: Outlet boundary marker(s)\n
    Format: ( outlet marker, back pressure (static), ... ) \ingroup Config*/
   addStringDoubleListOption("MARKER_OUTLET", nMarker_Outlet, Marker_Outlet, Outlet_Pressure);
+  /*!\brief STRONG_BC\n DESCRIPTION: Whether the boundary conditions have to be imposed in strong form. \ingroup Config*/
+  addBoolOption("STRONG_BC", StrongBC, false);
   /*!\brief MARKER_ISOTHERMAL DESCRIPTION: Isothermal wall boundary marker(s)\n
    * Format: ( isothermal marker, wall temperature (static), ... ) \ingroup Config  */
   addStringDoubleListOption("MARKER_ISOTHERMAL", nMarker_Isothermal, Marker_Isothermal, Isothermal_Temperature);
@@ -5176,6 +5178,10 @@ int CConfig::GetMarker_FSIinterface(string val_marker) {
 		  if (Marker_CfgFile_TagBound[iMarker_CfgFile] == val_marker)
 				return  Marker_CfgFile_FSIinterface[iMarker_CfgFile];
     return 0;
+}
+
+bool CConfig::GetStrongBC()const{
+  return StrongBC;
 }
 
 
