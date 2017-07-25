@@ -59,7 +59,7 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
     node_iLoc = node_iRot->duplicate();
     if(config->GetSpatialOrder_Flow() == SECOND_ORDER_LIMITER) limit(node_iLoc, LEFT);
     reconstruct(node_iLoc, dist_ij*0.5);
-    if(node_iLoc->GetNon_Physical()){
+    if(!node_iLoc->GetNon_Physical()){ //Note here that GetNon_Physical returns 0 if non physical!!
     	delete node_iLoc;
     	node_iLoc = node_iRot->duplicate();
     }
@@ -67,10 +67,10 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
     node_jLoc = node_jRot->duplicate();
     if(config->GetSpatialOrder_Flow() == SECOND_ORDER_LIMITER) limit(node_jLoc, RIGHT);
     reconstruct(node_jLoc, -dist_ij*0.5);
-    if(node_jLoc->GetNon_Physical()){
-      delete node_jLoc;
-      node_jLoc = node_jRot->duplicate();
-    }
+    if(!node_jLoc->GetNon_Physical()){
+			delete node_jLoc;
+			node_jLoc = node_jRot->duplicate();
+		}
   }else{
     node_iLoc = node_iRot->duplicate();
     node_jLoc = node_jRot->duplicate();
@@ -622,7 +622,7 @@ void CGasKineticSchemeBGK::reconstruct(CVariable* node, const su2double& d)const
   node->SetNon_Physical(false);
   bool RightSol = node->SetPrimVar(FluidModel);
   if (!RightSol) {
-    node->SetNon_Physical(false);
+    node->SetNon_Physical(true);
   }
 }
 
