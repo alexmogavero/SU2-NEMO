@@ -15553,7 +15553,7 @@ void CNSSolver::SetTime_Step(CGeometry *geometry, CSolver **solver_container, CC
   /*--- Each element uses their own speed, steady state simulation ---*/
   
   
-  for (iPoint = 0; iPoint < nPointDomain; iPoint++) {
+  for (iPoint = 0; iPoint < nPoint; iPoint++) {
     
     Vol = geometry->node[iPoint]->GetVolume();
     
