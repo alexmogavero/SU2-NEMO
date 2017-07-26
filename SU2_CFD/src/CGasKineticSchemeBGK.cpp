@@ -78,7 +78,7 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
 
   CalculateInterface();
 
-  su2double Dt = 0.5*(node_i->GetDelta_Time() + node_j->GetDelta_Time());
+  su2double Dt = min(node_i->GetDelta_Time(),node_j->GetDelta_Time());
 
   //Calculate the mean collision time
   su2double tauColl = node_I->GetLaminarViscosity()/node_I->GetPressure();
