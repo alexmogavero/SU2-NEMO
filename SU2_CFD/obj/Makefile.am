@@ -144,7 +144,9 @@ libSU2Core_sources = \
   ../src/CGasKineticSchemeBGK.cpp \
   ../include/CGasKineticSchemeBGK.hpp \
   ../include/CGeneralIdealGas.hpp \
-  ../src/CGeneralIdealGas.cpp
+  ../src/CGeneralIdealGas.cpp \
+  ../include/CPerfectGas.hpp \
+  ../src/CPerfectGas.cpp
 
 su2_cfd_sources = \
   ../include/SU2_CFD.hpp \
