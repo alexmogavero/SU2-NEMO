@@ -32,6 +32,7 @@
  */
 
 #include "../include/solver_structure.hpp"
+#include "../include/CVibrationArmonics.hpp"
 
 CIncEulerSolver::CIncEulerSolver(void) : CSolver() {
   /*--- Basic array initialization ---*/
@@ -1763,6 +1764,11 @@ void CIncEulerSolver::SetNondimensionalization(CGeometry *geometry, CConfig *con
       FluidModel->SetEnergy_Prho(Pressure_FreeStreamND, Density_FreeStreamND);
       break;
       
+    case HARMONIC_VIBR:
+			FluidModel = new CVibrationArmonics(Gamma, Gas_ConstantND, 2000); //TODO add input for theta
+			FluidModel->SetEnergy_Prho(Pressure_FreeStreamND, Density_FreeStreamND);
+			break;
+
   }
   
   Energy_FreeStreamND = FluidModel->GetStaticEnergy() + 0.5*ModVel_FreeStreamND*ModVel_FreeStreamND;
