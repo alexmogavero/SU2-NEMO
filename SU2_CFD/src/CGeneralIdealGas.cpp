@@ -106,7 +106,9 @@ void CGeneralIdealGas::SetTDState_rhoT (su2double rho, su2double T ) {
   SetTDState_rhoe(rho, e);
 }
 
-
+su2double CGeneralIdealGas::Enthalpy(su2double T)const{
+	return Energy(T) + Gas_Constant*T;
+}
 
 
 

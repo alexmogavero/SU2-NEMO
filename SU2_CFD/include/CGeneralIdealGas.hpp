@@ -15,6 +15,7 @@ protected:
 
   virtual su2double Energy(su2double T)const=0;
   virtual su2double EnergyInv(su2double e)const=0;
+  virtual su2double Enthalpy(su2double T)const;
   virtual su2double EnthalpyInv(su2double h)const=0;
   virtual su2double SpecificHeatVol(su2double T)const=0;
   virtual su2double EntropyTemp(su2double T)const=0;
