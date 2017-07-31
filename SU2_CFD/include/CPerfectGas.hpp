@@ -12,7 +12,8 @@ class CPerfectGas : public CGeneralIdealGas {
 
 protected:
   su2double n_dof;        /*!< \brief Number of degrees of freedom of the molecule. */
-  su2double Gamma;        /*!< \brief Specifc heat ratio*/
+  su2double Gamma;        /*!< \brief Specific heat ratio*/
+  su2double Cv;           /*!< \brief Specific heat at constant volume*/
 
   virtual su2double Energy(su2double T)const;
   virtual su2double EnergyInv(su2double e)const;

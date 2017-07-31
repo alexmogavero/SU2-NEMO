@@ -45,6 +45,7 @@ CPerfectGas::CPerfectGas(su2double R, su2double g):
 	Gamma(g),
 	n_dof(0){
 	n_dof = 2/(Gamma - 1);
+	Cv = 0.5*n_dof*Gas_Constant;
 }
 
 
@@ -53,27 +54,27 @@ CPerfectGas::~CPerfectGas(void) {
 }
 
 su2double CPerfectGas::Energy(su2double T)const{
-	return SpecificHeatVol(T)*T;
+	return Cv*T;
 }
 
 su2double CPerfectGas::EnergyInv(su2double e)const{
-	return e/SpecificHeatVol(-1); //-1 is a dummy value
+	return e/Cv;
 }
 
 su2double CPerfectGas::SpecificHeatVol(su2double T)const{
-	return 0.5*n_dof*Gas_Constant;
+	return Cv;
 }
 
 su2double CPerfectGas::EntropyTemp(su2double T)const{
-	return SpecificHeatVol(T)*log(T);
+	return Cv*log(T);
 }
 
 su2double CPerfectGas::EntropyTempInv(su2double s)const{
-	return exp(s/SpecificHeatVol(-1)); //-1 is a dummy value
+	return exp(s/Cv);
 }
 
 su2double CPerfectGas::EnthalpyInv(su2double h)const{
-	return h/(SpecificHeatVol(-1) + Gas_Constant); //-1 is a dummy value
+	return h/(Cv + Gas_Constant);
 }
 
 
