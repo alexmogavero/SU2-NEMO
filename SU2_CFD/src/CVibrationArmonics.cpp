@@ -56,8 +56,8 @@ su2double CVibrationArmonics::Energy(su2double T)const{
 }
 
 su2double CVibrationArmonics::EnergyInv(su2double e)const{
-	std::function<std::pair<su2double, su2double> (su2double)> func = [this](su2double T) {
-		return std::pair<su2double, su2double>(this->Energy(T), this->SpecificHeatVol(T));
+	std::function<std::pair<su2double, su2double> (su2double)> func = [this, e](su2double T) {
+		return std::pair<su2double, su2double>(this->Energy(T) - e, this->SpecificHeatVol(T));
 	};
 
 	return boost::math::tools::newton_raphson_iterate<
@@ -81,8 +81,8 @@ su2double CVibrationArmonics::EntropyTemp(su2double T)const{
 }
 
 su2double CVibrationArmonics::EntropyTempInv(su2double s)const{
-	std::function<std::pair<su2double, su2double> (su2double)> func = [this](su2double T) {
-			return std::pair<su2double, su2double>(this->EntropyTemp(T), this->SpecificHeatVol(T)/T);
+	std::function<std::pair<su2double, su2double> (su2double)> func = [this, s](su2double T) {
+			return std::pair<su2double, su2double>(this->EntropyTemp(T) - s, this->SpecificHeatVol(T)/T);
 		};
 
 	return boost::math::tools::newton_raphson_iterate<
@@ -91,8 +91,8 @@ su2double CVibrationArmonics::EntropyTempInv(su2double s)const{
 }
 
 su2double CVibrationArmonics::EnthalpyInv(su2double h)const{
-	std::function<std::pair<su2double, su2double> (su2double)> func = [this](su2double T) {
-		return std::pair<su2double, su2double>(this->Enthalpy(T),
+	std::function<std::pair<su2double, su2double> (su2double)> func = [this, h](su2double T) {
+		return std::pair<su2double, su2double>(this->Enthalpy(T) - h,
 				this->SpecificHeatVol(T) + Gas_Constant);
 	};
 

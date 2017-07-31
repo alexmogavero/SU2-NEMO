@@ -3472,7 +3472,7 @@ void CEulerSolver::SetNondimensionalization(CGeometry *geometry, CConfig *config
 
     case HARMONIC_VIBR:
 
-			FluidModel = new CVibrationArmonics(Gamma, config->GetGas_Constant(), 2000); //TODO add input for theta
+			FluidModel = new CVibrationArmonics(config->GetGas_Constant(), Gamma, 2000); //TODO add input for theta
 			if (free_stream_temp) {
 				FluidModel->SetTDState_PT(Pressure_FreeStream, Temperature_FreeStream);
 				Density_FreeStream = FluidModel->GetDensity();
@@ -3690,7 +3690,7 @@ void CEulerSolver::SetNondimensionalization(CGeometry *geometry, CConfig *config
       break;
       
     case HARMONIC_VIBR:
-			FluidModel = new CVibrationArmonics(Gamma, Gas_ConstantND, 2000); //TODO add input for theta
+			FluidModel = new CVibrationArmonics(Gas_ConstantND, Gamma,  2000); //TODO add input for theta
 			FluidModel->SetEnergy_Prho(Pressure_FreeStreamND, Density_FreeStreamND);
 			break;
 

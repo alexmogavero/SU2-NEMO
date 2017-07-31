@@ -44,7 +44,7 @@ CPerfectGas::CPerfectGas(su2double R, su2double g):
 		CGeneralIdealGas(R),
 	Gamma(g),
 	n_dof(0){
-	n_dof = 2*Gas_Constant/(Gamma - 1);
+	n_dof = 2/(Gamma - 1);
 }
 
 
