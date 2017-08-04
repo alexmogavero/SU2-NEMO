@@ -650,6 +650,7 @@ private:
   Gas_Constant,     /*!< \brief Specific gas constant. */
   Gas_ConstantND,     /*!< \brief Non-dimensional specific gas constant. */
   Gas_Constant_Ref, /*!< \brief Reference specific gas constant. */
+	Theta_v, /*!< \brief Characteristic temperature of the first vibrational harmonics. */
   Temperature_Critical,   /*!< \brief Critical Temperature for real fluid model.  */
   Pressure_Critical,   /*!< \brief Critical Pressure for real fluid model.  */
   Density_Critical,   /*!< \brief Critical Density for real fluid model.  */
@@ -1376,6 +1377,12 @@ public:
    */
   su2double GetGas_ConstantND(void);
   
+  /*!
+	 * \brief Get the characteristic temperature of the first vibrational harmonics.
+	 * \return Value of Theta_v
+	 */
+	su2double GetTheta_v(void)const;
+
   /*!
    * \brief Get the coefficients of the Blottner viscosity model
    * \param[in] val_Species - Index of the species
