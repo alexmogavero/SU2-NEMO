@@ -199,6 +199,22 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
     }
   }
 
+  if (abs(config->GetPrandtl_Lam()-1.0) < 1.e-15) {
+    su2double q;
+    su2double U = val_residual[1]/val_residual[0];
+    q = val_residual[nVar-1] + 0.5 * pow(U,2) * val_residual[0]
+    - U * val_residual[1] - U *  val_residual[nVar -1]
+    - 0.5 * pow(U,3) * val_residual[0] + pow(U,2) * val_residual[1];
+
+    for(unsigned short i=1; i<nDim; i++){
+      su2double V = val_residual[i+1]/val_residual[0];
+      q += 0.5 * pow(V,2) * val_residual[0] - V * val_residual[i+1]
+      -0.5 * U * pow(V,2) * val_residual[0] + U*V*val_residual[i+1];
+    }
+
+    val_residual[nVar-1] += (1/config->GetPrandtl_Lam() - 1) * q;
+  }
+
   rotate(val_residual + 1, true);
 }
 
