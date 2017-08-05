@@ -2152,12 +2152,14 @@ void CConfig::SetPostprocessing(unsigned short val_software, unsigned short val_
   
   if (!ideal_gas) {
     if (Kind_ConvNumScheme_Flow != SPACE_UPWIND) {
-      cout << "Only ROE Upwind and HLLC Upwind scheme can be used for Non-Ideal Compressible Fluids" << endl;
-      exit(EXIT_FAILURE);
+    	if(Kind_Centered_Flow != GKS_BGK){
+				cout << "Only ROE Upwind, HLLC Upwind and GKS_BGK scheme can be used for Non-Ideal Compressible Fluids" << endl;
+				exit(EXIT_FAILURE);
+    	}
     }
     else {
       if (Kind_Upwind_Flow != ROE && Kind_Upwind_Flow != HLLC) {
-        cout << "Only ROE Upwind and HLLC Upwind scheme can be used for Non-Ideal Compressible Fluids" << endl;
+        cout << "Only ROE Upwind, HLLC Upwind and GKS_BGK scheme can be used for Non-Ideal Compressible Fluids" << endl;
         exit(EXIT_FAILURE);
       }
     }
