@@ -480,7 +480,7 @@ su2double CGasKineticSchemeBGK::MomentsMaxwellian(std::vector<unsigned short> ex
 
 void CGasKineticSchemeBGK::ComputeMaxwellianMoments(CVariable* node, moments_struct*  moments){
   double K = (5.0 - 3.0*Gamma) / (Gamma - 1.0) + (3.0 - nDim);
-  double l = (K+nDim) / (4.0*(node->GetEnergy() - 0.5*node->GetVelocity2()));
+  double l = 1 / (2.0*config->GetGas_Constant()*node->GetTemperature());
 
   moments->A.resize(nDim);
   moments->P.resize(nDim);
@@ -515,6 +515,36 @@ void CGasKineticSchemeBGK::ComputeMaxwellianMoments(CVariable* node, moments_str
   moments->xi[2] = 0.5 * K / l;
   moments->xi[4] = 0.5 * moments->xi[2] * (K+2)/ l;
   moments->xi[6] = 0.5 * moments->xi[4] * (K+4)/ l;
+
+  //Add vibrational contribution
+  if(config->GetKind_FluidModel()==HARMONIC_VIBR){
+		su2double theta = config->GetTheta_v();
+		su2double T = node->GetTemperature();
+		su2double Z_v_inv = 1 - exp(-theta/T);
+		su2double tol = 1e-6;
+		std::vector<bool> cont(3, true);
+		int nMax = 100;
+		for(int j=1; j<nMax; j++){
+			bool finished = true;
+
+			su2double xi_v2 = j*theta/(l*T);
+			su2double e_xi = exp(-l*xi_v2);
+
+			for(unsigned short i=1; i<4; i++){
+				if(cont[i]){
+					su2double mom = Z_v_inv*pow(xi_v2, i)*e_xi;
+					if(mom/moments->xi[2*i] < tol){
+						cont[i] = false;
+					}
+					moments->xi[2*i] += mom;
+				}
+
+				finished = finished && !cont[i];
+			}
+
+			if(finished) break;
+		}
+  }
 }
 
 void CGasKineticSchemeBGK::SetNormal(su2double *val_normal){
