@@ -14,12 +14,12 @@ protected:
   su2double Gas_Constant;        /*!< \brief Gas Constant. */
 
   virtual su2double Energy(su2double T)const=0;
-  virtual su2double EnergyInv(su2double e)const=0;
+  virtual su2double EnergyInv(su2double e)const;
   virtual su2double Enthalpy(su2double T)const;
-  virtual su2double EnthalpyInv(su2double h)const=0;
+  virtual su2double EnthalpyInv(su2double h)const;
   virtual su2double SpecificHeatVol(su2double T)const=0;
   virtual su2double EntropyTemp(su2double T)const=0;
-  virtual su2double EntropyTempInv(su2double s)const=0;
+  virtual su2double EntropyTempInv(su2double s)const;
 
 public:
 

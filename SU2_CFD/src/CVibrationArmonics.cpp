@@ -32,8 +32,6 @@
  */
 
 #include "../include/CVibrationArmonics.hpp"
-#include <functional>
-#include <boost/math/tools/roots.hpp>
 
 CVibrationArmonics::CVibrationArmonics() :
 	CPerfectGas(),
@@ -56,13 +54,7 @@ su2double CVibrationArmonics::Energy(su2double T)const{
 }
 
 su2double CVibrationArmonics::EnergyInv(su2double e)const{
-	std::function<std::pair<su2double, su2double> (su2double)> func = [this, e](su2double T) {
-		return std::pair<su2double, su2double>(this->Energy(T) - e, this->SpecificHeatVol(T));
-	};
-
-	return boost::math::tools::newton_raphson_iterate<
-			std::function<std::pair<su2double, su2double> (su2double)>, su2double>(
-					func, 300, 1, 10000, 5);
+	return CGeneralIdealGas::EnergyInv(e);
 }
 
 su2double CVibrationArmonics::SpecificHeatVol(su2double T)const{
@@ -81,24 +73,11 @@ su2double CVibrationArmonics::EntropyTemp(su2double T)const{
 }
 
 su2double CVibrationArmonics::EntropyTempInv(su2double s)const{
-	std::function<std::pair<su2double, su2double> (su2double)> func = [this, s](su2double T) {
-			return std::pair<su2double, su2double>(this->EntropyTemp(T) - s, this->SpecificHeatVol(T)/T);
-		};
-
-	return boost::math::tools::newton_raphson_iterate<
-			std::function<std::pair<su2double, su2double> (su2double)>, su2double>(
-					func, 300, 1, 10000, 5);
+	return CGeneralIdealGas::EntropyTempInv(s);
 }
 
 su2double CVibrationArmonics::EnthalpyInv(su2double h)const{
-	std::function<std::pair<su2double, su2double> (su2double)> func = [this, h](su2double T) {
-		return std::pair<su2double, su2double>(this->Enthalpy(T) - h,
-				this->SpecificHeatVol(T) + Gas_Constant);
-	};
-
-	return boost::math::tools::newton_raphson_iterate<
-			std::function<std::pair<su2double, su2double> (su2double)>, su2double>(
-					func, 300, 1, 10000, 5);
+	return CGeneralIdealGas::EnthalpyInv(h);
 }
 
 

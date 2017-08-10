@@ -32,6 +32,8 @@
  */
 
 #include "../include/CGeneralIdealGas.hpp"
+#include <functional>
+#include <boost/math/tools/roots.hpp>
 
 CGeneralIdealGas::CGeneralIdealGas() :
 	CFluidModel(),
@@ -110,9 +112,36 @@ su2double CGeneralIdealGas::Enthalpy(su2double T)const{
 	return Energy(T) + Gas_Constant*T;
 }
 
+su2double  CGeneralIdealGas::EnergyInv(su2double e)const{
+	std::function<std::pair<su2double, su2double> (su2double)> func = [this, e](su2double T) {
+		return std::pair<su2double, su2double>(this->Energy(T) - e, this->SpecificHeatVol(T));
+	};
 
+	return boost::math::tools::newton_raphson_iterate<
+			std::function<std::pair<su2double, su2double> (su2double)>, su2double>(
+					func, 300, 1, 10000, 5);
+}
 
+su2double CGeneralIdealGas::EntropyTempInv(su2double s)const{
+	std::function<std::pair<su2double, su2double> (su2double)> func = [this, s](su2double T) {
+			return std::pair<su2double, su2double>(this->EntropyTemp(T) - s, this->SpecificHeatVol(T)/T);
+		};
 
+	return boost::math::tools::newton_raphson_iterate<
+			std::function<std::pair<su2double, su2double> (su2double)>, su2double>(
+					func, 300, 1, 10000, 5);
+}
+
+su2double CGeneralIdealGas::EnthalpyInv(su2double h)const{
+	std::function<std::pair<su2double, su2double> (su2double)> func = [this, h](su2double T) {
+		return std::pair<su2double, su2double>(this->Enthalpy(T) - h,
+				this->SpecificHeatVol(T) + Gas_Constant);
+	};
+
+	return boost::math::tools::newton_raphson_iterate<
+			std::function<std::pair<su2double, su2double> (su2double)>, su2double>(
+					func, 300, 1, 10000, 5);
+}
 
 
 
