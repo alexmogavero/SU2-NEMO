@@ -90,11 +90,7 @@ su2double CElectronicExcitation::SpecificHeatVol(su2double T)const{
 }
 
 su2double CElectronicExcitation::EntropyTemp(su2double T)const{
-	su2double e_T = exp(ThetaVib/T);
-
-	return Gas_Constant*((ThetaVib + ThetaVib/(e_T - 1))*(1/T - 1) +
-			log(abs(exp(ThetaVib) - 1)) - log(abs(e_T - 1))) +
-			CPerfectGas::EntropyTemp(T);
+	//TODO add implementation
 }
 
 

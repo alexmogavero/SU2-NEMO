@@ -9,9 +9,9 @@
  * \version 5.0.0 "Raven"
  */
 class CVibrationArmonics : public CPerfectGas {
-
+	std::vector<su2double> ThetaVib;        /*!< \brief Gas Constant. */
+	std::vector<su2double> weight;       /*!< \brief Weight to apply to each vibrational contribution*/
 protected:
-  su2double ThetaVib;        /*!< \brief Gas Constant. */
 
   virtual su2double Energy(su2double T)const;
   virtual su2double EnergyInv(su2double e)const;
@@ -31,6 +31,9 @@ public:
      * \brief Constructor of the class.
      */
     CVibrationArmonics(su2double R, su2double g, su2double theta);
+
+    CVibrationArmonics(su2double R, su2double g,
+    		std::vector<su2double> theta, std::vector<su2double> w);
 
 
     /*!

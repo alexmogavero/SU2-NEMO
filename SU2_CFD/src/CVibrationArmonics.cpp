@@ -35,13 +35,23 @@
 
 CVibrationArmonics::CVibrationArmonics() :
 	CPerfectGas(),
-	ThetaVib(0){
+	ThetaVib(),
+	weight(){
 }
 
 
 CVibrationArmonics::CVibrationArmonics(su2double R, su2double g, su2double theta):
 		CPerfectGas(R, g),
-	ThetaVib(theta){
+	ThetaVib(1,theta),
+	weight(1,1){
+}
+
+CVibrationArmonics::CVibrationArmonics(su2double R, su2double g,
+		std::vector<su2double> theta, std::vector<su2double> w):
+		CPerfectGas(R, g),
+	ThetaVib(theta),
+	weight(w){
+	if(theta.size() != weight.size()) throw std::logic_error("Error: theta and w must be of the same size.");
 }
 
 
@@ -50,7 +60,11 @@ CVibrationArmonics::~CVibrationArmonics(void) {
 }
 
 su2double CVibrationArmonics::Energy(su2double T)const{
-	return Gas_Constant*ThetaVib/(exp(ThetaVib/T)-1) + CPerfectGas::Energy(T);
+	su2double C = 0;
+	for(std::size_t i=0; i<ThetaVib.size(); i++){
+		C += weight[i]*ThetaVib[i]/(exp(ThetaVib[i]/T)-1);
+	}
+	return Gas_Constant*C + CPerfectGas::Energy(T);
 }
 
 su2double CVibrationArmonics::EnergyInv(su2double e)const{
@@ -59,17 +73,25 @@ su2double CVibrationArmonics::EnergyInv(su2double e)const{
 
 su2double CVibrationArmonics::SpecificHeatVol(su2double T)const{
 	su2double cv = CPerfectGas::SpecificHeatVol(T);
-	su2double theta_T = ThetaVib/T;
-	su2double exp_theta_T = exp(theta_T);
-	return Gas_Constant*pow(theta_T, 2)*exp_theta_T/pow(exp_theta_T - 1, 2) + cv;
+
+	su2double C = 0;
+	for(std::size_t i=0; i<ThetaVib.size(); i++){
+		su2double theta_T = ThetaVib[i]/T;
+		su2double exp_theta_T = exp(theta_T);
+		C += weight[i]*pow(theta_T, 2)*exp_theta_T/pow(exp_theta_T - 1, 2);
+	}
+	return Gas_Constant*C + cv;
 }
 
 su2double CVibrationArmonics::EntropyTemp(su2double T)const{
-	su2double e_T = exp(ThetaVib/T);
+	su2double C = 0;
+	for(std::size_t i=0; i<ThetaVib.size(); i++){
+		su2double e_T = exp(ThetaVib[i]/T);
+		C += weight[i]*((ThetaVib[i] + ThetaVib[i]/(e_T - 1))*(1/T - 1) +
+				log(abs(exp(ThetaVib[i]) - 1)) - log(abs(e_T - 1)));
+	}
 
-	return Gas_Constant*((ThetaVib + ThetaVib/(e_T - 1))*(1/T - 1) +
-			log(abs(exp(ThetaVib) - 1)) - log(abs(e_T - 1))) +
-			CPerfectGas::EntropyTemp(T);
+	return Gas_Constant*C +	CPerfectGas::EntropyTemp(T);
 }
 
 su2double CVibrationArmonics::EntropyTempInv(su2double s)const{
