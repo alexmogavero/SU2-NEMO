@@ -3472,7 +3472,8 @@ void CEulerSolver::SetNondimensionalization(CGeometry *geometry, CConfig *config
 
     case HARMONIC_VIBR:
 
-			FluidModel = new CVibrationArmonics(config->GetGas_Constant(), Gamma, config->GetTheta_v());
+			FluidModel = new CVibrationArmonics(config->GetGas_Constant(), Gamma,
+					config->GetnVibration_mode(), config->GetTheta_v());
 			if (free_stream_temp) {
 				FluidModel->SetTDState_PT(Pressure_FreeStream, Temperature_FreeStream);
 				Density_FreeStream = FluidModel->GetDensity();
@@ -3690,7 +3691,8 @@ void CEulerSolver::SetNondimensionalization(CGeometry *geometry, CConfig *config
       break;
       
     case HARMONIC_VIBR:
-			FluidModel = new CVibrationArmonics(Gas_ConstantND, Gamma,  config->GetTheta_v());
+			FluidModel = new CVibrationArmonics(Gas_ConstantND, Gamma,
+					config->GetnVibration_mode(), config->GetTheta_v());
 			FluidModel->SetEnergy_Prho(Pressure_FreeStreamND, Density_FreeStreamND);
 			break;
 
@@ -3789,7 +3791,11 @@ void CEulerSolver::SetNondimensionalization(CGeometry *geometry, CConfig *config
 				cout << "Specific gas constant: " << config->GetGas_Constant() << " N.m/kg.K." << endl;
 				cout << "Specific gas constant (non-dim): " << config->GetGas_ConstantND()<< endl;
 				cout << "Specific Heat Ratio: "<< Gamma << endl;
-				cout << "Vibrational characteristic temperature: " << config->GetTheta_v() << endl;
+				cout << "Vibrational characteristic temperature: ";
+				for(unsigned short i=0; i<config->GetnVibration_mode(); i++){
+						cout << config->GetTheta_v()[i] << " ";
+				}
+				cout << endl;
 				break;
 
     }

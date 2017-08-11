@@ -1765,7 +1765,8 @@ void CIncEulerSolver::SetNondimensionalization(CGeometry *geometry, CConfig *con
       break;
       
     case HARMONIC_VIBR:
-			FluidModel = new CVibrationArmonics(Gas_ConstantND, Gamma, config->GetTheta_v());
+			FluidModel = new CVibrationArmonics(Gas_ConstantND, Gamma,
+					config->GetnVibration_mode(), config->GetTheta_v());
 			FluidModel->SetEnergy_Prho(Pressure_FreeStreamND, Density_FreeStreamND);
 			break;
 

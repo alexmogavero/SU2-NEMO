@@ -30,7 +30,7 @@ public:
     /*!
      * \brief Constructor of the class.
      */
-    CVibrationArmonics(su2double R, su2double g, su2double theta);
+    CVibrationArmonics(su2double R, su2double g, unsigned short n_modes, su2double* theta);
 
     CVibrationArmonics(su2double R, su2double g,
     		std::vector<su2double> theta, std::vector<su2double> w);

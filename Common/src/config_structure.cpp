@@ -580,8 +580,10 @@ void CConfig::SetConfig_Options(unsigned short val_iZone, unsigned short val_nZo
   addDoubleOption("GAS_CONSTANT", Gas_Constant, 287.058);
   /*!\brief GAMMA_VALUE  \n DESCRIPTION: Ratio of specific heats (1.4 (air), only for compressible flows) \ingroup Config*/
   addDoubleOption("GAMMA_VALUE", Gamma, 1.4);
-  /*!\brief GAMMA_VALUE  \n DESCRIPTION: Ratio of specific heats (1.4 (air), only for compressible flows) \ingroup Config*/
-	addDoubleOption("THETA_VIBRATION", Theta_v, 2000);
+
+  /*--- Options related to vibration harmonics gas MODEL ---*/
+  /*!\brief THETA_VIBRATION  \n DESCRIPTION: Characteristic temperature of vibration \ingroup Config*/
+	addDoubleListOption("THETA_VIBRATION", nVibration_mode, Theta_v);
 
 
   /*--- Options related to VAN der WAALS MODEL and PENG ROBINSON ---*/
@@ -6559,6 +6561,10 @@ su2double CConfig::GetSpline(vector<su2double>&xa, vector<su2double>&ya, vector<
   return y;
 }
 
-su2double CConfig::GetTheta_v()const{
+su2double* CConfig::GetTheta_v()const{
 	return Theta_v;
+}
+
+unsigned short CConfig::GetnVibration_mode()const{
+	return nVibration_mode;
 }

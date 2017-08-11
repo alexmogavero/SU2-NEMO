@@ -41,7 +41,7 @@ public:
     /*!
      * \brief Constructor of the class.
      */
-    CElectronicExcitation(su2double R, su2double g, su2double theta,
+    CElectronicExcitation(su2double R, su2double g, unsigned short n_mode, su2double* theta,
     		std::vector<su2double> gEl, std::vector<su2double> thetaEl);
 
 
