@@ -651,6 +651,7 @@ private:
   Gas_ConstantND,     /*!< \brief Non-dimensional specific gas constant. */
   Gas_Constant_Ref, /*!< \brief Reference specific gas constant. */
 	*Theta_v, /*!< \brief Characteristic temperature of the first vibrational harmonics. */
+	*Weight_v, /*!< \brief Weight for every value of Theta_v. */
   Temperature_Critical,   /*!< \brief Critical Temperature for real fluid model.  */
   Pressure_Critical,   /*!< \brief Critical Pressure for real fluid model.  */
   Density_Critical,   /*!< \brief Critical Density for real fluid model.  */
@@ -1383,6 +1384,12 @@ public:
 	 * \return Value of Theta_v
 	 */
 	su2double* GetTheta_v()const;
+
+	/*!
+	 * \brief Get the weight of every vibrational mode.
+	 * \return Value of Weight_v
+	 */
+	su2double* GetWeight_v()const;
 
 	/*!
 	 * \brief Get the number of vibrational mode in the vibration harmonics gas model.

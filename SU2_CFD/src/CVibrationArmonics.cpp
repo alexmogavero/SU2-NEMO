@@ -40,12 +40,16 @@ CVibrationArmonics::CVibrationArmonics() :
 }
 
 
-CVibrationArmonics::CVibrationArmonics(su2double R, su2double g, unsigned short n_modes, su2double* theta):
+CVibrationArmonics::CVibrationArmonics(su2double R, su2double g,
+		unsigned short n_modes, su2double* theta, su2double* w):
 		CPerfectGas(R, g),
 	ThetaVib(n_modes),
-	weight(n_modes, 1){
+	weight(n_modes){
 	for(unsigned short i=0; i<n_modes; i++){
 		ThetaVib[i] = theta[i];
+	}
+	for(unsigned short i=0; i<n_modes; i++){
+		weight[i] = w[i];
 	}
 }
 

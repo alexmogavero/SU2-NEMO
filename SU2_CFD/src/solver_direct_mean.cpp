@@ -3473,7 +3473,7 @@ void CEulerSolver::SetNondimensionalization(CGeometry *geometry, CConfig *config
     case HARMONIC_VIBR:
 
 			FluidModel = new CVibrationArmonics(config->GetGas_Constant(), Gamma,
-					config->GetnVibration_mode(), config->GetTheta_v());
+					config->GetnVibration_mode(), config->GetTheta_v(), config->GetWeight_v());
 			if (free_stream_temp) {
 				FluidModel->SetTDState_PT(Pressure_FreeStream, Temperature_FreeStream);
 				Density_FreeStream = FluidModel->GetDensity();
@@ -3692,7 +3692,7 @@ void CEulerSolver::SetNondimensionalization(CGeometry *geometry, CConfig *config
       
     case HARMONIC_VIBR:
 			FluidModel = new CVibrationArmonics(Gas_ConstantND, Gamma,
-					config->GetnVibration_mode(), config->GetTheta_v());
+					config->GetnVibration_mode(), config->GetTheta_v(), config->GetWeight_v());
 			FluidModel->SetEnergy_Prho(Pressure_FreeStreamND, Density_FreeStreamND);
 			break;
 
@@ -3794,6 +3794,11 @@ void CEulerSolver::SetNondimensionalization(CGeometry *geometry, CConfig *config
 				cout << "Vibrational characteristic temperature: ";
 				for(unsigned short i=0; i<config->GetnVibration_mode(); i++){
 						cout << config->GetTheta_v()[i] << " ";
+				}
+				cout << endl;
+				cout << "Weights: ";
+				for(unsigned short i=0; i<config->GetnVibration_mode(); i++){
+						cout << config->GetWeight_v()[i] << " ";
 				}
 				cout << endl;
 				break;

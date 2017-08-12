@@ -41,9 +41,9 @@ CElectronicExcitation::CElectronicExcitation() :
 
 
 CElectronicExcitation::CElectronicExcitation(su2double R, su2double g,
-		unsigned short n_mode, su2double* theta,
+		unsigned short n_mode, su2double* theta, su2double* w,
 		std::vector<su2double> gEl, std::vector<su2double> thetaEl):
-		CVibrationArmonics(R, g, n_mode, theta),
+		CVibrationArmonics(R, g, n_mode, theta, w),
 		g(gEl),
 		ThetaEl(thetaEl){
 	if(gEl.size() != thetaEl.size()) throw std::logic_error("Error: gEl and thetaEl must be of the same size.");

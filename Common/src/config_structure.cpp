@@ -473,6 +473,10 @@ void CConfig::SetPointersNull(void) {
   Kind_TurboPerformance = NULL;
   Marker_NRBC           = NULL;
   
+  /*--- Gas model -------------*/
+  Theta_v = NULL;
+  Weight_v = NULL;
+
   /*--- Variable initialization ---*/
   
   ExtIter    = 0;
@@ -584,7 +588,8 @@ void CConfig::SetConfig_Options(unsigned short val_iZone, unsigned short val_nZo
   /*--- Options related to vibration harmonics gas MODEL ---*/
   /*!\brief THETA_VIBRATION  \n DESCRIPTION: Characteristic temperature of vibration \ingroup Config*/
 	addDoubleListOption("THETA_VIBRATION", nVibration_mode, Theta_v);
-
+	/*!\brief VIBRATION_WEIGHTS  \n DESCRIPTION: Weight for every vibration mode. \ingroup Config*/
+	addDoubleListOption("VIBRATION_WEIGHTS", nVibration_mode, Weight_v);
 
   /*--- Options related to VAN der WAALS MODEL and PENG ROBINSON ---*/
 
@@ -6563,6 +6568,10 @@ su2double CConfig::GetSpline(vector<su2double>&xa, vector<su2double>&ya, vector<
 
 su2double* CConfig::GetTheta_v()const{
 	return Theta_v;
+}
+
+su2double* CConfig::GetWeight_v()const{
+	return Weight_v;
 }
 
 unsigned short CConfig::GetnVibration_mode()const{
