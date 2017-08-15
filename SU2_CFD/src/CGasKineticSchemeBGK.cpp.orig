@@ -67,10 +67,17 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
     node_jLoc = node_jRot->duplicate();
     if(config->GetSpatialOrder_Flow() == SECOND_ORDER_LIMITER) limit(node_jLoc, RIGHT);
     reconstruct(node_jLoc, -dist_ij*0.5);
+<<<<<<< HEAD
     if(!node_jLoc->GetNon_Physical()){
 			delete node_jLoc;
 			node_jLoc = node_jRot->duplicate();
 		}
+=======
+    if(node_jLoc->GetNon_Physical()){
+      delete node_jLoc;
+      node_jLoc = node_jRot->duplicate();
+    }
+>>>>>>> 4ec053f21cfbc4591c7f553edf4585a5a8b72d99
   }else{
     node_iLoc = node_iRot->duplicate();
     node_jLoc = node_jRot->duplicate();
@@ -78,7 +85,7 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
 
   CalculateInterface();
 
-  su2double Dt = min(node_i->GetDelta_Time(),node_j->GetDelta_Time());
+  su2double Dt = 0.5*(node_i->GetDelta_Time() + node_j->GetDelta_Time());
 
   //Calculate the mean collision time
   su2double tauColl = node_I->GetLaminarViscosity()/node_I->GetPressure();
@@ -197,22 +204,6 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
     for(unsigned short iVar=0; iVar<nVar; iVar++){
       val_residual[iVar] -= Dt_inv*tauColl*int_e_dt*(Flux_i[iVar] + Flux_j[iVar])*Area;
     }
-  }
-
-  if (abs(config->GetPrandtl_Lam()-1.0) > 1.e-12) {
-    su2double q;
-    su2double U = val_residual[1]/val_residual[0];
-    q = val_residual[nVar-1] + 0.5 * pow(U,2) * val_residual[0]
-    - U * val_residual[1] - U *  val_residual[nVar -1]
-    - 0.5 * pow(U,3) * val_residual[0] + pow(U,2) * val_residual[1];
-
-    for(unsigned short i=1; i<nDim; i++){
-      su2double V = val_residual[i+1]/val_residual[0];
-      q += 0.5 * pow(V,2) * val_residual[0] - V * val_residual[i+1]
-      -0.5 * U * pow(V,2) * val_residual[0] + U*V*val_residual[i+1];
-    }
-
-    val_residual[nVar-1] += (1/config->GetPrandtl_Lam() - 1) * q;
   }
 
   rotate(val_residual + 1, true);
@@ -496,7 +487,7 @@ su2double CGasKineticSchemeBGK::MomentsMaxwellian(std::vector<unsigned short> ex
 
 void CGasKineticSchemeBGK::ComputeMaxwellianMoments(CVariable* node, moments_struct*  moments){
   double K = (5.0 - 3.0*Gamma) / (Gamma - 1.0) + (3.0 - nDim);
-  double l = 1 / (2.0*config->GetGas_Constant()*node->GetTemperature());
+  double l = (K+nDim) / (4.0*(node->GetEnergy() - 0.5*node->GetVelocity2()));
 
   moments->A.resize(nDim);
   moments->P.resize(nDim);
@@ -531,41 +522,6 @@ void CGasKineticSchemeBGK::ComputeMaxwellianMoments(CVariable* node, moments_str
   moments->xi[2] = 0.5 * K / l;
   moments->xi[4] = 0.5 * moments->xi[2] * (K+2)/ l;
   moments->xi[6] = 0.5 * moments->xi[4] * (K+4)/ l;
-
-  //Add vibrational contribution
-  if(config->GetKind_FluidModel()==HARMONIC_VIBR){
-		su2double* theta = config->GetTheta_v();
-		su2double* w = config->GetWeight_v();
-		su2double T = node->GetTemperature();
-		su2double tol = 1e-6;
-		int nMax = 100;
-
-		for(unsigned short s=0; s<config->GetnVibration_mode(); s++){
-      su2double Z_v_inv = 1 - exp(-theta[s]/T);
-      std::vector<bool> cont(3, true);
-
-      for(int j=1; j<nMax; j++){
-        bool finished = true;
-
-        su2double xi_v2 = j*theta[s]/(l*T);
-        su2double e_xi = exp(-l*xi_v2);
-
-        for(unsigned short i=1; i<4; i++){
-          if(cont[i]){
-            su2double mom = w[s]*Z_v_inv*pow(xi_v2, i)*e_xi;
-            if(mom/moments->xi[2*i] < tol){
-              cont[i] = false;
-            }
-            moments->xi[2*i] += mom;
-          }
-
-          finished = finished && !cont[i];
-        }
-
-        if(finished) break;
-      }
-		}
-  }
 }
 
 void CGasKineticSchemeBGK::SetNormal(su2double *val_normal){

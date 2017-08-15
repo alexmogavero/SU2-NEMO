@@ -650,6 +650,8 @@ private:
   Gas_Constant,     /*!< \brief Specific gas constant. */
   Gas_ConstantND,     /*!< \brief Non-dimensional specific gas constant. */
   Gas_Constant_Ref, /*!< \brief Reference specific gas constant. */
+	*Theta_v, /*!< \brief Characteristic temperature of the first vibrational harmonics. */
+	*Weight_v, /*!< \brief Weight for every value of Theta_v. */
   Temperature_Critical,   /*!< \brief Critical Temperature for real fluid model.  */
   Pressure_Critical,   /*!< \brief Critical Pressure for real fluid model.  */
   Density_Critical,   /*!< \brief Critical Density for real fluid model.  */
@@ -766,7 +768,8 @@ private:
   nPlunging_Ampl_Z,           /*!< \brief Number of Plunging amplitudes in the z-direction. */
   nOmega_HB,                /*!< \brief Number of frequencies in Harmonic Balance Operator. */
   nMoveMotion_Origin,         /*!< \brief Number of motion origins. */
-  *MoveMotion_Origin;         /*!< \brief Keeps track if we should move moment origin. */
+  *MoveMotion_Origin,         /*!< \brief Keeps track if we should move moment origin. */
+  nVibration_mode;            /*!< \brief number of vibration mode in the vibration harmonics gas model */
   vector<vector<vector<su2double> > > Aeroelastic_np1, /*!< \brief Aeroelastic solution at time level n+1. */
   Aeroelastic_n,              /*!< \brief Aeroelastic solution at time level n. */
   Aeroelastic_n1;             /*!< \brief Aeroelastic solution at time level n-1. */
@@ -1376,6 +1379,24 @@ public:
    */
   su2double GetGas_ConstantND(void);
   
+  /*!
+	 * \brief Get the characteristic temperature of the first vibrational harmonics.
+	 * \return Value of Theta_v
+	 */
+	su2double* GetTheta_v()const;
+
+	/*!
+	 * \brief Get the weight of every vibrational mode.
+	 * \return Value of Weight_v
+	 */
+	su2double* GetWeight_v()const;
+
+	/*!
+	 * \brief Get the number of vibrational mode in the vibration harmonics gas model.
+	 * \return Value of nVibration_mode
+	 */
+	unsigned short GetnVibration_mode()const;
+
   /*!
    * \brief Get the coefficients of the Blottner viscosity model
    * \param[in] val_Species - Index of the species

@@ -473,6 +473,10 @@ void CConfig::SetPointersNull(void) {
   Kind_TurboPerformance = NULL;
   Marker_NRBC           = NULL;
   
+  /*--- Gas model -------------*/
+  Theta_v = NULL;
+  Weight_v = NULL;
+
   /*--- Variable initialization ---*/
   
   ExtIter    = 0;
@@ -581,6 +585,11 @@ void CConfig::SetConfig_Options(unsigned short val_iZone, unsigned short val_nZo
   /*!\brief GAMMA_VALUE  \n DESCRIPTION: Ratio of specific heats (1.4 (air), only for compressible flows) \ingroup Config*/
   addDoubleOption("GAMMA_VALUE", Gamma, 1.4);
 
+  /*--- Options related to vibration harmonics gas MODEL ---*/
+  /*!\brief THETA_VIBRATION  \n DESCRIPTION: Characteristic temperature of vibration \ingroup Config*/
+	addDoubleListOption("THETA_VIBRATION", nVibration_mode, Theta_v);
+	/*!\brief VIBRATION_WEIGHTS  \n DESCRIPTION: Weight for every vibration mode. \ingroup Config*/
+	addDoubleListOption("VIBRATION_WEIGHTS", nVibration_mode, Weight_v);
 
   /*--- Options related to VAN der WAALS MODEL and PENG ROBINSON ---*/
 
@@ -2150,12 +2159,14 @@ void CConfig::SetPostprocessing(unsigned short val_software, unsigned short val_
   
   if (!ideal_gas) {
     if (Kind_ConvNumScheme_Flow != SPACE_UPWIND) {
-      cout << "Only ROE Upwind and HLLC Upwind scheme can be used for Non-Ideal Compressible Fluids" << endl;
-      exit(EXIT_FAILURE);
+    	if(Kind_Centered_Flow != GKS_BGK){
+				cout << "Only ROE Upwind, HLLC Upwind and GKS_BGK scheme can be used for Non-Ideal Compressible Fluids" << endl;
+				exit(EXIT_FAILURE);
+    	}
     }
     else {
       if (Kind_Upwind_Flow != ROE && Kind_Upwind_Flow != HLLC) {
-        cout << "Only ROE Upwind and HLLC Upwind scheme can be used for Non-Ideal Compressible Fluids" << endl;
+        cout << "Only ROE Upwind, HLLC Upwind and GKS_BGK scheme can be used for Non-Ideal Compressible Fluids" << endl;
         exit(EXIT_FAILURE);
       }
     }
@@ -6553,4 +6564,16 @@ su2double CConfig::GetSpline(vector<su2double>&xa, vector<su2double>&ya, vector<
   y=a*ya[klo-1]+b*ya[khi-1]+((a*a*a-a)*y2a[klo-1]+(b*b*b-b)*y2a[khi-1])*(h*h)/6.0;
 
   return y;
+}
+
+su2double* CConfig::GetTheta_v()const{
+	return Theta_v;
+}
+
+su2double* CConfig::GetWeight_v()const{
+	return Weight_v;
+}
+
+unsigned short CConfig::GetnVibration_mode()const{
+	return nVibration_mode;
 }

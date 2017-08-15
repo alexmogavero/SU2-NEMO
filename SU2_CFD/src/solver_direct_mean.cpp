@@ -32,6 +32,7 @@
  */
 
 #include "../include/solver_structure.hpp"
+#include "../include/CVibrationArmonics.hpp"
 
 CEulerSolver::CEulerSolver(void) : CSolver() {
   
@@ -3469,6 +3470,22 @@ void CEulerSolver::SetNondimensionalization(CGeometry *geometry, CConfig *config
       }
       break;
 
+    case HARMONIC_VIBR:
+
+			FluidModel = new CVibrationArmonics(config->GetGas_Constant(), Gamma,
+					config->GetnVibration_mode(), config->GetTheta_v(), config->GetWeight_v());
+			if (free_stream_temp) {
+				FluidModel->SetTDState_PT(Pressure_FreeStream, Temperature_FreeStream);
+				Density_FreeStream = FluidModel->GetDensity();
+				config->SetDensity_FreeStream(Density_FreeStream);
+			}
+			else {
+				FluidModel->SetTDState_Prho(Pressure_FreeStream, Density_FreeStream );
+				Temperature_FreeStream = FluidModel->GetTemperature();
+				config->SetTemperature_FreeStream(Temperature_FreeStream);
+			}
+			break;
+
   }
 
   Mach2Vel_FreeStream = FluidModel->GetSoundSpeed();
@@ -3673,6 +3690,12 @@ void CEulerSolver::SetNondimensionalization(CGeometry *geometry, CConfig *config
       FluidModel->SetEnergy_Prho(Pressure_FreeStreamND, Density_FreeStreamND);
       break;
       
+    case HARMONIC_VIBR:
+			FluidModel = new CVibrationArmonics(Gas_ConstantND, Gamma,
+					config->GetnVibration_mode(), config->GetTheta_v(), config->GetWeight_v());
+			FluidModel->SetEnergy_Prho(Pressure_FreeStreamND, Density_FreeStreamND);
+			break;
+
   }
   
   Energy_FreeStreamND = FluidModel->GetStaticEnergy() + 0.5*ModVel_FreeStreamND*ModVel_FreeStreamND;
@@ -3762,6 +3785,23 @@ void CEulerSolver::SetNondimensionalization(CGeometry *geometry, CConfig *config
         cout << "Critical Pressure (non-dim):   " << config->GetPressure_Critical() /config->GetPressure_Ref() << endl;
         cout << "Critical Temperature (non-dim) :  " << config->GetTemperature_Critical() /config->GetTemperature_Ref() << endl;
         break;
+
+      case HARMONIC_VIBR:
+				cout << "Fluid Model: HARMONIC_VIBR "<< endl;
+				cout << "Specific gas constant: " << config->GetGas_Constant() << " N.m/kg.K." << endl;
+				cout << "Specific gas constant (non-dim): " << config->GetGas_ConstantND()<< endl;
+				cout << "Specific Heat Ratio: "<< Gamma << endl;
+				cout << "Vibrational characteristic temperature: ";
+				for(unsigned short i=0; i<config->GetnVibration_mode(); i++){
+						cout << config->GetTheta_v()[i] << " ";
+				}
+				cout << endl;
+				cout << "Weights: ";
+				for(unsigned short i=0; i<config->GetnVibration_mode(); i++){
+						cout << config->GetWeight_v()[i] << " ";
+				}
+				cout << endl;
+				break;
 
     }
     if (viscous) {
