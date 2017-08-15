@@ -148,9 +148,7 @@ libSU2Core_sources = \
   ../include/CPerfectGas.hpp \
   ../src/CPerfectGas.cpp \
   ../include/CVibrationArmonics.hpp \
-  ../src/CVibrationArmonics.cpp \
-  ../include/CElectronicExcitation.hpp \
-  ../src/CElectronicExcitation.cpp
+  ../src/CVibrationArmonics.cpp
 
 su2_cfd_sources = \
   ../include/SU2_CFD.hpp \
