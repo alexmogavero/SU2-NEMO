@@ -42,8 +42,7 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
   Clear();
 
   // Convert limited primitive variables to conservative
-  su2double Pressure_i, Pressure_j, Density_i, Density_j, Enthalpy_i, Enthalpy_j, SoundSpeed_i, SoundSpeed_j, Energy_i, Energy_j;
-  su2double sq_vel_i, sq_vel_j;
+  su2double Pressure_i, Pressure_j, Density_i, Density_j, Enthalpy_i, Enthalpy_j, Energy_i, Energy_j;
   su2double Velocity_i[nDim], Velocity_j[nDim];
   unsigned short iDim, iVar;
 
@@ -52,15 +51,11 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
   Pressure_i = V_i[nDim+1];                       Pressure_j = V_j[nDim+1];
   Density_i = V_i[nDim+2];                        Density_j = V_j[nDim+2];
   Enthalpy_i = V_i[nDim+3];                       Enthalpy_j = V_j[nDim+3];
-  SoundSpeed_i = V_i[nDim+4];                     SoundSpeed_j = V_j[nDim+4];
   Energy_i = Enthalpy_i - Pressure_i/Density_i;   Energy_j = Enthalpy_j - Pressure_j/Density_j;
 
-  sq_vel_i = 0.0; sq_vel_j = 0.0;
   for (iDim = 0; iDim < nDim; iDim++) {
     Velocity_i[iDim] = V_i[iDim+1];
     Velocity_j[iDim] = V_j[iDim+1];
-    sq_vel_i += 0.5*Velocity_i[iDim]*Velocity_i[iDim];
-    sq_vel_j += 0.5*Velocity_j[iDim]*Velocity_j[iDim];
   }
 
   U_i[0] = Density_i; U_j[0] = Density_j;
@@ -68,7 +63,6 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
     U_i[iDim+1] = Density_i*Velocity_i[iDim]; U_j[iDim+1] = Density_j*Velocity_j[iDim];
   }
   U_i[nDim+1] = Density_i*Energy_i; U_j[nDim+1] = Density_j*Energy_j;
-
 
 
   //Rotate Reference Frame
