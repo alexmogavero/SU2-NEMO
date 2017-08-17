@@ -73,29 +73,32 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
 
   //Rotate Reference Frame
   node_iRot = node_i->duplicate();
-  node_iRot->SetSolution(U_i);
-
-  node_iRot->SetNon_Physical(false);
-  bool RightSol = node_iRot->SetPrimVar(FluidModel);
-  if (!RightSol) {
-    node_iRot->SetNon_Physical(true);
-  }
-
   rotate(node_iRot);
 
-  node_jRot = node_j->duplicate();
-  node_jRot->SetSolution(U_j);
+  node_iLoc = node_i->duplicate();
+  node_iLoc->SetSolution(U_i);
 
-  node_jRot->SetNon_Physical(false);
-  RightSol = node_jRot->SetPrimVar(FluidModel);
+  node_iLoc->SetNon_Physical(false);
+  bool RightSol = node_iLoc->SetPrimVar(FluidModel);
   if (!RightSol) {
-    node_jRot->SetNon_Physical(true);
+    node_iLoc->SetNon_Physical(true);
   }
+  rotate(node_iLoc);
 
+  node_jRot = node_j->duplicate();
   rotate(node_jRot);
 
-  node_iLoc = node_iRot->duplicate();
-  node_jLoc = node_jRot->duplicate();
+  node_jLoc = node_j->duplicate();
+  node_jLoc->SetSolution(U_j);
+
+  node_jLoc->SetNon_Physical(false);
+  RightSol = node_jLoc->SetPrimVar(FluidModel);
+  if (!RightSol) {
+    node_jLoc->SetNon_Physical(true);
+  }
+  rotate(node_jLoc);
+
+
 
   CalculateInterface();
 
