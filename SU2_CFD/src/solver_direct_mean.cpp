@@ -35,9 +35,9 @@
 #include "../include/CVibrationArmonics.hpp"
 
 CEulerSolver::CEulerSolver(void) : CSolver() {
-  
+
   /*--- Basic array initialization ---*/
-  
+
   CD_Inv = NULL; CL_Inv = NULL; CSF_Inv = NULL;  CEff_Inv = NULL;
   CMx_Inv = NULL; CMy_Inv = NULL; CMz_Inv = NULL;
   CFx_Inv = NULL; CFy_Inv = NULL; CFz_Inv = NULL;
@@ -4512,6 +4512,8 @@ void CEulerSolver::Centered_Residual(CGeometry *geometry, CSolver **solver_conta
   
   bool implicit = (config->GetKind_TimeIntScheme_Flow() == EULER_IMPLICIT);
   bool second_order = ((config->GetKind_Centered_Flow() == JST) && (iMesh == MESH_0));
+  bool second_order_gks = (((config->GetSpatialOrder_Flow() == SECOND_ORDER) || (config->GetSpatialOrder_Flow() == SECOND_ORDER_LIMITER)) && (config->GetKind_Centered_Flow() == GKS_BGK));
+  bool limiter = (config->GetSpatialOrder_Flow() == SECOND_ORDER_LIMITER);
   bool low_fidelity = (config->GetLowFidelitySim() && (iMesh == MESH_1));
   bool grid_movement = config->GetGrid_Movement();
   

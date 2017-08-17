@@ -41,40 +41,58 @@ CGasKineticSchemeBGK::~CGasKineticSchemeBGK(void) {
 void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *config){
   Clear();
 
+  // Convert limited primitive variables to conservative
+  su2double Pressure_i, Pressure_j, Density_i, Density_j, Enthalpy_i, Enthalpy_j, Energy_i, Energy_j;
+  su2double Velocity_i[nDim], Velocity_j[nDim];
+  unsigned short iDim, iVar;
+
+  su2double U_i[5] = {0.0,0.0,0.0,0.0,0.0}, U_j[5] = {0.0,0.0,0.0,0.0,0.0};
+
+  Pressure_i = V_i[nDim+1];                       Pressure_j = V_j[nDim+1];
+  Density_i = V_i[nDim+2];                        Density_j = V_j[nDim+2];
+  Enthalpy_i = V_i[nDim+3];                       Enthalpy_j = V_j[nDim+3];
+  Energy_i = Enthalpy_i - Pressure_i/Density_i;   Energy_j = Enthalpy_j - Pressure_j/Density_j;
+
+  for (iDim = 0; iDim < nDim; iDim++) {
+    Velocity_i[iDim] = V_i[iDim+1];
+    Velocity_j[iDim] = V_j[iDim+1];
+  }
+
+  U_i[0] = Density_i; U_j[0] = Density_j;
+  for (iDim = 0; iDim < nDim; iDim++) {
+    U_i[iDim+1] = Density_i*Velocity_i[iDim]; U_j[iDim+1] = Density_j*Velocity_j[iDim];
+  }
+  U_i[nDim+1] = Density_i*Energy_i; U_j[nDim+1] = Density_j*Energy_j;
+
+
   //Rotate Reference Frame
   node_iRot = node_i->duplicate();
   rotate(node_iRot);
 
+  node_iLoc = node_i->duplicate();
+  node_iLoc->SetSolution(U_i);
+
+  node_iLoc->SetNon_Physical(false);
+  bool RightSol = node_iLoc->SetPrimVar(FluidModel);
+  if (!RightSol) {
+    node_iLoc->SetNon_Physical(true);
+  }
+  rotate(node_iLoc);
+
   node_jRot = node_j->duplicate();
   rotate(node_jRot);
 
-  //Reconstruct
-  if(config->GetSpatialOrder_Flow() == SECOND_ORDER ||
-  		config->GetSpatialOrder_Flow() == SECOND_ORDER_LIMITER){
-    su2double dist_ij = 0.0;
-    for (unsigned int i=0; i<nDim; i++)
-      dist_ij += (Coord_j[i]-Coord_i[i])*(Coord_j[i]-Coord_i[i]);
-    dist_ij = sqrt(dist_ij);
+  node_jLoc = node_j->duplicate();
+  node_jLoc->SetSolution(U_j);
 
-    node_iLoc = node_iRot->duplicate();
-    if(config->GetSpatialOrder_Flow() == SECOND_ORDER_LIMITER) limit(node_iLoc, LEFT);
-    reconstruct(node_iLoc, dist_ij*0.5);
-    if(!node_iLoc->GetNon_Physical()){ //Note here that GetNon_Physical returns 0 if non physical!!
-    	delete node_iLoc;
-    	node_iLoc = node_iRot->duplicate();
-    }
-
-    node_jLoc = node_jRot->duplicate();
-    if(config->GetSpatialOrder_Flow() == SECOND_ORDER_LIMITER) limit(node_jLoc, RIGHT);
-    reconstruct(node_jLoc, -dist_ij*0.5);
-    if(!node_jLoc->GetNon_Physical()){
-			delete node_jLoc;
-			node_jLoc = node_jRot->duplicate();
-		}
-  }else{
-    node_iLoc = node_iRot->duplicate();
-    node_jLoc = node_jRot->duplicate();
+  node_jLoc->SetNon_Physical(false);
+  RightSol = node_jLoc->SetPrimVar(FluidModel);
+  if (!RightSol) {
+    node_jLoc->SetNon_Physical(true);
   }
+  rotate(node_jLoc);
+
+
 
   CalculateInterface();
 
@@ -675,43 +693,6 @@ void CGasKineticSchemeBGK::reconstruct(CVariable* node, const su2double& d)const
   if (!RightSol) {
     node->SetNon_Physical(true);
   }
-}
-
-void CGasKineticSchemeBGK::limit(CVariable* node, State st)const{
-	if(st == INTERFACE) throw std::logic_error("Error: st cannot be INTERFACE in function limit.");
-
-	su2double dist_ij = 0.0;
-	for (unsigned int i=0; i<nDim; i++)
-	  dist_ij += (Coord_j[i]-Coord_i[i])*(Coord_j[i]-Coord_i[i]);
-	dist_ij = sqrt(dist_ij);
-
-	su2double** g = node->GetGradient();
-	for(unsigned short iVar=0; iVar<nVar; iVar++){
-		su2double diff_ij = node_jRot->GetSolution(iVar) - node_iRot->GetSolution(iVar);
-		su2double diff_ext = 2*g[iVar][0]*dist_ij - diff_ij;
-		if(st == LEFT){
-			g[iVar][0] *= vanLeer(diff_ext, diff_ij);
-		}else{
-			g[iVar][0] *= vanLeer(diff_ij, diff_ext);
-		}
-	}
-}
-
-su2double CGasKineticSchemeBGK::vanLeer(su2double a, su2double b){
-	if(b==0){
-		if(a==0){
-			return 0;
-		}else{
-			return 2;
-		}
-	}
-
-	su2double r = a/b;
-	if(r<=0){
-		return 0;
-	}else{
-		return 2*r/(r + 1);
-	}
 }
 
 void CGasKineticSchemeBGK::Clear(){
