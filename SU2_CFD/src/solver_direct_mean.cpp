@@ -16804,6 +16804,8 @@ vector<string> CNSSolver::GetOutputVarNames()const{
   }
   out.push_back("Heat_Flux");
   out.push_back("Y_Plus");
+
+  out.push_back("Specific_Heat_cnstPress");
   out.push_back("Knudsen");
 
   return out;
@@ -16823,6 +16825,7 @@ vector<su2double> CNSSolver::GetOutputVarValues(unsigned long iPoint)const{
   out.push_back(0);
   out.push_back(0);
 
+  out.push_back(node[iPoint]->GetSpecificHeatCp());
   out.push_back(node[iPoint]->GetKnudsen());
 
   return out;
