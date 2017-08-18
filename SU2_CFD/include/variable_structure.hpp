@@ -181,7 +181,7 @@ public:
    * \param[in] val_var - Index of the variable.
    * \return Value of the solution for the index <i>val_var</i>.
    */
-  su2double GetSolution(unsigned short val_var);
+  su2double GetSolution(unsigned short val_var)const;
   
   /*!
    * \brief Get the old solution of the problem (Runge-Kutta method)
@@ -890,7 +890,7 @@ public:
    * \brief A virtual member.
    * \return Value of the flow pressure.
    */
-  virtual su2double GetPressure(void);
+  virtual su2double GetPressure(void)const;
   
   /*!
    * \brief A virtual member.
@@ -911,7 +911,7 @@ public:
    * \brief A virtual member.
    * \return Value of the sound speed.
    */
-  virtual su2double GetSoundSpeed(void);
+  virtual su2double GetSoundSpeed(void)const;
   
   /*!
    * \brief A virtual member.
@@ -923,7 +923,7 @@ public:
    * \brief A virtual member.
    * \return Value of the temperature.
    */
-  virtual su2double GetTemperature(void);
+  virtual su2double GetTemperature(void)const;
   
   /*!
    * \brief A virtual member.
@@ -954,7 +954,7 @@ public:
    * \brief A virtual member.
    * \return Norm 2 of the velocity vector.
    */
-  virtual su2double GetVelocity2(void);
+  virtual su2double GetVelocity2(void)const;
   
   /*!
    * \brief A virtual member.
@@ -966,7 +966,7 @@ public:
    * \brief A virtual member.
    * \return The laminar viscosity of the flow.
    */
-  virtual su2double GetLaminarViscosity(void);
+  virtual su2double GetLaminarViscosity(void)const;
   
   
   /*!
@@ -3025,19 +3025,19 @@ public:
    * \brief Get the norm 2 of the velocity.
    * \return Norm 2 of the velocity vector.
    */
-  su2double GetVelocity2(void);
+  su2double GetVelocity2(void)const;
   
   /*!
    * \brief Get the flow pressure.
    * \return Value of the flow pressure.
    */
-  su2double GetPressure(void);
+  su2double GetPressure(void)const;
   
   /*!
    * \brief Get the speed of the sound.
    * \return Value of speed of the sound.
    */
-  su2double GetSoundSpeed(void);
+  su2double GetSoundSpeed(void)const;
   
   /*!
    * \brief Get the enthalpy of the flow.
@@ -3061,7 +3061,7 @@ public:
    * \brief Get the temperature of the flow.
    * \return Value of the temperature of the flow.
    */
-  su2double GetTemperature(void);
+  su2double GetTemperature(void)const;
   
   /*!
    * \brief Get the velocity of the flow.
@@ -3307,13 +3307,13 @@ public:
    * \brief Get the norm 2 of the velocity.
    * \return Norm 2 of the velocity vector.
    */
-  su2double GetVelocity2(void);
+  su2double GetVelocity2(void)const;
   
   /*!
    * \brief Get the flow pressure.
    * \return Value of the flow pressure.
    */
-  su2double GetPressure(void);
+  su2double GetPressure(void)const;
   
   /*!
    * \brief Get the value of beta squared for the incompressible flow
@@ -3466,7 +3466,7 @@ public:
    * \brief Get the laminar viscosity of the flow.
    * \return Value of the laminar viscosity of the flow.
    */
-  su2double GetLaminarViscosity(void);
+  su2double GetLaminarViscosity(void)const;
   
   /*!
    * \brief Get the thermal conductivity of the flow.
@@ -3618,7 +3618,7 @@ public:
    * \brief Get the laminar viscosity of the flow.
    * \return Value of the laminar viscosity of the flow.
    */
-  su2double GetLaminarViscosity(void);
+  su2double GetLaminarViscosity(void)const;
   
   /*!
    * \brief Get the eddy viscosity of the flow.
