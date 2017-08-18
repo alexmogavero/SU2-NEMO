@@ -10379,27 +10379,34 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
     nVar_Par += 1; Variable_Names.push_back("z");
   }
   
-  /*--- At a mininum, the restarts and visualization files need the
-   conservative variables, so these follow next. ---*/
+  vector<string> vNames = solver[FirstIndex]->node[0]->GetOutputVarNames();
+  if(vNames.size()>0){
+    nVar_Par += vNames.size();
+    Variable_Names.insert(Variable_Names.end(), vNames.begin(), vNames.end());
+  }else{ //Backward compatibility. TODO: remove once GetOutputVarNames is implemented for all classes
   
-  nVar_Par += nVar_Consv_Par;
-  
-  /*--- For now, leave the names as "Conservative_", etc., in order
-   to avoid confusion with the serial version, which still prints these
-   names. Names can be set alternatively by using the commented code
-   below. ---*/
-  
-  if (incompressible) {
-    Variable_Names.push_back("Pressure");
-    Variable_Names.push_back("X-Momentum");
-    Variable_Names.push_back("Y-Momentum");
-    if (geometry->GetnDim() == 3) Variable_Names.push_back("Z-Momentum");
-  } else {
-    Variable_Names.push_back("Density");
-    Variable_Names.push_back("X-Momentum");
-    Variable_Names.push_back("Y-Momentum");
-    if (geometry->GetnDim() == 3) Variable_Names.push_back("Z-Momentum");
-    Variable_Names.push_back("Energy");
+    /*--- At a mininum, the restarts and visualization files need the
+     conservative variables, so these follow next. ---*/
+
+    nVar_Par += nVar_Consv_Par;
+
+    /*--- For now, leave the names as "Conservative_", etc., in order
+     to avoid confusion with the serial version, which still prints these
+     names. Names can be set alternatively by using the commented code
+     below. ---*/
+
+    if (incompressible) {
+      Variable_Names.push_back("Pressure");
+      Variable_Names.push_back("X-Momentum");
+      Variable_Names.push_back("Y-Momentum");
+      if (geometry->GetnDim() == 3) Variable_Names.push_back("Z-Momentum");
+    } else {
+      Variable_Names.push_back("Density");
+      Variable_Names.push_back("X-Momentum");
+      Variable_Names.push_back("Y-Momentum");
+      if (geometry->GetnDim() == 3) Variable_Names.push_back("Z-Momentum");
+      Variable_Names.push_back("Energy");
+    }
   }
   if (SecondIndex != NONE) {
     if (config->GetKind_Turb_Model() == SST) {
@@ -10484,67 +10491,70 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
     
     /*--- Add Pressure, Temperature, Cp, Mach. ---*/
     
-    if (!incompressible) {
-      nVar_Par += 1;
-      Variable_Names.push_back("Pressure");
-    }
-    
-    nVar_Par += 3;
-    Variable_Names.push_back("Temperature");
-		if (config->GetOutput_FileFormat() == PARAVIEW){
-			Variable_Names.push_back("Pressure_Coefficient");
-		} else {
-			Variable_Names.push_back("C<sub>p</sub>");
-		}
-    Variable_Names.push_back("Mach");
-    
-    /*--- Add Laminar Viscosity, Skin Friction, Heat Flux, & yPlus to the restart file ---*/
-    
-    if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS) || (Kind_Solver == KINETIC)) {
-			if (config->GetOutput_FileFormat() == PARAVIEW){
-				nVar_Par += 1; Variable_Names.push_back("Laminar_Viscosity");
-				nVar_Par += 2;
-				Variable_Names.push_back("Skin_Friction_Coefficient_X");
-				Variable_Names.push_back("Skin_Friction_Coefficient_Y");
-				if (geometry->GetnDim() == 3) {
-					nVar_Par += 1; Variable_Names.push_back("Skin_Friction_Coefficient_Z");
-				}
-				nVar_Par += 2;
-				Variable_Names.push_back("Heat_Flux");
-				Variable_Names.push_back("Y_Plus");
-			} else {
-				nVar_Par += 1; Variable_Names.push_back("<greek>m</greek>");
-				nVar_Par += 2;
-				Variable_Names.push_back("C<sub>f</sub>_x");
-				Variable_Names.push_back("C<sub>f</sub>_y");
-				if (geometry->GetnDim() == 3) {
-					nVar_Par += 1; Variable_Names.push_back("C<sub>f</sub>_z");
-				}
-				nVar_Par += 2;
-				Variable_Names.push_back("h");
-				Variable_Names.push_back("y<sup>+</sup>");
-			}
-    }
-    
-    if (Kind_Solver == KINETIC) {
-    	if (config->GetOutput_FileFormat() == PARAVIEW){
-    		nVar_Par += 1;
-    		Variable_Names.push_back("Knudsen");
-    	}else{
-    		nVar_Par += 1;
-    		Variable_Names.push_back("Kn");
-    	}
-    }
+    if(vNames.size()==0){ //Backward compatibility. TODO: remove once GetOutputVarNames is implemented for all classes
+      if (!incompressible) {
+        nVar_Par += 1;
+        Variable_Names.push_back("Pressure");
+      }
 
-    /*--- Add Eddy Viscosity. ---*/
-    
-    if (Kind_Solver == RANS) {
-      nVar_Par += 1;
-			if (config->GetOutput_FileFormat() == PARAVIEW){
-				Variable_Names.push_back("Eddy_Viscosity");
-			} else {
-				Variable_Names.push_back("<greek>m</greek><sub>t</sub>");
-			}
+      nVar_Par += 3;
+      Variable_Names.push_back("Temperature");
+      if (config->GetOutput_FileFormat() == PARAVIEW){
+        Variable_Names.push_back("Pressure_Coefficient");
+      } else {
+        Variable_Names.push_back("C<sub>p</sub>");
+      }
+      Variable_Names.push_back("Mach");
+
+
+      /*--- Add Laminar Viscosity, Skin Friction, Heat Flux, & yPlus to the restart file ---*/
+
+      if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == RANS) || (Kind_Solver == KINETIC)) {
+        if (config->GetOutput_FileFormat() == PARAVIEW){
+          nVar_Par += 1; Variable_Names.push_back("Laminar_Viscosity");
+          nVar_Par += 2;
+          Variable_Names.push_back("Skin_Friction_Coefficient_X");
+          Variable_Names.push_back("Skin_Friction_Coefficient_Y");
+          if (geometry->GetnDim() == 3) {
+            nVar_Par += 1; Variable_Names.push_back("Skin_Friction_Coefficient_Z");
+          }
+          nVar_Par += 2;
+          Variable_Names.push_back("Heat_Flux");
+          Variable_Names.push_back("Y_Plus");
+        } else {
+          nVar_Par += 1; Variable_Names.push_back("<greek>m</greek>");
+          nVar_Par += 2;
+          Variable_Names.push_back("C<sub>f</sub>_x");
+          Variable_Names.push_back("C<sub>f</sub>_y");
+          if (geometry->GetnDim() == 3) {
+            nVar_Par += 1; Variable_Names.push_back("C<sub>f</sub>_z");
+          }
+          nVar_Par += 2;
+          Variable_Names.push_back("h");
+          Variable_Names.push_back("y<sup>+</sup>");
+        }
+      }
+
+      if (Kind_Solver == KINETIC) {
+        if (config->GetOutput_FileFormat() == PARAVIEW){
+          nVar_Par += 1;
+          Variable_Names.push_back("Knudsen");
+        }else{
+          nVar_Par += 1;
+          Variable_Names.push_back("Kn");
+        }
+      }
+
+      /*--- Add Eddy Viscosity. ---*/
+
+      if (Kind_Solver == RANS) {
+        nVar_Par += 1;
+        if (config->GetOutput_FileFormat() == PARAVIEW){
+          Variable_Names.push_back("Eddy_Viscosity");
+        } else {
+          Variable_Names.push_back("<greek>m</greek><sub>t</sub>");
+        }
+      }
     }
     
     /*--- Add the distance to the nearest sharp edge if requested. ---*/
@@ -10657,12 +10667,20 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
         iVar++;
       }
       
+      vector<su2double> values = solver[FirstIndex]->node[iPoint]->GetOutputVarValues();
+
+      for(jVar=0; jVar<values.size(); jVar++){
+        Local_Data[jPoint][iVar] = values[jVar];
+        iVar++;
+      }
+
       /*--- Load the conservative variable states for the mean flow variables.
        If requested, load the limiters and residuals as well. ---*/
-      
-      for (jVar = 0; jVar < nVar_First; jVar++) {
-        Local_Data[jPoint][iVar] = solver[FirstIndex]->node[iPoint]->GetSolution(jVar);
-        iVar++;
+      if(values.size()==0){//Backward compatibility. TODO: remove once GetOutputVarValues is implemented for all classes
+        for (jVar = 0; jVar < nVar_First; jVar++) {
+          Local_Data[jPoint][iVar] = solver[FirstIndex]->node[iPoint]->GetSolution(jVar);
+          iVar++;
+        }
       }
       
       if (!config->GetLow_MemoryOutput()) {
@@ -10720,54 +10738,51 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
         }
         
         /*--- Load data for the pressure, temperature, Cp, and Mach variables. ---*/
-        
-        if (compressible) {
-          Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetPressure(); iVar++;
-          Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetTemperature(); iVar++;
-          Local_Data[jPoint][iVar] = (solver[FLOW_SOL]->node[iPoint]->GetPressure() - RefPressure)*factor*RefAreaCoeff; iVar++;
-          Local_Data[jPoint][iVar] = sqrt(solver[FLOW_SOL]->node[iPoint]->GetVelocity2())/
-          solver[FLOW_SOL]->node[iPoint]->GetSoundSpeed(); iVar++;
-        }
-        if (incompressible) {
-          Local_Data[jPoint][iVar] = 0.0; iVar++;
-          Local_Data[jPoint][iVar] = (solver[FLOW_SOL]->node[iPoint]->GetPressure() - RefPressure)*factor*RefAreaCoeff; iVar++;
-          Local_Data[jPoint][iVar] = sqrt(solver[FLOW_SOL]->node[iPoint]->GetVelocity2())*config->GetVelocity_Ref()/
-          sqrt(config->GetBulk_Modulus()/(solver[FLOW_SOL]->node[iPoint]->GetDensity()*config->GetDensity_Ref())); iVar++;
-        }
-        
-        if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == KINETIC) || (Kind_Solver == RANS)) {
-          
-          /*--- Load data for the laminar viscosity. ---*/
-          
-          Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetLaminarViscosity(); iVar++;
-          
-          /*--- Load data for the skin friction, heat flux, and y-plus. ---*/
-          
-          Local_Data[jPoint][iVar] = Aux_Frict_x[iPoint]; iVar++;
-          Local_Data[jPoint][iVar] = Aux_Frict_y[iPoint]; iVar++;
-          if (geometry->GetnDim() == 3) {
-            Local_Data[jPoint][iVar] = Aux_Frict_z[iPoint];
-            iVar++;
+        if(values.size()==0){//Backward compatibility. TODO: remove once GetOutputVarValues is implemented for all classes
+          if (compressible) {
+            Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetPressure(); iVar++;
+            Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetTemperature(); iVar++;
+            Local_Data[jPoint][iVar] = (solver[FLOW_SOL]->node[iPoint]->GetPressure() - RefPressure)*factor*RefAreaCoeff; iVar++;
+            Local_Data[jPoint][iVar] = sqrt(solver[FLOW_SOL]->node[iPoint]->GetVelocity2())/
+            solver[FLOW_SOL]->node[iPoint]->GetSoundSpeed(); iVar++;
           }
-          Local_Data[jPoint][iVar] = Aux_Heat[iPoint]; iVar++;
-          Local_Data[jPoint][iVar] = Aux_yPlus[iPoint]; iVar++;
+          if (incompressible) {
+            Local_Data[jPoint][iVar] = 0.0; iVar++;
+            Local_Data[jPoint][iVar] = (solver[FLOW_SOL]->node[iPoint]->GetPressure() - RefPressure)*factor*RefAreaCoeff; iVar++;
+            Local_Data[jPoint][iVar] = sqrt(solver[FLOW_SOL]->node[iPoint]->GetVelocity2())*config->GetVelocity_Ref()/
+            sqrt(config->GetBulk_Modulus()/(solver[FLOW_SOL]->node[iPoint]->GetDensity()*config->GetDensity_Ref())); iVar++;
+          }
+        
+          if ((Kind_Solver == NAVIER_STOKES) || (Kind_Solver == KINETIC) || (Kind_Solver == RANS)) {
+
+            /*--- Load data for the laminar viscosity. ---*/
+
+            Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetLaminarViscosity(); iVar++;
+
+            /*--- Load data for the skin friction, heat flux, and y-plus. ---*/
+
+            Local_Data[jPoint][iVar] = Aux_Frict_x[iPoint]; iVar++;
+            Local_Data[jPoint][iVar] = Aux_Frict_y[iPoint]; iVar++;
+            if (geometry->GetnDim() == 3) {
+              Local_Data[jPoint][iVar] = Aux_Frict_z[iPoint];
+              iVar++;
+            }
+            Local_Data[jPoint][iVar] = Aux_Heat[iPoint]; iVar++;
+            Local_Data[jPoint][iVar] = Aux_yPlus[iPoint]; iVar++;
+
+          }
+
+          /*--- Load data for the Eddy viscosity for RANS. ---*/
           
-        }
-        
-        /*--- Load data for the Eddy viscosity for RANS. ---*/
-        
-        if (Kind_Solver == RANS) {
-          Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetEddyViscosity(); iVar++;
+          if (Kind_Solver == RANS) {
+            Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetEddyViscosity(); iVar++;
+          }
         }
         
         /*--- Load data for the distance to the nearest sharp edge. ---*/
         
         if (config->GetWrt_SharpEdges()) {
           Local_Data[jPoint][iVar] = geometry->node[iPoint]->GetSharpEdge_Distance(); iVar++;
-        }
-        
-        if (Kind_Solver == KINETIC) {
-          Local_Data[jPoint][iVar] = solver[FLOW_SOL]->node[iPoint]->GetKnudsen(); iVar++;
         }
 
         /*--- New variables can be loaded to the Local_Data structure here,
