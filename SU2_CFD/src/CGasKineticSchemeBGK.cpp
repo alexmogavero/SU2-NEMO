@@ -41,43 +41,84 @@ CGasKineticSchemeBGK::~CGasKineticSchemeBGK(void) {
 void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *config){
   Clear();
 
+  // Convert limited primitive variables to conservative
+  su2double Pressure_i, Pressure_j, Density_i, Density_j, Enthalpy_i, Enthalpy_j, Energy_i, Energy_j;
+  su2double Velocity_i[nDim], Velocity_j[nDim];
+  unsigned short iDim, iVar;
+
+  su2double U_i[5] = {0.0,0.0,0.0,0.0,0.0}, U_j[5] = {0.0,0.0,0.0,0.0,0.0};
+
+  Pressure_i = V_i[nDim+1];                       Pressure_j = V_j[nDim+1];
+  Density_i = V_i[nDim+2];                        Density_j = V_j[nDim+2];
+  Enthalpy_i = V_i[nDim+3];                       Enthalpy_j = V_j[nDim+3];
+  Energy_i = Enthalpy_i - Pressure_i/Density_i;   Energy_j = Enthalpy_j - Pressure_j/Density_j;
+
+  for (iDim = 0; iDim < nDim; iDim++) {
+    Velocity_i[iDim] = V_i[iDim+1];
+    Velocity_j[iDim] = V_j[iDim+1];
+  }
+
+  U_i[0] = Density_i; U_j[0] = Density_j;
+  for (iDim = 0; iDim < nDim; iDim++) {
+    U_i[iDim+1] = Density_i*Velocity_i[iDim]; U_j[iDim+1] = Density_j*Velocity_j[iDim];
+  }
+  U_i[nDim+1] = Density_i*Energy_i; U_j[nDim+1] = Density_j*Energy_j;
+
+
   //Rotate Reference Frame
   node_iRot = node_i->duplicate();
   rotate(node_iRot);
 
+  node_iLoc = node_i->duplicate();
+  node_iLoc->SetSolution(U_i);
+
+  node_iLoc->SetNon_Physical(false);
+  bool RightSol = node_iLoc->SetPrimVar(FluidModel);
+  if (!RightSol) {
+    node_iLoc->SetNon_Physical(true);
+  }
+  rotate(node_iLoc);
+
   node_jRot = node_j->duplicate();
   rotate(node_jRot);
 
-  //Reconstruct
-  if(config->GetSpatialOrder_Flow() == SECOND_ORDER ||
-  		config->GetSpatialOrder_Flow() == SECOND_ORDER_LIMITER){
-    su2double dist_ij = 0.0;
-    for (unsigned int i=0; i<nDim; i++)
-      dist_ij += (Coord_j[i]-Coord_i[i])*(Coord_j[i]-Coord_i[i]);
-    dist_ij = sqrt(dist_ij);
+  node_jLoc = node_j->duplicate();
+  node_jLoc->SetSolution(U_j);
 
-    node_iLoc = node_iRot->duplicate();
-    if(config->GetSpatialOrder_Flow() == SECOND_ORDER_LIMITER) limit(node_iLoc, LEFT);
-    reconstruct(node_iLoc, dist_ij*0.5);
-    if(!node_iLoc->GetNon_Physical()){ //Note here that GetNon_Physical returns 0 if non physical!!
-    	delete node_iLoc;
-    	node_iLoc = node_iRot->duplicate();
-    }
-
-    node_jLoc = node_jRot->duplicate();
-    if(config->GetSpatialOrder_Flow() == SECOND_ORDER_LIMITER) limit(node_jLoc, RIGHT);
-    reconstruct(node_jLoc, -dist_ij*0.5);
-    if(!node_jLoc->GetNon_Physical()){
-			delete node_jLoc;
-			node_jLoc = node_jRot->duplicate();
-		}
-  }else{
-    node_iLoc = node_iRot->duplicate();
-    node_jLoc = node_jRot->duplicate();
+  node_jLoc->SetNon_Physical(false);
+  RightSol = node_jLoc->SetPrimVar(FluidModel);
+  if (!RightSol) {
+    node_jLoc->SetNon_Physical(true);
   }
+  rotate(node_jLoc);
 
   CalculateInterface();
 
+  ComputeFluxes( true, val_residual);
+
+  if (abs(config->GetPrandtl_Lam()-1.0) > 1.e-12) {
+    su2double val_residual_zero[nVar];
+    ComputeFluxes( false, val_residual_zero);
+
+    su2double q;
+    su2double U = val_residual_zero[1]/val_residual_zero[0];
+    q = val_residual[nVar-1] + 0.5 * pow(U,2) * val_residual[0]
+    - U * val_residual[1] - U *  val_residual_zero[nVar -1]
+    - 0.5 * pow(U,3) * val_residual_zero[0] + pow(U,2) * val_residual_zero[1];
+
+    for(unsigned short i=1; i<nDim; i++){
+      su2double V = val_residual_zero[i+1]/val_residual_zero[0];
+      q += 0.5 * pow(V,2) * val_residual[0] - V * val_residual[i+1]
+      -0.5 * U * pow(V,2) * val_residual_zero[0] + U*V*val_residual_zero[i+1];
+    }
+
+    val_residual[nVar-1] += (1/config->GetPrandtl_Lam() - 1) * q;
+  }
+
+  rotate(val_residual + 1, true);
+}
+
+void CGasKineticSchemeBGK::ComputeFluxes(bool order, su2double *val_residual){
   su2double Dt = min(node_i->GetDelta_Time(),node_j->GetDelta_Time());
 
   //Calculate the mean collision time
@@ -90,9 +131,9 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
   tauColl += Dt*abs(rho_lamL - rho_lamR)/abs(rho_lamL + rho_lamR);
 
   std::vector<su2double> Flux_i, Flux_j, Flux_I;
-  Flux_I = PsiMaxwell(INTERFACE, ALL, true);
-  Flux_i = PsiMaxwell(LEFT, POSITIVE, true);
-  Flux_j = PsiMaxwell(RIGHT, NEGATIVE, true);
+  Flux_I = PsiMaxwell(INTERFACE, ALL, order);
+  Flux_i = PsiMaxwell(LEFT, POSITIVE, order);
+  Flux_j = PsiMaxwell(RIGHT, NEGATIVE, order);
 
   //calculate time integrals
   su2double e_dt = exp(-Dt/tauColl);
@@ -105,7 +146,7 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
   }
 
   if(config->GetSpatialOrder_Flow() == SECOND_ORDER ||
-  		config->GetSpatialOrder_Flow() == SECOND_ORDER_LIMITER){ // if second order
+      config->GetSpatialOrder_Flow() == SECOND_ORDER_LIMITER){ // if second order
     std::vector<su2double> Flux_i, Flux_j, Flux_I, Flux_I_t;
     Flux_i = std::vector<su2double>(nVar, 0);
     Flux_j = std::vector<su2double>(nVar, 0);
@@ -116,8 +157,15 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
     std::vector<std::vector<su2double> > a_j(nDim, std::vector<su2double>(nVar, 0));
     std::vector<su2double> A_i(nVar, 0);
     std::vector<su2double> A_j(nVar, 0);
-    Derivatives(LEFT, a_i, A_i); // Dont need time derivatives
-    Derivatives(RIGHT, a_j, A_j); // Dont need time derivatives
+
+    if (order) {
+      Derivatives(LEFT, a_i, A_i); // Dont need time derivatives
+      Derivatives(RIGHT, a_j, A_j); // Dont need time derivatives
+    } else {
+      Derivatives(INTERFACE, a_i, A_i);
+      a_j = a_i;
+      A_j = A_i;
+    }
 
     // compute space (and time) derivatives at the interface
     std::vector<su2double> ad_i(nVar, 0);
@@ -137,23 +185,24 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
     // Assemble fluxes
     std::vector<unsigned short> exponents;
     exponents.assign(nVar-1, 0);
-    exponents[0] += 2;
+    exponents[0] += 1;
+    if (order) exponents[0] += 1;
     Flux_I += ad_i*PsiPsiMaxwell(INTERFACE, POSITIVE, exponents);
     Flux_I += ad_j*PsiPsiMaxwell(INTERFACE, NEGATIVE, exponents);
     for(unsigned short i=1; i<nDim; i++){
       exponents.assign(nVar-1, 0);
-      exponents[0]++;
+      if (order) exponents[0]++;
       exponents[i]++;
       Flux_I += ad[i-1]*PsiPsiMaxwell(INTERFACE, ALL, exponents);
     }
 
     exponents.assign(nVar-1, 0);
-    exponents[0]++;
+    if (order) exponents[0]++;
     Flux_I_t = Ad*PsiPsiMaxwell(INTERFACE, ALL, exponents);
 
     for(unsigned short i=0; i<nDim; i++){
       exponents.assign(nVar-1, 0);
-      exponents[0]++;
+      if (order) exponents[0]++;
       exponents[i]++;
       Flux_i -= a_i[i]*PsiPsiMaxwell(LEFT, POSITIVE, exponents);
       Flux_j -= a_j[i]*PsiPsiMaxwell(RIGHT, NEGATIVE, exponents);
@@ -176,21 +225,28 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
     std::vector<std::vector<su2double> > a_j(nDim, std::vector<su2double>(nVar, 0)); //space derivatives
     std::vector<su2double> A_i(nVar, 0); //Time derivatives
     std::vector<su2double> A_j(nVar, 0); //Time derivatives
-    Derivatives(LEFT, a_i, A_i);
-    Derivatives(RIGHT, a_j, A_j);
+
+    if (order) {
+      Derivatives(LEFT, a_i, A_i);
+      Derivatives(RIGHT, a_j, A_j);
+    } else {
+      Derivatives(INTERFACE, a_i, A_i);
+      a_j = a_i;
+      A_j = A_i;
+    }
 
     Flux_i = std::vector<su2double>(nVar, 0);
     Flux_j = std::vector<su2double>(nVar, 0);
     std::vector<unsigned short> exponents;
     for(unsigned short i=0; i<nDim; i++){
       exponents.assign(nVar-1, 0);
-      exponents[0]++;
+      if (order) exponents[0]++;
       exponents[i]++;
       Flux_i += a_i[i]*PsiPsiMaxwell(LEFT, POSITIVE, exponents);
       Flux_j += a_j[i]*PsiPsiMaxwell(RIGHT, NEGATIVE, exponents);
     }
     exponents.assign(nVar-1, 0);
-    exponents[0]++;
+    if (order) exponents[0]++;
     Flux_i += A_i*PsiPsiMaxwell(LEFT, POSITIVE, exponents);
     Flux_j += A_j*PsiPsiMaxwell(RIGHT, NEGATIVE, exponents);
 
@@ -198,24 +254,6 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
       val_residual[iVar] -= Dt_inv*tauColl*int_e_dt*(Flux_i[iVar] + Flux_j[iVar])*Area;
     }
   }
-
-  if (abs(config->GetPrandtl_Lam()-1.0) > 1.e-12) {
-    su2double q;
-    su2double U = val_residual[1]/val_residual[0];
-    q = val_residual[nVar-1] + 0.5 * pow(U,2) * val_residual[0]
-    - U * val_residual[1] - U *  val_residual[nVar -1]
-    - 0.5 * pow(U,3) * val_residual[0] + pow(U,2) * val_residual[1];
-
-    for(unsigned short i=1; i<nDim; i++){
-      su2double V = val_residual[i+1]/val_residual[0];
-      q += 0.5 * pow(V,2) * val_residual[0] - V * val_residual[i+1]
-      -0.5 * U * pow(V,2) * val_residual[0] + U*V*val_residual[i+1];
-    }
-
-    val_residual[nVar-1] += (1/config->GetPrandtl_Lam() - 1) * q;
-  }
-
-  rotate(val_residual + 1, true);
 }
 
 void CGasKineticSchemeBGK::CalculateInterface(){
@@ -662,56 +700,6 @@ void CGasKineticSchemeBGK::rotate(CVariable* node)const{
     rotate(t[iVar]);
   }
   rotate(++t);
-}
-
-void CGasKineticSchemeBGK::reconstruct(CVariable* node, const su2double& d)const{
-  su2double* v = node->GetSolution();
-  for(unsigned int iVar=0; iVar<nVar; iVar++){
-    v[iVar] += node->GetGradient(iVar, 0)*d;
-  }
-
-  node->SetNon_Physical(false);
-  bool RightSol = node->SetPrimVar(FluidModel);
-  if (!RightSol) {
-    node->SetNon_Physical(true);
-  }
-}
-
-void CGasKineticSchemeBGK::limit(CVariable* node, State st)const{
-	if(st == INTERFACE) throw std::logic_error("Error: st cannot be INTERFACE in function limit.");
-
-	su2double dist_ij = 0.0;
-	for (unsigned int i=0; i<nDim; i++)
-	  dist_ij += (Coord_j[i]-Coord_i[i])*(Coord_j[i]-Coord_i[i]);
-	dist_ij = sqrt(dist_ij);
-
-	su2double** g = node->GetGradient();
-	for(unsigned short iVar=0; iVar<nVar; iVar++){
-		su2double diff_ij = node_jRot->GetSolution(iVar) - node_iRot->GetSolution(iVar);
-		su2double diff_ext = 2*g[iVar][0]*dist_ij - diff_ij;
-		if(st == LEFT){
-			g[iVar][0] *= vanLeer(diff_ext, diff_ij);
-		}else{
-			g[iVar][0] *= vanLeer(diff_ij, diff_ext);
-		}
-	}
-}
-
-su2double CGasKineticSchemeBGK::vanLeer(su2double a, su2double b){
-	if(b==0){
-		if(a==0){
-			return 0;
-		}else{
-			return 2;
-		}
-	}
-
-	su2double r = a/b;
-	if(r<=0){
-		return 0;
-	}else{
-		return 2*r/(r + 1);
-	}
 }
 
 void CGasKineticSchemeBGK::Clear(){

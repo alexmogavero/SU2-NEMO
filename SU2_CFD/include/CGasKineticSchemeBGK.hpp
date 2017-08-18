@@ -40,34 +40,11 @@ private:
   void rotate(CVariable* node)const;
 
   /*!
-   * \brief recontruct the node values based on the solution gradient
-   * \details the reconstruction is made by means of the following;
-   *  \f[
-   *    \bar{w}_i = w_i + \frac{\partial w_i}{\partial x} * d
-   *  \f]
-   *  where \f$\bar{w}_i\f$ is the i-th conserved variable and x the the first
-   *  cartesian coordinate. Usually the input node is already rotated
-   *  in the local reference frame, so x is the coordinate along the edge.
-   * @param node node to reconstruct. Before calling the function is \f$w_i\f$
-   * @param d signed distance used to make the reconstruction (usually half edge)
-   */
-  void reconstruct(CVariable* node, const su2double& d)const;
-
-  /*!
    * \brief Unfold a matrix into a vector row wise
    * @param mat matrix to be unfolded
    * @return a vector composed by the concatenation of the rows of the matrix
    */
   static std::vector<su2double> MatrixToVector(const std::vector<std::vector<su2double> >& mat);
-
-  /*!
-   * \brief calculate Van Leer limiter
-   * @param a left delta
-   * @param b right delta
-   * \detail the ratio of successive differences is a/b
-   * @return limiter coefficient
-   */
-  static su2double vanLeer(su2double a, su2double b);
 
 protected:
   /*!
@@ -107,15 +84,6 @@ protected:
   CVariable* node_jLoc; //!<Node at right of interface in the local reference frame, reconstructed if second order
   CVariable* node_iRot; //!<Node at left of interface in the local reference frame
   CVariable* node_jRot; //!<Node at right of interface in the local reference frame
-
-  /*!
-	 * \brief limit the gradient in a node
-	 * @param node node to be limited
-	 * @param st state of the node to be limited. Can be LEFT or RIGHT
-	 * \detail it limits only the x component. It consider the node
-	 * defined in a reference frame with x parallel to the edge.
-	 */
-	void limit(CVariable* node, State st)const;
 
   /*!
    * \brief calculates the moments of the Maxwellian distribution
@@ -228,6 +196,11 @@ protected:
    * \details clear the auxiliary variables variables
    */
   void Clear();
+
+  /*!
+   * \brief Calculates the fluxes.
+   */
+  void ComputeFluxes(bool order, su2double *val_residual);
 
 public:
 
