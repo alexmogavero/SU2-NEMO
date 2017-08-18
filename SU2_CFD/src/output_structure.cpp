@@ -10379,7 +10379,7 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
     nVar_Par += 1; Variable_Names.push_back("z");
   }
   
-  vector<string> vNames = solver[FirstIndex]->node[0]->GetOutputVarNames();
+  vector<string> vNames = solver[FirstIndex]->GetOutputVarNames();
   if(vNames.size()>0){
     nVar_Par += vNames.size();
     Variable_Names.insert(Variable_Names.end(), vNames.begin(), vNames.end());
@@ -10667,7 +10667,7 @@ void COutput::LoadLocalData_Flow(CConfig *config, CGeometry *geometry, CSolver *
         iVar++;
       }
       
-      vector<su2double> values = solver[FirstIndex]->node[iPoint]->GetOutputVarValues();
+      vector<su2double> values = solver[FirstIndex]->GetOutputVarValues(iPoint);
 
       for(jVar=0; jVar<values.size(); jVar++){
         Local_Data[jPoint][iVar] = values[jVar];

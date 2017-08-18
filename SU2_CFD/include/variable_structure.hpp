@@ -2082,18 +2082,6 @@ public:
    * @return the local Knudsen number
    */
   virtual su2double GetKnudsen()const;
-
-  /*!
-   * \brief Get the names of the variables to be printed in the output file
-   * @return a string for each variable
-   */
-  virtual vector<string> GetOutputVarNames()const;
-
-  /*!
-   * \brief Get the values of the variables to be printed in the output file
-   * @return the values of each variable
-   */
-  virtual vector<su2double> GetOutputVarValues()const;
 };
 
 /*!
@@ -3158,10 +3146,6 @@ public:
    * \param[in] Value of the derivatives of the wind gust
    */
   void SetWindGustDer(su2double* val_WindGust);
-
-  virtual vector<string> GetOutputVarNames()const;
-
-  virtual vector<su2double> GetOutputVarValues()const;
 };
 
 /*!
@@ -3568,10 +3552,6 @@ public:
    * \brief Set all the secondary variables (partial derivatives) for compressible flows
    */
   void SetSecondaryVar(CFluidModel *FluidModel);
-
-  virtual vector<string> GetOutputVarNames()const;
-
-  virtual vector<su2double> GetOutputVarValues()const;
 
   virtual su2double GetKnudsen()const;
 };

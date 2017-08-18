@@ -3592,6 +3592,19 @@ public:
    * \param[in] config - Definition of the particular problem.
    */
   virtual void SetFreeStream_Solution(CConfig *config);
+
+  /*!
+   * \brief Get the names of the variables to be printed in the output file
+   * @return a string for each variable
+   */
+  virtual vector<string> GetOutputVarNames()const;
+
+  /*!
+   * \brief Get the values of the variables to be printed in the output file
+   * @param iPoint index of the mesh point for which the variable are needed
+   * @return the values of each variable
+   */
+  virtual vector<su2double> GetOutputVarValues(unsigned long iPoint)const;
 };
 
 /*!
@@ -3660,7 +3673,6 @@ public:
    * \param[in] config - Definition of the particular problem.
    */
   void SetOutputVariables(CGeometry *geometry, CConfig *config);
-  
 };
 
 /*!
@@ -6052,6 +6064,10 @@ public:
    * \param[in] config - Definition of the particular problem.
    */
   void SetFreeStream_Solution(CConfig *config);
+
+  virtual vector<string> GetOutputVarNames()const;
+
+  virtual vector<su2double> GetOutputVarValues(unsigned long iPoint)const;
 };
 
   
@@ -7775,6 +7791,9 @@ public:
    */
   void SetOmega_Max(su2double val_omega_max);
   
+  virtual vector<string> GetOutputVarNames()const;
+
+  virtual vector<su2double> GetOutputVarValues(unsigned long iPoint)const;
 };
 
 /*!

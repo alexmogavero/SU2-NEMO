@@ -14541,6 +14541,39 @@ void CEulerSolver::SetFreeStream_Solution(CConfig *config) {
   }
 }
 
+vector<string> CEulerSolver::GetOutputVarNames()const{
+  vector<string> out = CSolver::GetOutputVarNames();
+
+  out.push_back("Density");
+  out.push_back("X-Momentum");
+  out.push_back("Y-Momentum");
+  if (nDim == 3) out.push_back("Z-Momentum");
+  out.push_back("Energy");
+
+  out.push_back("Pressure");
+
+  out.push_back("Temperature");
+  out.push_back("Pressure_Coefficient");
+  out.push_back("Mach");
+
+  return out;
+}
+
+vector<su2double> CEulerSolver::GetOutputVarValues(unsigned long iPoint)const{
+  vector<su2double> out = CSolver::GetOutputVarValues(iPoint);
+
+  for(unsigned short i=0; i<nVar; i++){
+    out.push_back(node[iPoint]->GetSolution(i));
+  }
+
+  out.push_back(node[iPoint]->GetPressure());
+  out.push_back(node[iPoint]->GetTemperature());
+  out.push_back(0); //(GetPressure() - RefPressure)*factor*RefAreaCoeff); TODO: implement the press coeff.
+  out.push_back(sqrt(node[iPoint]->GetVelocity2())/node[iPoint]->GetSoundSpeed());
+
+  return out;
+}
+
 CNSSolver::CNSSolver(void) : CEulerSolver() {
 
   /*--- Basic array initialization ---*/
@@ -16758,4 +16791,39 @@ void CNSSolver::BC_Isothermal_Wall(CGeometry *geometry, CSolver **solver_contain
 
     }
   }
+}
+
+vector<string> CNSSolver::GetOutputVarNames()const{
+  vector<string> out = CEulerSolver::GetOutputVarNames();
+
+  out.push_back("Laminar_Viscosity");
+  out.push_back("Skin_Friction_Coefficient_X");
+  out.push_back("Skin_Friction_Coefficient_Y");
+  if (nDim == 3) {
+    out.push_back("Skin_Friction_Coefficient_Z");
+  }
+  out.push_back("Heat_Flux");
+  out.push_back("Y_Plus");
+  out.push_back("Knudsen");
+
+  return out;
+}
+
+vector<su2double> CNSSolver::GetOutputVarValues(unsigned long iPoint)const{
+  vector<su2double> out = CEulerSolver::GetOutputVarValues(iPoint);
+
+  out.push_back(node[iPoint]->GetLaminarViscosity());
+
+  //TODO: implement in some way the calculation of these quantities
+  out.push_back(0);
+  out.push_back(0);
+  if (nDim == 3) {
+    out.push_back(0);
+  }
+  out.push_back(0);
+  out.push_back(0);
+
+  out.push_back(node[iPoint]->GetKnudsen());
+
+  return out;
 }

@@ -466,14 +466,6 @@ void CVariable::SetTemperature_Old(su2double temperature, CFluidModel *FluidMode
   throw std::logic_error("Error: method SetTemperature_Old not implemented.");
 }
 
-vector<string> CVariable::GetOutputVarNames()const{
-  return vector<string>();
-}
-
-vector<su2double> CVariable::GetOutputVarValues()const{
-  return vector<su2double>();
-}
-
 su2double CVariable::CalcMagnitude(su2double* v)const{
   su2double out = 0;
 

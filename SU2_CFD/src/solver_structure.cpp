@@ -2365,6 +2365,14 @@ void CSolver::Read_SU2_Restart_Metadata(CGeometry *geometry, CConfig *config, st
 
 }
 
+vector<string> CSolver::GetOutputVarNames()const{
+  return vector<string>();
+}
+
+vector<su2double> CSolver::GetOutputVarValues(unsigned long iPoint)const{
+  return vector<su2double>();
+}
+
 CBaselineSolver::CBaselineSolver(void) : CSolver() { }
 
 CBaselineSolver::CBaselineSolver(CGeometry *geometry, CConfig *config) {

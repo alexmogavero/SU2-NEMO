@@ -527,39 +527,6 @@ void CEulerVariable::SetSecondaryVar(CFluidModel *FluidModel) {
 
 }
 
-vector<string> CEulerVariable::GetOutputVarNames()const{
-  vector<string> out = CVariable::GetOutputVarNames();
-
-  out.push_back("Density");
-  out.push_back("X-Momentum");
-  out.push_back("Y-Momentum");
-  if (nDim == 3) out.push_back("Z-Momentum");
-  out.push_back("Energy");
-
-  out.push_back("Pressure");
-
-  out.push_back("Temperature");
-  out.push_back("Pressure_Coefficient");
-  out.push_back("Mach");
-
-  return out;
-}
-
-vector<su2double> CEulerVariable::GetOutputVarValues()const{
-  vector<su2double> out = CVariable::GetOutputVarValues();
-
-  for(unsigned short i=0; i<nVar; i++){
-    out.push_back(GetSolution(i));
-  }
-
-  out.push_back(GetPressure());
-  out.push_back(GetTemperature());
-  out.push_back(0); //(GetPressure() - RefPressure)*factor*RefAreaCoeff); TODO: implement the press coeff.
-  out.push_back(sqrt(GetVelocity2())/GetSoundSpeed());
-
-  return out;
-}
-
 CNSVariable::CNSVariable(void) : CEulerVariable() { }
 
 CNSVariable::CNSVariable(su2double val_density, su2double *val_velocity, su2double val_energy,
@@ -740,41 +707,6 @@ void CNSVariable::SetSecondaryVar(CFluidModel *FluidModel) {
     Setdktdrho_T( FluidModel->Getdktdrho_T() );
     SetdktdT_rho( FluidModel->GetdktdT_rho() );
 
-}
-
-vector<string> CNSVariable::GetOutputVarNames()const{
-  vector<string> out = CEulerVariable::GetOutputVarNames();
-
-  out.push_back("Laminar_Viscosity");
-  out.push_back("Skin_Friction_Coefficient_X");
-  out.push_back("Skin_Friction_Coefficient_Y");
-  if (nDim == 3) {
-    out.push_back("Skin_Friction_Coefficient_Z");
-  }
-  out.push_back("Heat_Flux");
-  out.push_back("Y_Plus");
-  out.push_back("Knudsen");
-
-  return out;
-}
-
-vector<su2double> CNSVariable::GetOutputVarValues()const{
-  vector<su2double> out = CEulerVariable::GetOutputVarValues();
-
-  out.push_back(GetLaminarViscosity());
-
-  //TODO: implement in some way the calculation of these quantities
-  out.push_back(0);
-  out.push_back(0);
-  if (nDim == 3) {
-    out.push_back(0);
-  }
-  out.push_back(0);
-  out.push_back(0);
-
-  out.push_back(GetKnudsen());
-
-  return out;
 }
 
 su2double CNSVariable::GetKnudsen()const{
