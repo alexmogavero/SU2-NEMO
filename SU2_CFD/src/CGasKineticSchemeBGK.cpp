@@ -702,19 +702,6 @@ void CGasKineticSchemeBGK::rotate(CVariable* node)const{
   rotate(++t);
 }
 
-void CGasKineticSchemeBGK::reconstruct(CVariable* node, const su2double& d)const{
-  su2double* v = node->GetSolution();
-  for(unsigned int iVar=0; iVar<nVar; iVar++){
-    v[iVar] += node->GetGradient(iVar, 0)*d;
-  }
-
-  node->SetNon_Physical(false);
-  bool RightSol = node->SetPrimVar(FluidModel);
-  if (!RightSol) {
-    node->SetNon_Physical(true);
-  }
-}
-
 void CGasKineticSchemeBGK::Clear(){
   if(node_iLoc) delete node_iLoc;
   if(node_jLoc) delete node_jLoc;
