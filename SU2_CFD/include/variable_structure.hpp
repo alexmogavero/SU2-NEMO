@@ -105,6 +105,14 @@ protected:
    */
   static su2double** copyArray(const su2double* const* arr, unsigned short size1, unsigned short size2);
 
+  /*!
+   * \brief Calculates the magnitude of a vector.
+   *
+   * @param[in] v - Vector of size nDim
+   * @return norm of order 2 of v
+   */
+  su2double CalcMagnitude(su2double* v)const;
+
 public:
   
   /*!
@@ -835,7 +843,7 @@ public:
    * \brief A virtual member.
    * \return Value of the flow density.
    */
-  virtual su2double GetDensity(void);
+  virtual su2double GetDensity(void)const;
   
   /*!
    * \brief A virtual member.
@@ -3061,7 +3069,7 @@ public:
    * \brief Get the density of the flow.
    * \return Value of the density of the flow.
    */
-  su2double GetDensity(void);
+  su2double GetDensity(void)const;
   
   /*!
    * \brief Get the energy of the flow.
@@ -3341,7 +3349,7 @@ public:
    * \brief Get the density of the flow.
    * \return Value of the density of the flow.
    */
-  su2double GetDensity(void);
+  su2double GetDensity(void)const;
   
   /*!
    * \brief Get the velocity of the flow.
@@ -3564,6 +3572,8 @@ public:
   virtual vector<string> GetOutputVarNames()const;
 
   virtual vector<su2double> GetOutputVarValues()const;
+
+  virtual su2double GetKnudsen()const;
 };
 
 /*!

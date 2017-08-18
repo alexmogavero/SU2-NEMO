@@ -753,6 +753,7 @@ vector<string> CNSVariable::GetOutputVarNames()const{
   }
   out.push_back("Heat_Flux");
   out.push_back("Y_Plus");
+  out.push_back("Knudsen");
 
   return out;
 }
@@ -771,6 +772,36 @@ vector<su2double> CNSVariable::GetOutputVarValues()const{
   out.push_back(0);
   out.push_back(0);
 
+  out.push_back(GetKnudsen());
+
   return out;
+}
+
+su2double CNSVariable::GetKnudsen()const{
+  //Calculate mean free path
+  su2double lam = GetLaminarViscosity()*sqrt(M_PI*GetDensity()/(2*GetPressure()))/GetDensity();
+
+  unsigned short iDens = nDim + 2;
+  su2double knDens = lam*CalcMagnitude(Gradient_Primitive[iDens])/Primitive[iDens];
+
+  unsigned short iTemp = 0;
+  su2double knTemp = lam*CalcMagnitude(Gradient_Primitive[iTemp])/Primitive[iTemp];
+
+  /*Calculates the gradient of the magnitude of U from the gradient of U
+   * gradMagU = (1/magU)*(ux*grad(ux) + uy*grad(uy) + uz*grad(uz))
+   */
+  su2double gradMagU[nDim];
+  for(unsigned short i=0; i<nDim; i++){
+    gradMagU[i] = 0.0;
+  }
+  for(unsigned short i=0; i<nDim; i++){
+    for(unsigned short j=0; j<nDim; j++){
+      gradMagU[i] += Primitive[i+1]*Gradient_Primitive[i+1][j];
+    }
+  }
+
+  su2double knU = lam*CalcMagnitude(gradMagU)/Velocity2;
+
+  return max(knDens, max(knTemp, knU));
 }
 

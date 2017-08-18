@@ -240,7 +240,7 @@ inline void CVariable::SetSensor(su2double val_sensor) { Sensor = val_sensor; }
 
 inline void CVariable::SetSensor(su2double val_sensor, unsigned short val_iSpecies) {}
 
-inline su2double CVariable::GetDensity(void) {  return 0; }
+inline su2double CVariable::GetDensity(void)const {  return 0; }
 
 inline su2double CVariable::GetDensity(unsigned short val_iSpecies) {  return 0; }
 
@@ -589,7 +589,7 @@ inline void CEulerVariable::AddSolution_New(unsigned short val_var, su2double va
   Solution_New[val_var] += val_solution;
 }
 
-inline su2double CEulerVariable::GetDensity(void) { return Solution[0]; }
+inline su2double CEulerVariable::GetDensity(void)const { return Solution[0]; }
 
 inline su2double CEulerVariable::GetEnergy(void) { return Solution[nVar-1]/Solution[0]; };
 
@@ -811,7 +811,7 @@ inline void CAdjNSVariable::SetVelSolutionOldDVector(void) { for (unsigned short
 
 inline void CAdjNSVariable::SetVelSolutionDVector(void) { for (unsigned short iDim = 0; iDim < nDim; iDim++) Solution[iDim+1] = ForceProj_Vector[iDim]; };
 
-inline su2double CIncEulerVariable::GetDensity(void) { return Primitive[nDim+1]; }
+inline su2double CIncEulerVariable::GetDensity(void)const { return Primitive[nDim+1]; }
 
 inline su2double CIncEulerVariable::GetBetaInc2(void) { return Primitive[nDim+2]; }
 

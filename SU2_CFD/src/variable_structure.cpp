@@ -474,6 +474,15 @@ vector<su2double> CVariable::GetOutputVarValues()const{
   return vector<su2double>();
 }
 
+su2double CVariable::CalcMagnitude(su2double* v)const{
+  su2double out = 0;
+
+  for(unsigned short i=0; i<nDim; i++){
+    out += pow(v[i], 2.0);
+  }
+  return sqrt(out);
+}
+
 CBaselineVariable::CBaselineVariable(void) : CVariable() { }
 
 CBaselineVariable::CBaselineVariable(su2double *val_solution, unsigned short val_nvar, CConfig *config) : CVariable(val_nvar, config) {
