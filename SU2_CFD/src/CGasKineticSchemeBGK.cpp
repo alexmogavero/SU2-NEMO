@@ -92,10 +92,33 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
   }
   rotate(node_jLoc);
 
-
-
   CalculateInterface();
 
+  ComputeFluxes( true, val_residual);
+
+  if (abs(config->GetPrandtl_Lam()-1.0) > 1.e-12) {
+    su2double val_residual_zero[nVar];
+    ComputeFluxes( false, val_residual_zero);
+
+    su2double q;
+    su2double U = val_residual_zero[1]/val_residual_zero[0];
+    q = val_residual[nVar-1] + 0.5 * pow(U,2) * val_residual[0]
+    - U * val_residual[1] - U *  val_residual_zero[nVar -1]
+    - 0.5 * pow(U,3) * val_residual_zero[0] + pow(U,2) * val_residual_zero[1];
+
+    for(unsigned short i=1; i<nDim; i++){
+      su2double V = val_residual_zero[i+1]/val_residual_zero[0];
+      q += 0.5 * pow(V,2) * val_residual[0] - V * val_residual[i+1]
+      -0.5 * U * pow(V,2) * val_residual_zero[0] + U*V*val_residual_zero[i+1];
+    }
+
+    val_residual[nVar-1] += (1/config->GetPrandtl_Lam() - 1) * q;
+  }
+
+  rotate(val_residual + 1, true);
+}
+
+void CGasKineticSchemeBGK::ComputeFluxes(bool order, su2double *val_residual){
   su2double Dt = min(node_i->GetDelta_Time(),node_j->GetDelta_Time());
 
   //Calculate the mean collision time
@@ -108,9 +131,9 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
   tauColl += Dt*abs(rho_lamL - rho_lamR)/abs(rho_lamL + rho_lamR);
 
   std::vector<su2double> Flux_i, Flux_j, Flux_I;
-  Flux_I = PsiMaxwell(INTERFACE, ALL, true);
-  Flux_i = PsiMaxwell(LEFT, POSITIVE, true);
-  Flux_j = PsiMaxwell(RIGHT, NEGATIVE, true);
+  Flux_I = PsiMaxwell(INTERFACE, ALL, order);
+  Flux_i = PsiMaxwell(LEFT, POSITIVE, order);
+  Flux_j = PsiMaxwell(RIGHT, NEGATIVE, order);
 
   //calculate time integrals
   su2double e_dt = exp(-Dt/tauColl);
@@ -123,7 +146,7 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
   }
 
   if(config->GetSpatialOrder_Flow() == SECOND_ORDER ||
-  		config->GetSpatialOrder_Flow() == SECOND_ORDER_LIMITER){ // if second order
+      config->GetSpatialOrder_Flow() == SECOND_ORDER_LIMITER){ // if second order
     std::vector<su2double> Flux_i, Flux_j, Flux_I, Flux_I_t;
     Flux_i = std::vector<su2double>(nVar, 0);
     Flux_j = std::vector<su2double>(nVar, 0);
@@ -134,8 +157,15 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
     std::vector<std::vector<su2double> > a_j(nDim, std::vector<su2double>(nVar, 0));
     std::vector<su2double> A_i(nVar, 0);
     std::vector<su2double> A_j(nVar, 0);
-    Derivatives(LEFT, a_i, A_i); // Dont need time derivatives
-    Derivatives(RIGHT, a_j, A_j); // Dont need time derivatives
+
+    if (order) {
+      Derivatives(LEFT, a_i, A_i); // Dont need time derivatives
+      Derivatives(RIGHT, a_j, A_j); // Dont need time derivatives
+    } else {
+      Derivatives(INTERFACE, a_i, A_i);
+      a_j = a_i;
+      A_j = A_i;
+    }
 
     // compute space (and time) derivatives at the interface
     std::vector<su2double> ad_i(nVar, 0);
@@ -155,23 +185,24 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
     // Assemble fluxes
     std::vector<unsigned short> exponents;
     exponents.assign(nVar-1, 0);
-    exponents[0] += 2;
+    exponents[0] += 1;
+    if (order) exponents[0] += 1;
     Flux_I += ad_i*PsiPsiMaxwell(INTERFACE, POSITIVE, exponents);
     Flux_I += ad_j*PsiPsiMaxwell(INTERFACE, NEGATIVE, exponents);
     for(unsigned short i=1; i<nDim; i++){
       exponents.assign(nVar-1, 0);
-      exponents[0]++;
+      if (order) exponents[0]++;
       exponents[i]++;
       Flux_I += ad[i-1]*PsiPsiMaxwell(INTERFACE, ALL, exponents);
     }
 
     exponents.assign(nVar-1, 0);
-    exponents[0]++;
+    if (order) exponents[0]++;
     Flux_I_t = Ad*PsiPsiMaxwell(INTERFACE, ALL, exponents);
 
     for(unsigned short i=0; i<nDim; i++){
       exponents.assign(nVar-1, 0);
-      exponents[0]++;
+      if (order) exponents[0]++;
       exponents[i]++;
       Flux_i -= a_i[i]*PsiPsiMaxwell(LEFT, POSITIVE, exponents);
       Flux_j -= a_j[i]*PsiPsiMaxwell(RIGHT, NEGATIVE, exponents);
@@ -194,21 +225,28 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
     std::vector<std::vector<su2double> > a_j(nDim, std::vector<su2double>(nVar, 0)); //space derivatives
     std::vector<su2double> A_i(nVar, 0); //Time derivatives
     std::vector<su2double> A_j(nVar, 0); //Time derivatives
-    Derivatives(LEFT, a_i, A_i);
-    Derivatives(RIGHT, a_j, A_j);
+
+    if (order) {
+      Derivatives(LEFT, a_i, A_i);
+      Derivatives(RIGHT, a_j, A_j);
+    } else {
+      Derivatives(INTERFACE, a_i, A_i);
+      a_j = a_i;
+      A_j = A_i;
+    }
 
     Flux_i = std::vector<su2double>(nVar, 0);
     Flux_j = std::vector<su2double>(nVar, 0);
     std::vector<unsigned short> exponents;
     for(unsigned short i=0; i<nDim; i++){
       exponents.assign(nVar-1, 0);
-      exponents[0]++;
+      if (order) exponents[0]++;
       exponents[i]++;
       Flux_i += a_i[i]*PsiPsiMaxwell(LEFT, POSITIVE, exponents);
       Flux_j += a_j[i]*PsiPsiMaxwell(RIGHT, NEGATIVE, exponents);
     }
     exponents.assign(nVar-1, 0);
-    exponents[0]++;
+    if (order) exponents[0]++;
     Flux_i += A_i*PsiPsiMaxwell(LEFT, POSITIVE, exponents);
     Flux_j += A_j*PsiPsiMaxwell(RIGHT, NEGATIVE, exponents);
 
@@ -216,24 +254,6 @@ void CGasKineticSchemeBGK::ComputeResidual(su2double *val_residual, CConfig *con
       val_residual[iVar] -= Dt_inv*tauColl*int_e_dt*(Flux_i[iVar] + Flux_j[iVar])*Area;
     }
   }
-
-  if (abs(config->GetPrandtl_Lam()-1.0) > 1.e-12) {
-    su2double q;
-    su2double U = val_residual[1]/val_residual[0];
-    q = val_residual[nVar-1] + 0.5 * pow(U,2) * val_residual[0]
-    - U * val_residual[1] - U *  val_residual[nVar -1]
-    - 0.5 * pow(U,3) * val_residual[0] + pow(U,2) * val_residual[1];
-
-    for(unsigned short i=1; i<nDim; i++){
-      su2double V = val_residual[i+1]/val_residual[0];
-      q += 0.5 * pow(V,2) * val_residual[0] - V * val_residual[i+1]
-      -0.5 * U * pow(V,2) * val_residual[0] + U*V*val_residual[i+1];
-    }
-
-    val_residual[nVar-1] += (1/config->GetPrandtl_Lam() - 1) * q;
-  }
-
-  rotate(val_residual + 1, true);
 }
 
 void CGasKineticSchemeBGK::CalculateInterface(){

@@ -229,6 +229,11 @@ protected:
    */
   void Clear();
 
+  /*!
+   * \brief Calculates the fluxes.
+   */
+  void ComputeFluxes(bool order, su2double *val_residual);
+
 public:
 
   /*!
