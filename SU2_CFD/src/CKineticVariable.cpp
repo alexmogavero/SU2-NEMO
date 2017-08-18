@@ -40,19 +40,3 @@ su2double CKineticVariable::GetKnudsen()const{
 bool CKineticVariable::SetPrimVar(CFluidModel *FluidModel){
   return SetPrimVar(0, 0, FluidModel);
 }
-
-vector<string> CKineticVariable::GetOutputVarNames()const{
-  vector<string> out = CNSVariable::GetOutputVarNames();
-
-  //out.push_back("Knudsen");
-
-  return out;
-}
-
-vector<su2double> CKineticVariable::GetOutputVarValues()const{
-  vector<su2double> out = CNSVariable::GetOutputVarValues();
-
-  //out.push_back(GetKnudsen());
-
-  return out;
-}

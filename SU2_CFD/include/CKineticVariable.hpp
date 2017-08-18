@@ -104,8 +104,4 @@ public:
    * @return
    */
   bool SetPrimVar(CFluidModel *FluidModel);
-
-  virtual vector<string> GetOutputVarNames()const;
-
-  virtual vector<su2double> GetOutputVarValues()const;
 };
