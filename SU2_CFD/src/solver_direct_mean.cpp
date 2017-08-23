@@ -161,6 +161,7 @@ CEulerSolver::CEulerSolver(void) : CSolver() {
 
 CEulerSolver::CEulerSolver(CGeometry *geometry, CConfig *config, unsigned short iMesh) : CSolver() {
   Geom = geometry;
+  Config = config;
 
   unsigned long iPoint, counter_local = 0, counter_global = 0, iVertex;
   unsigned short iVar, iDim, iMarker, nLineLets;
@@ -14600,6 +14601,7 @@ CNSSolver::CNSSolver(void) : CEulerSolver() {
 
 CNSSolver::CNSSolver(CGeometry *geometry, CConfig *config, unsigned short iMesh) : CEulerSolver() {
   Geom = geometry;
+  Config = config;
 
   unsigned long iPoint, counter_local = 0, counter_global = 0, iVertex;
   unsigned short iVar, iDim, iMarker, nLineLets;
@@ -16818,14 +16820,18 @@ vector<su2double> CNSSolver::GetOutputVarValues(unsigned long iPoint)const{
 
   out.push_back(node[iPoint]->GetLaminarViscosity());
 
+  long iVertex = -1;
+  unsigned short iMarker;
   if(Geom->node[iPoint]->GetBoundary()){ //node is on the boundary
-    long iVertex = -1;
-    unsigned short iMarker;
     for(iMarker=0; iMarker<Geom->GetnMarker(); iMarker++){
-      iVertex = Geom->node[iPoint]->GetVertex(iMarker);
+      if(Config->GetMarker_All_Plotting(iMarker) == YES){
+        iVertex = Geom->node[iPoint]->GetVertex(iMarker);
+      }
       if(iVertex!=-1) break;
     }
+  }
 
+  if(iVertex!=-1){
     out.push_back(GetCSkinFriction(iMarker, iVertex, 0));
     out.push_back(GetCSkinFriction(iMarker, iVertex, 1));
     if (nDim == 3) {

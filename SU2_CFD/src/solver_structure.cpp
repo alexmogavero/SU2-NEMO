@@ -71,6 +71,7 @@ CSolver::CSolver(void) {
   node               = NULL;
   nOutputVariables   = 0;
   Geom               = NULL;
+  Config             = NULL;
 }
 
 CSolver::~CSolver(void) {

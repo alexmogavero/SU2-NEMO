@@ -121,6 +121,8 @@ protected:
 
   CGeometry* Geom; /*!< \brief Geometry associated with the solver. */
 
+  const CConfig* Config; /*!< \brief Pointer to the configuration object. */
+
 public:
   
   CSysVector LinSysSol;    /*!< \brief vector to store iterative solution of implicit linear system. */

@@ -2821,7 +2821,7 @@ public:
    * \param[in] val_marker - 0 or 1 depending if the the marker is going to be moved.
    * \return 0 or 1 depending if the marker is going to be plotted.
    */
-  unsigned short GetMarker_All_Plotting(unsigned short val_marker);
+  unsigned short GetMarker_All_Plotting(unsigned short val_marker)const;
   
   /*!
    * \brief Get the plotting information for a marker <i>val_marker</i>.

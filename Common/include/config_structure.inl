@@ -1046,7 +1046,7 @@ inline short CConfig::GetMarker_All_SendRecv(unsigned short val_marker) { return
 
 inline void CConfig::SetMarker_All_SendRecv(unsigned short val_marker, short val_index) { Marker_All_SendRecv[val_marker] = val_index; }
 
-inline unsigned short CConfig::GetMarker_All_Plotting(unsigned short val_marker) { return Marker_All_Plotting[val_marker]; }
+inline unsigned short CConfig::GetMarker_All_Plotting(unsigned short val_marker)const { return Marker_All_Plotting[val_marker]; }
 
 inline unsigned short CConfig::GetMarker_All_Analyze(unsigned short val_marker) { return Marker_All_Analyze[val_marker]; }
 
