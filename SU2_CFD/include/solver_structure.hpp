@@ -119,6 +119,8 @@ protected:
 
   su2double ***SlidingState; /*!< \brief Sliding State variables. */
 
+  CGeometry* Geom; /*!< \brief Geometry associated with the solver. */
+
 public:
   
   CSysVector LinSysSol;    /*!< \brief vector to store iterative solution of implicit linear system. */
@@ -2852,7 +2854,7 @@ public:
    * \param[in] val_vertex - Vertex of the marker <i>val_marker</i> where the coefficient is evaluated.
    * \return Value of the skin friction coefficient.
    */
-  virtual su2double GetCSkinFriction(unsigned short val_marker, unsigned long val_vertex, unsigned short val_dim);
+  virtual su2double GetCSkinFriction(unsigned short val_marker, unsigned long val_vertex, unsigned short val_dim)const;
   
   /*!
    * \brief A virtual member.
@@ -2860,7 +2862,7 @@ public:
    * \param[in] val_vertex - Vertex of the marker <i>val_marker</i> where the coefficient is evaluated.
    * \return Value of the heat transfer coefficient.
    */
-  virtual su2double GetHeatFlux(unsigned short val_marker, unsigned long val_vertex);
+  virtual su2double GetHeatFlux(unsigned short val_marker, unsigned long val_vertex)const;
   
   /*!
    * \brief A virtual member.
@@ -2884,7 +2886,7 @@ public:
    * \param[in] val_vertex - Vertex of the marker <i>val_marker</i> where the coefficient is evaluated.
    * \return Value of the y plus.
    */
-  virtual su2double GetYPlus(unsigned short val_marker, unsigned long val_vertex);
+  virtual su2double GetYPlus(unsigned short val_marker, unsigned long val_vertex)const;
   
   /*!
    * \brief A virtual member.
@@ -7733,7 +7735,7 @@ public:
    * \param[in] val_vertex - Vertex of the marker <i>val_marker</i> where the coefficient is evaluated.
    * \return Value of the skin friction coefficient.
    */
-  su2double GetCSkinFriction(unsigned short val_marker, unsigned long val_vertex, unsigned short val_dim);
+  su2double GetCSkinFriction(unsigned short val_marker, unsigned long val_vertex, unsigned short val_dim)const;
   
   /*!
    * \brief Get the skin friction coefficient.
@@ -7741,7 +7743,7 @@ public:
    * \param[in] val_vertex - Vertex of the marker <i>val_marker</i> where the coefficient is evaluated.
    * \return Value of the heat transfer coefficient.
    */
-  su2double GetHeatFlux(unsigned short val_marker, unsigned long val_vertex);
+  su2double GetHeatFlux(unsigned short val_marker, unsigned long val_vertex)const;
   
   /*!
    * \brief Get the skin friction coefficient.
@@ -7765,7 +7767,7 @@ public:
    * \param[in] val_vertex - Vertex of the marker <i>val_marker</i> where the coefficient is evaluated.
    * \return Value of the y plus.
    */
-  su2double GetYPlus(unsigned short val_marker, unsigned long val_vertex);
+  su2double GetYPlus(unsigned short val_marker, unsigned long val_vertex)const;
   
   /*!
    * \brief Get the max Omega.
@@ -8110,7 +8112,7 @@ public:
    * \param[in] val_vertex - Vertex of the marker <i>val_marker</i> where the coefficient is evaluated.
    * \return Value of the skin friction coefficient.
    */
-  su2double GetCSkinFriction(unsigned short val_marker, unsigned long val_vertex, unsigned short val_dim);
+  su2double GetCSkinFriction(unsigned short val_marker, unsigned long val_vertex, unsigned short val_dim)const;
   
   /*!
    * \brief Get the skin friction coefficient.
@@ -8118,7 +8120,7 @@ public:
    * \param[in] val_vertex - Vertex of the marker <i>val_marker</i> where the coefficient is evaluated.
    * \return Value of the heat transfer coefficient.
    */
-  su2double GetHeatFlux(unsigned short val_marker, unsigned long val_vertex);
+  su2double GetHeatFlux(unsigned short val_marker, unsigned long val_vertex)const;
   
   /*!
    * \brief Get the skin friction coefficient.
@@ -8142,7 +8144,7 @@ public:
    * \param[in] val_vertex - Vertex of the marker <i>val_marker</i> where the coefficient is evaluated.
    * \return Value of the y plus.
    */
-  su2double GetYPlus(unsigned short val_marker, unsigned long val_vertex);
+  su2double GetYPlus(unsigned short val_marker, unsigned long val_vertex)const;
   
   /*!
    * \brief Get the max Omega.

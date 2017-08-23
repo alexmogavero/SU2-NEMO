@@ -70,7 +70,7 @@ CSolver::CSolver(void) {
   Restart_Data       = NULL;
   node               = NULL;
   nOutputVariables   = 0;
-  
+  Geom               = NULL;
 }
 
 CSolver::~CSolver(void) {

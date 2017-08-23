@@ -160,6 +160,7 @@ CEulerSolver::CEulerSolver(void) : CSolver() {
 }
 
 CEulerSolver::CEulerSolver(CGeometry *geometry, CConfig *config, unsigned short iMesh) : CSolver() {
+  Geom = geometry;
 
   unsigned long iPoint, counter_local = 0, counter_global = 0, iVertex;
   unsigned short iVar, iDim, iMarker, nLineLets;
@@ -14598,6 +14599,7 @@ CNSSolver::CNSSolver(void) : CEulerSolver() {
 }
 
 CNSSolver::CNSSolver(CGeometry *geometry, CConfig *config, unsigned short iMesh) : CEulerSolver() {
+  Geom = geometry;
 
   unsigned long iPoint, counter_local = 0, counter_global = 0, iVertex;
   unsigned short iVar, iDim, iMarker, nLineLets;
@@ -16816,14 +16818,30 @@ vector<su2double> CNSSolver::GetOutputVarValues(unsigned long iPoint)const{
 
   out.push_back(node[iPoint]->GetLaminarViscosity());
 
-  //TODO: implement in some way the calculation of these quantities
-  out.push_back(0);
-  out.push_back(0);
-  if (nDim == 3) {
+  if(Geom->node[iPoint]->GetBoundary()){ //node is on the boundary
+    long iVertex = -1;
+    unsigned short iMarker;
+    for(iMarker=0; iMarker<Geom->GetnMarker(); iMarker++){
+      iVertex = Geom->node[iPoint]->GetVertex(iMarker);
+      if(iVertex!=-1) break;
+    }
+
+    out.push_back(GetCSkinFriction(iMarker, iVertex, 0));
+    out.push_back(GetCSkinFriction(iMarker, iVertex, 1));
+    if (nDim == 3) {
+      out.push_back(GetCSkinFriction(iMarker, iVertex, 2));
+    }
+    out.push_back(GetHeatFlux(iMarker, iVertex));
+    out.push_back(GetYPlus(iMarker, iVertex));
+  }else{
+    out.push_back(0);
+    out.push_back(0);
+    if (nDim == 3) {
+      out.push_back(0);
+    }
+    out.push_back(0);
     out.push_back(0);
   }
-  out.push_back(0);
-  out.push_back(0);
 
   out.push_back(node[iPoint]->GetSpecificHeatCp());
   out.push_back(node[iPoint]->GetKnudsen());
