@@ -289,7 +289,7 @@ inline su2double CConfig::GetDualVol_Power(void) { return DualVol_Power; }
 
 inline bool CConfig::GetExtraOutput(void) { return ExtraOutput; }
 
-inline su2double CConfig::GetRefAreaCoeff(void) { return RefAreaCoeff; }
+inline su2double CConfig::GetRefAreaCoeff(void)const { return RefAreaCoeff; }
 
 inline su2double CConfig::GetWaveSpeed(void) { return Wave_Speed; }
 

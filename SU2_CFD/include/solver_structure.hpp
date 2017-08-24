@@ -2986,7 +2986,7 @@ public:
    * \brief A virtual member.
    * \return Value of the density at the infinity.
    */
-  virtual su2double GetDensity_Inf(void);
+  virtual su2double GetDensity_Inf(void)const;
   
   /*!
    * \brief A virtual member.
@@ -3011,7 +3011,7 @@ public:
    * \brief A virtual member.
    * \return Value of the pressure at the infinity.
    */
-  virtual su2double GetPressure_Inf(void);
+  virtual su2double GetPressure_Inf(void)const;
   
   /*!
    * \brief A virtual member.
@@ -3033,7 +3033,7 @@ public:
    * \param[in] val_dim - Index of the velocity vector.
    * \return Value of the velocity at the infinity.
    */
-  virtual su2double GetVelocity_Inf(unsigned short val_dim);
+  virtual su2double GetVelocity_Inf(unsigned short val_dim)const;
   
   /*!
    * \brief A virtual member.
@@ -4039,7 +4039,7 @@ public:
    * \brief Compute the density at the infinity.
    * \return Value of the density at the infinity.
    */
-  su2double GetDensity_Inf(void);
+  su2double GetDensity_Inf(void)const;
   
   /*!
    * \brief Compute 2-norm of the velocity at the infinity.
@@ -4057,7 +4057,7 @@ public:
    * \brief Compute the pressure at the infinity.
    * \return Value of the pressure at the infinity.
    */
-  su2double GetPressure_Inf(void);
+  su2double GetPressure_Inf(void)const;
   
   /*!
    * \brief Compute the density multiply by velocity at the infinity.
@@ -4071,7 +4071,7 @@ public:
    * \param[in] val_dim - Index of the velocity vector.
    * \return Value of the velocity at the infinity.
    */
-  su2double GetVelocity_Inf(unsigned short val_dim);
+  su2double GetVelocity_Inf(unsigned short val_dim)const;
   
   /*!
    * \brief Get the velocity at the infinity.
@@ -6331,7 +6331,7 @@ public:
    * \brief Compute the density at the infinity.
    * \return Value of the density at the infinity.
    */
-  su2double GetDensity_Inf(void);
+  su2double GetDensity_Inf(void)const;
   
   /*!
    * \brief Compute 2-norm of the velocity at the infinity.
@@ -6343,7 +6343,7 @@ public:
    * \brief Compute the pressure at the infinity.
    * \return Value of the pressure at the infinity.
    */
-  su2double GetPressure_Inf(void);
+  su2double GetPressure_Inf(void)const;
   
   /*!
    * \brief Compute the density multiply by velocity at the infinity.
@@ -6357,7 +6357,7 @@ public:
    * \param[in] val_dim - Index of the velocity vector.
    * \return Value of the velocity at the infinity.
    */
-  su2double GetVelocity_Inf(unsigned short val_dim);
+  su2double GetVelocity_Inf(unsigned short val_dim)const;
   
   /*!
    * \brief Get the velocity at the infinity.

@@ -1700,7 +1700,7 @@ public:
    *        the z plane (3D) or the x plane (2D).
    * \return Value of the reference area for coefficient computation.
    */
-  su2double GetRefAreaCoeff(void);
+  su2double GetRefAreaCoeff(void)const;
   
   /*!
    * \brief Get the wave speed.

@@ -548,7 +548,7 @@ inline su2double CSolver::GetTotal_Sens_Temp() { return 0; }
 
 inline su2double CSolver::GetTotal_Sens_BPress() { return 0; }
 
-inline su2double CSolver::GetDensity_Inf(void) { return 0; }
+inline su2double CSolver::GetDensity_Inf(void)const { return 0; }
 
 inline su2double CSolver::GetDensity_Inf(unsigned short val_var) { return 0; }
 
@@ -560,11 +560,11 @@ inline su2double CSolver::GetDensity_Velocity_Inf(unsigned short val_dim) { retu
 
 inline su2double CSolver::GetDensity_Velocity_Inf(unsigned short val_dim, unsigned short val_var) { return 0; }
 
-inline su2double CSolver::GetVelocity_Inf(unsigned short val_dim) { return 0; }
+inline su2double CSolver::GetVelocity_Inf(unsigned short val_dim)const { return 0; }
 
 inline su2double* CSolver::GetVelocity_Inf(void) { return 0; }
 
-inline su2double CSolver::GetPressure_Inf(void) { return 0; }
+inline su2double CSolver::GetPressure_Inf(void)const { return 0; }
 
 inline su2double CSolver::GetViscosity_Inf(void) { return 0; }
 
@@ -989,7 +989,7 @@ inline void CEulerSolver::Set_NewSolution(CGeometry *geometry) {
     node[iPoint]->SetSolution_New();
 }
 
-inline su2double CEulerSolver::GetDensity_Inf(void) { return Density_Inf; }
+inline su2double CEulerSolver::GetDensity_Inf(void)const { return Density_Inf; }
 
 inline su2double CEulerSolver::GetModVelocity_Inf(void) { 
   su2double Vel2 = 0; 
@@ -1004,11 +1004,11 @@ inline su2double CEulerSolver::GetDensity_Energy_Inf(void) { return Density_Inf*
 
 inline su2double CEulerSolver::GetDensity_Velocity_Inf(unsigned short val_dim) { return Density_Inf*Velocity_Inf[val_dim]; }
 
-inline su2double CEulerSolver::GetVelocity_Inf(unsigned short val_dim) { return Velocity_Inf[val_dim]; }
+inline su2double CEulerSolver::GetVelocity_Inf(unsigned short val_dim)const { return Velocity_Inf[val_dim]; }
 
 inline su2double *CEulerSolver::GetVelocity_Inf(void) { return Velocity_Inf; }
 
-inline su2double CEulerSolver::GetPressure_Inf(void) { return Pressure_Inf; }
+inline su2double CEulerSolver::GetPressure_Inf(void)const { return Pressure_Inf; }
 
 inline su2double CEulerSolver::GetCPressure(unsigned short val_marker, unsigned long val_vertex) { return CPressure[val_marker][val_vertex]; }
 
@@ -1539,7 +1539,7 @@ inline su2double CAdjEulerSolver::GetDonorAdjVar(unsigned short val_marker, unsi
 
 inline su2double CAdjEulerSolver::GetPhi_Inf(unsigned short val_dim) { return Phi_Inf[val_dim]; }
 
-inline su2double CIncEulerSolver::GetDensity_Inf(void) { return Density_Inf; }
+inline su2double CIncEulerSolver::GetDensity_Inf(void)const { return Density_Inf; }
 
 inline su2double CIncEulerSolver::GetModVelocity_Inf(void) {
   su2double Vel2 = 0;
@@ -1552,11 +1552,11 @@ inline CFluidModel* CIncEulerSolver::GetFluidModel(void) { return FluidModel;}
 
 inline su2double CIncEulerSolver::GetDensity_Velocity_Inf(unsigned short val_dim) { return Density_Inf*Velocity_Inf[val_dim]; }
 
-inline su2double CIncEulerSolver::GetVelocity_Inf(unsigned short val_dim) { return Velocity_Inf[val_dim]; }
+inline su2double CIncEulerSolver::GetVelocity_Inf(unsigned short val_dim)const { return Velocity_Inf[val_dim]; }
 
 inline su2double *CIncEulerSolver::GetVelocity_Inf(void) { return Velocity_Inf; }
 
-inline su2double CIncEulerSolver::GetPressure_Inf(void) { return Pressure_Inf; }
+inline su2double CIncEulerSolver::GetPressure_Inf(void)const { return Pressure_Inf; }
 
 inline su2double CIncEulerSolver::GetCPressure(unsigned short val_marker, unsigned long val_vertex) { return CPressure[val_marker][val_vertex]; }
 

@@ -14570,7 +14570,14 @@ vector<su2double> CEulerSolver::GetOutputVarValues(unsigned long iPoint)const{
 
   out.push_back(node[iPoint]->GetPressure());
   out.push_back(node[iPoint]->GetTemperature());
-  out.push_back(0); //(GetPressure() - RefPressure)*factor*RefAreaCoeff); TODO: implement the press coeff.
+
+  su2double RefVel2 = 0;
+  for (su2double iDim = 0; iDim < nDim; iDim++){
+    RefVel2  += GetVelocity_Inf(iDim)*GetVelocity_Inf(iDim);
+  }
+  su2double factor = 1.0 / (0.5*GetDensity_Inf()*Config->GetRefAreaCoeff()*RefVel2);
+  out.push_back((node[iPoint]->GetPressure() - GetPressure_Inf())*factor*Config->GetRefAreaCoeff());
+
   out.push_back(sqrt(node[iPoint]->GetVelocity2())/node[iPoint]->GetSoundSpeed());
 
   return out;
