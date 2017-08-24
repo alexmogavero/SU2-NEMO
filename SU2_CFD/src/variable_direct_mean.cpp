@@ -506,6 +506,18 @@ bool CEulerVariable::SetPrimVar(CFluidModel *FluidModel) {
   
 }
 
+void CEulerVariable::SetTemperature_Old(su2double temperature, CFluidModel *FluidModel) {
+  su2double density = Solution[0];
+  FluidModel->SetTDState_rhoT(density, temperature);
+
+  su2double V2 = 0;
+  for(unsigned short iDim=0; iDim<nDim; iDim++){
+    V2 += pow(Solution_Old[iDim+1]/density, 2);
+  }
+
+  Solution_Old[nVar-1] = density*(FluidModel->GetStaticEnergy() + 0.5*V2);
+}
+
 void CEulerVariable::SetSecondaryVar(CFluidModel *FluidModel) {
 
    /*--- Compute secondary thermo-physical properties (partial derivatives...) ---*/
@@ -695,5 +707,33 @@ void CNSVariable::SetSecondaryVar(CFluidModel *FluidModel) {
     Setdktdrho_T( FluidModel->Getdktdrho_T() );
     SetdktdT_rho( FluidModel->GetdktdT_rho() );
 
+}
+
+su2double CNSVariable::GetKnudsen()const{
+  //Calculate mean free path
+  su2double lam = GetLaminarViscosity()*sqrt(M_PI*GetDensity()/(2*GetPressure()))/GetDensity();
+
+  unsigned short iDens = nDim + 2;
+  su2double knDens = lam*CalcMagnitude(Gradient_Primitive[iDens])/Primitive[iDens];
+
+  unsigned short iTemp = 0;
+  su2double knTemp = lam*CalcMagnitude(Gradient_Primitive[iTemp])/Primitive[iTemp];
+
+  /*Calculates the gradient of the magnitude of U from the gradient of U
+   * gradMagU = (1/magU)*(ux*grad(ux) + uy*grad(uy) + uz*grad(uz))
+   */
+  su2double gradMagU[nDim];
+  for(unsigned short i=0; i<nDim; i++){
+    gradMagU[i] = 0.0;
+  }
+  for(unsigned short i=0; i<nDim; i++){
+    for(unsigned short j=0; j<nDim; j++){
+      gradMagU[i] += Primitive[i+1]*Gradient_Primitive[i+1][j];
+    }
+  }
+
+  su2double knU = lam*CalcMagnitude(gradMagU)/Velocity2;
+
+  return max(knDens, max(knTemp, knU));
 }
 

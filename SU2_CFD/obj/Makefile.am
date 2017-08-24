@@ -142,7 +142,13 @@ libSU2Core_sources = \
   ../src/CKineticVariable.cpp \
   ../include/CKineticVariable.hpp \
   ../src/CGasKineticSchemeBGK.cpp \
-  ../include/CGasKineticSchemeBGK.hpp
+  ../include/CGasKineticSchemeBGK.hpp \
+  ../include/CGeneralIdealGas.hpp \
+  ../src/CGeneralIdealGas.cpp \
+  ../include/CPerfectGas.hpp \
+  ../src/CPerfectGas.cpp \
+  ../include/CVibrationArmonics.hpp \
+  ../src/CVibrationArmonics.cpp
 
 su2_cfd_sources = \
   ../include/SU2_CFD.hpp \

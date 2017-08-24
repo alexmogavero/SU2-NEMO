@@ -119,6 +119,10 @@ protected:
 
   su2double ***SlidingState; /*!< \brief Sliding State variables. */
 
+  CGeometry* Geom; /*!< \brief Geometry associated with the solver. */
+
+  const CConfig* Config; /*!< \brief Pointer to the configuration object. */
+
 public:
   
   CSysVector LinSysSol;    /*!< \brief vector to store iterative solution of implicit linear system. */
@@ -2852,7 +2856,7 @@ public:
    * \param[in] val_vertex - Vertex of the marker <i>val_marker</i> where the coefficient is evaluated.
    * \return Value of the skin friction coefficient.
    */
-  virtual su2double GetCSkinFriction(unsigned short val_marker, unsigned long val_vertex, unsigned short val_dim);
+  virtual su2double GetCSkinFriction(unsigned short val_marker, unsigned long val_vertex, unsigned short val_dim)const;
   
   /*!
    * \brief A virtual member.
@@ -2860,7 +2864,7 @@ public:
    * \param[in] val_vertex - Vertex of the marker <i>val_marker</i> where the coefficient is evaluated.
    * \return Value of the heat transfer coefficient.
    */
-  virtual su2double GetHeatFlux(unsigned short val_marker, unsigned long val_vertex);
+  virtual su2double GetHeatFlux(unsigned short val_marker, unsigned long val_vertex)const;
   
   /*!
    * \brief A virtual member.
@@ -2884,7 +2888,7 @@ public:
    * \param[in] val_vertex - Vertex of the marker <i>val_marker</i> where the coefficient is evaluated.
    * \return Value of the y plus.
    */
-  virtual su2double GetYPlus(unsigned short val_marker, unsigned long val_vertex);
+  virtual su2double GetYPlus(unsigned short val_marker, unsigned long val_vertex)const;
   
   /*!
    * \brief A virtual member.
@@ -2982,7 +2986,7 @@ public:
    * \brief A virtual member.
    * \return Value of the density at the infinity.
    */
-  virtual su2double GetDensity_Inf(void);
+  virtual su2double GetDensity_Inf(void)const;
   
   /*!
    * \brief A virtual member.
@@ -3007,7 +3011,7 @@ public:
    * \brief A virtual member.
    * \return Value of the pressure at the infinity.
    */
-  virtual su2double GetPressure_Inf(void);
+  virtual su2double GetPressure_Inf(void)const;
   
   /*!
    * \brief A virtual member.
@@ -3029,7 +3033,7 @@ public:
    * \param[in] val_dim - Index of the velocity vector.
    * \return Value of the velocity at the infinity.
    */
-  virtual su2double GetVelocity_Inf(unsigned short val_dim);
+  virtual su2double GetVelocity_Inf(unsigned short val_dim)const;
   
   /*!
    * \brief A virtual member.
@@ -3592,6 +3596,19 @@ public:
    * \param[in] config - Definition of the particular problem.
    */
   virtual void SetFreeStream_Solution(CConfig *config);
+
+  /*!
+   * \brief Get the names of the variables to be printed in the output file
+   * @return a string for each variable
+   */
+  virtual vector<string> GetOutputVarNames()const;
+
+  /*!
+   * \brief Get the values of the variables to be printed in the output file
+   * @param iPoint index of the mesh point for which the variable are needed
+   * @return the values of each variable
+   */
+  virtual vector<su2double> GetOutputVarValues(unsigned long iPoint)const;
 };
 
 /*!
@@ -3660,7 +3677,6 @@ public:
    * \param[in] config - Definition of the particular problem.
    */
   void SetOutputVariables(CGeometry *geometry, CConfig *config);
-  
 };
 
 /*!
@@ -4023,7 +4039,7 @@ public:
    * \brief Compute the density at the infinity.
    * \return Value of the density at the infinity.
    */
-  su2double GetDensity_Inf(void);
+  su2double GetDensity_Inf(void)const;
   
   /*!
    * \brief Compute 2-norm of the velocity at the infinity.
@@ -4041,7 +4057,7 @@ public:
    * \brief Compute the pressure at the infinity.
    * \return Value of the pressure at the infinity.
    */
-  su2double GetPressure_Inf(void);
+  su2double GetPressure_Inf(void)const;
   
   /*!
    * \brief Compute the density multiply by velocity at the infinity.
@@ -4055,7 +4071,7 @@ public:
    * \param[in] val_dim - Index of the velocity vector.
    * \return Value of the velocity at the infinity.
    */
-  su2double GetVelocity_Inf(unsigned short val_dim);
+  su2double GetVelocity_Inf(unsigned short val_dim)const;
   
   /*!
    * \brief Get the velocity at the infinity.
@@ -6052,6 +6068,10 @@ public:
    * \param[in] config - Definition of the particular problem.
    */
   void SetFreeStream_Solution(CConfig *config);
+
+  virtual vector<string> GetOutputVarNames()const;
+
+  virtual vector<su2double> GetOutputVarValues(unsigned long iPoint)const;
 };
 
   
@@ -6311,7 +6331,7 @@ public:
    * \brief Compute the density at the infinity.
    * \return Value of the density at the infinity.
    */
-  su2double GetDensity_Inf(void);
+  su2double GetDensity_Inf(void)const;
   
   /*!
    * \brief Compute 2-norm of the velocity at the infinity.
@@ -6323,7 +6343,7 @@ public:
    * \brief Compute the pressure at the infinity.
    * \return Value of the pressure at the infinity.
    */
-  su2double GetPressure_Inf(void);
+  su2double GetPressure_Inf(void)const;
   
   /*!
    * \brief Compute the density multiply by velocity at the infinity.
@@ -6337,7 +6357,7 @@ public:
    * \param[in] val_dim - Index of the velocity vector.
    * \return Value of the velocity at the infinity.
    */
-  su2double GetVelocity_Inf(unsigned short val_dim);
+  su2double GetVelocity_Inf(unsigned short val_dim)const;
   
   /*!
    * \brief Get the velocity at the infinity.
@@ -7717,7 +7737,7 @@ public:
    * \param[in] val_vertex - Vertex of the marker <i>val_marker</i> where the coefficient is evaluated.
    * \return Value of the skin friction coefficient.
    */
-  su2double GetCSkinFriction(unsigned short val_marker, unsigned long val_vertex, unsigned short val_dim);
+  su2double GetCSkinFriction(unsigned short val_marker, unsigned long val_vertex, unsigned short val_dim)const;
   
   /*!
    * \brief Get the skin friction coefficient.
@@ -7725,7 +7745,7 @@ public:
    * \param[in] val_vertex - Vertex of the marker <i>val_marker</i> where the coefficient is evaluated.
    * \return Value of the heat transfer coefficient.
    */
-  su2double GetHeatFlux(unsigned short val_marker, unsigned long val_vertex);
+  su2double GetHeatFlux(unsigned short val_marker, unsigned long val_vertex)const;
   
   /*!
    * \brief Get the skin friction coefficient.
@@ -7749,7 +7769,7 @@ public:
    * \param[in] val_vertex - Vertex of the marker <i>val_marker</i> where the coefficient is evaluated.
    * \return Value of the y plus.
    */
-  su2double GetYPlus(unsigned short val_marker, unsigned long val_vertex);
+  su2double GetYPlus(unsigned short val_marker, unsigned long val_vertex)const;
   
   /*!
    * \brief Get the max Omega.
@@ -7775,6 +7795,9 @@ public:
    */
   void SetOmega_Max(su2double val_omega_max);
   
+  virtual vector<string> GetOutputVarNames()const;
+
+  virtual vector<su2double> GetOutputVarValues(unsigned long iPoint)const;
 };
 
 /*!
@@ -8091,7 +8114,7 @@ public:
    * \param[in] val_vertex - Vertex of the marker <i>val_marker</i> where the coefficient is evaluated.
    * \return Value of the skin friction coefficient.
    */
-  su2double GetCSkinFriction(unsigned short val_marker, unsigned long val_vertex, unsigned short val_dim);
+  su2double GetCSkinFriction(unsigned short val_marker, unsigned long val_vertex, unsigned short val_dim)const;
   
   /*!
    * \brief Get the skin friction coefficient.
@@ -8099,7 +8122,7 @@ public:
    * \param[in] val_vertex - Vertex of the marker <i>val_marker</i> where the coefficient is evaluated.
    * \return Value of the heat transfer coefficient.
    */
-  su2double GetHeatFlux(unsigned short val_marker, unsigned long val_vertex);
+  su2double GetHeatFlux(unsigned short val_marker, unsigned long val_vertex)const;
   
   /*!
    * \brief Get the skin friction coefficient.
@@ -8123,7 +8146,7 @@ public:
    * \param[in] val_vertex - Vertex of the marker <i>val_marker</i> where the coefficient is evaluated.
    * \return Value of the y plus.
    */
-  su2double GetYPlus(unsigned short val_marker, unsigned long val_vertex);
+  su2double GetYPlus(unsigned short val_marker, unsigned long val_vertex)const;
   
   /*!
    * \brief Get the max Omega.

@@ -68,7 +68,7 @@ protected:
     std::vector<std::vector<double> > N;
     std::vector<double> xi;
   };
-  
+
   moments_struct moments_i; //!< Structure that stores the Maxwellian moments on the left size of the edge
   moments_struct moments_j; //!< Structure that stores the Maxwellian moments on the right size of the edge
   moments_struct moments_I; //!< Structure that stores the Maxwellian moments at the interface
@@ -83,8 +83,10 @@ protected:
   };
 
   CKineticVariable* node_I; //!< Node that stores all the variables at the interface
-  CVariable* node_iLoc; //!<Node at left of interface in the local reference frame
-  CVariable* node_jLoc; //!<Node at right of interface in the local reference frame
+  CVariable* node_iLoc; //!<Node at left of interface in the local reference frame, reconstructed if second order
+  CVariable* node_jLoc; //!<Node at right of interface in the local reference frame, reconstructed if second order
+  CVariable* node_iRot; //!<Node at left of interface in the local reference frame
+  CVariable* node_jRot; //!<Node at right of interface in the local reference frame
 
   /*!
    * \brief calculates the moments of the Maxwellian distribution
@@ -105,9 +107,9 @@ protected:
    * @return
    */
   su2double MomentsMaxwellian(std::vector<unsigned short> exponents, State state, IntLimits lim);
-  
+
   /*!
-   * \brief Actual function that computes the Maxwellian moments for a node 
+   * \brief Actual function that computes the Maxwellian moments for a node
    */
   void ComputeMaxwellianMoments(CVariable* node, moments_struct*  moments);
 
@@ -164,8 +166,27 @@ protected:
    * @param state define the state for which the derivative are needed.
    * @return a vector of size nDim+1 where the first nDim components are space derivatives
    *  and the last one is time derivative
+   *  TODO update this documentation
    */
   void Derivatives(State state, std::vector<std::vector<su2double> >& G, std::vector<su2double>& Ft);
+
+  /*!
+   * \brief calculate time/space derivatives of the distribution function at the interface
+   * @param[out] ad_i - x derivative at the left of interface
+   * @param[out] ad_j - x derivative at the right of interface
+   * @param[out] ad - y, z derivatives
+   * @param[out] Ad - time derivative
+   * @param[in] a_i - space derivative of the left state
+   * @param[in] a_j - space derivative of the right state
+   * @param[in] g - coefficients for the calculation of Ad
+   * TODO improve this documentation
+   */
+   void Interface_Derivatives(
+     std::vector<su2double>& ad_i, std::vector<su2double>& ad_j,
+     std::vector<std::vector<su2double> >& ad,
+     std::vector<su2double>& Ad,
+     std::vector<std::vector<su2double> >& a_i, std::vector<std::vector<su2double> >& a_j,
+     std::vector<su2double>& g);
 
   /*!
    * \brief Calculates the state at the interface.
@@ -180,6 +201,11 @@ protected:
   void Clear();
 
   su2double CalculateTau(su2double Dt)const;
+
+  /*!
+   * \brief Calculates the fluxes.
+   */
+  void ComputeFluxes(bool order, su2double *val_residual);
 
 public:
 
@@ -254,6 +280,7 @@ std::vector<su2double> operator+(const std::vector<su2double>& a, const std::vec
 std::vector<su2double> operator+=(std::vector<su2double>& a, const std::vector<su2double>& b);
 std::vector<su2double> operator-=(std::vector<su2double>& a, const std::vector<su2double>& b);
 std::vector<su2double> operator*(const std::vector<su2double>& a, const su2double& b);
+std::vector<su2double> operator*(const su2double& a, const std::vector<su2double>& b);
 std::vector<su2double> operator*=(std::vector<su2double>& a, const su2double& b);
 std::vector<su2double> operator/=(std::vector<su2double>& a, const su2double& b);
 std::vector<su2double> operator*(const std::vector<su2double>& a, const std::vector<std::vector<su2double> >& b);

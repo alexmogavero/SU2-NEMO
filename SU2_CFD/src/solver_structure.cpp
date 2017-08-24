@@ -70,7 +70,8 @@ CSolver::CSolver(void) {
   Restart_Data       = NULL;
   node               = NULL;
   nOutputVariables   = 0;
-  
+  Geom               = NULL;
+  Config             = NULL;
 }
 
 CSolver::~CSolver(void) {
@@ -2363,6 +2364,14 @@ void CSolver::Read_SU2_Restart_Metadata(CGeometry *geometry, CConfig *config, st
       (adjoint && config->GetRestart()))
     config->SetExtIter_OffSet(ExtIter_);
 
+}
+
+vector<string> CSolver::GetOutputVarNames()const{
+  return vector<string>();
+}
+
+vector<su2double> CSolver::GetOutputVarValues(unsigned long iPoint)const{
+  return vector<su2double>();
 }
 
 CBaselineSolver::CBaselineSolver(void) : CSolver() { }

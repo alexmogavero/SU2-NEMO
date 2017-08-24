@@ -126,7 +126,8 @@ private:
   Frozen_Visc,			/*!< \brief Flag for adjoint problem with/without frozen viscosity. */
   Sens_Remove_Sharp,			/*!< \brief Flag for removing or not the sharp edges from the sensitivity computation. */
   Hold_GridFixed,	/*!< \brief Flag hold fixed some part of the mesh during the deformation. */
-  Axisymmetric; /*!< \brief Flag for axisymmetric calculations */
+  Axisymmetric, /*!< \brief Flag for axisymmetric calculations */
+  StrongBC; /*!< \brief Flag imposing strong boundary conditions */
   su2double Damp_Engine_Inflow;	/*!< \brief Damping factor for the engine inlet. */
   su2double Damp_Engine_Exhaust;	/*!< \brief Damping factor for the engine exhaust. */
   su2double Damp_Res_Restric,	/*!< \brief Damping factor for the residual restriction. */
@@ -649,6 +650,8 @@ private:
   Gas_Constant,     /*!< \brief Specific gas constant. */
   Gas_ConstantND,     /*!< \brief Non-dimensional specific gas constant. */
   Gas_Constant_Ref, /*!< \brief Reference specific gas constant. */
+	*Theta_v, /*!< \brief Characteristic temperature of the first vibrational harmonics. */
+	*Weight_v, /*!< \brief Weight for every value of Theta_v. */
   Temperature_Critical,   /*!< \brief Critical Temperature for real fluid model.  */
   Pressure_Critical,   /*!< \brief Critical Pressure for real fluid model.  */
   Density_Critical,   /*!< \brief Critical Density for real fluid model.  */
@@ -765,7 +768,8 @@ private:
   nPlunging_Ampl_Z,           /*!< \brief Number of Plunging amplitudes in the z-direction. */
   nOmega_HB,                /*!< \brief Number of frequencies in Harmonic Balance Operator. */
   nMoveMotion_Origin,         /*!< \brief Number of motion origins. */
-  *MoveMotion_Origin;         /*!< \brief Keeps track if we should move moment origin. */
+  *MoveMotion_Origin,         /*!< \brief Keeps track if we should move moment origin. */
+  nVibration_mode;            /*!< \brief number of vibration mode in the vibration harmonics gas model */
   vector<vector<vector<su2double> > > Aeroelastic_np1, /*!< \brief Aeroelastic solution at time level n+1. */
   Aeroelastic_n,              /*!< \brief Aeroelastic solution at time level n. */
   Aeroelastic_n1;             /*!< \brief Aeroelastic solution at time level n-1. */
@@ -1376,6 +1380,24 @@ public:
   su2double GetGas_ConstantND(void);
   
   /*!
+	 * \brief Get the characteristic temperature of the first vibrational harmonics.
+	 * \return Value of Theta_v
+	 */
+	su2double* GetTheta_v()const;
+
+	/*!
+	 * \brief Get the weight of every vibrational mode.
+	 * \return Value of Weight_v
+	 */
+	su2double* GetWeight_v()const;
+
+	/*!
+	 * \brief Get the number of vibrational mode in the vibration harmonics gas model.
+	 * \return Value of nVibration_mode
+	 */
+	unsigned short GetnVibration_mode()const;
+
+  /*!
    * \brief Get the coefficients of the Blottner viscosity model
    * \param[in] val_Species - Index of the species
    * \param[in] val_Coeff - Index of the coefficient (As, Bs, Cs)
@@ -1678,7 +1700,7 @@ public:
    *        the z plane (3D) or the x plane (2D).
    * \return Value of the reference area for coefficient computation.
    */
-  su2double GetRefAreaCoeff(void);
+  su2double GetRefAreaCoeff(void)const;
   
   /*!
    * \brief Get the wave speed.
@@ -2799,7 +2821,7 @@ public:
    * \param[in] val_marker - 0 or 1 depending if the the marker is going to be moved.
    * \return 0 or 1 depending if the marker is going to be plotted.
    */
-  unsigned short GetMarker_All_Plotting(unsigned short val_marker);
+  unsigned short GetMarker_All_Plotting(unsigned short val_marker)const;
   
   /*!
    * \brief Get the plotting information for a marker <i>val_marker</i>.
@@ -4798,6 +4820,11 @@ public:
    * \return Periodic information of the boundary in the config information of the marker <i>val_marker</i>.
    */
   unsigned short GetMarker_CfgFile_PerBound(string val_marker);
+
+  /*!
+   * \brief Get whether the boundary conditions shall be imposed in the strong form.
+   */
+  bool GetStrongBC()const;
   
   /*!
    * \brief  Get the name of the marker <i>val_marker</i>.

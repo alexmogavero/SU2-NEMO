@@ -159,3 +159,10 @@ void CKineticSolver::BC_Isothermal_Wall(CGeometry *geometry, CSolver **solver_co
     visc_numerics, config, val_marker, 1);
 }
 
+void CKineticSolver::Preprocessing(CGeometry *geometry, CSolver **solver_container, CConfig *config,
+    unsigned short iMesh, unsigned short iRKStep, unsigned short RunTime_EqSystem, bool Output) {
+  CNSSolver::Preprocessing(geometry, solver_container, config, iMesh, iRKStep, RunTime_EqSystem, Output);
+
+  if (config->GetKind_Gradient_Method() == GREEN_GAUSS) SetSolution_Gradient_GG(geometry, config);
+  if (config->GetKind_Gradient_Method() == WEIGHTED_LEAST_SQUARES) SetSolution_Gradient_LS(geometry, config);
+}

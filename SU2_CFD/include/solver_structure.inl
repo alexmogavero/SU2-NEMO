@@ -506,13 +506,13 @@ inline void CSolver::SetInlet_Ptotal(unsigned short val_marker, unsigned long va
 
 inline void CSolver::SetInlet_FlowDir(unsigned short val_marker, unsigned long val_vertex, unsigned short val_dim, su2double val_flowdir) { }
 
-inline su2double CSolver::GetCSkinFriction(unsigned short val_marker, unsigned long val_vertex, unsigned short val_dim) { return 0; }
+inline su2double CSolver::GetCSkinFriction(unsigned short val_marker, unsigned long val_vertex, unsigned short val_dim)const { return 0; }
 
-inline su2double CSolver::GetHeatFlux(unsigned short val_marker, unsigned long val_vertex) { return 0; }
+inline su2double CSolver::GetHeatFlux(unsigned short val_marker, unsigned long val_vertex)const { return 0; }
 
 inline su2double CSolver::GetHeatFluxTarget(unsigned short val_marker, unsigned long val_vertex) { return 0; }
 
-inline su2double CSolver::GetYPlus(unsigned short val_marker, unsigned long val_vertex) { return 0; }
+inline su2double CSolver::GetYPlus(unsigned short val_marker, unsigned long val_vertex)const { return 0; }
 
 inline su2double CSolver::GetStrainMag_Max(void) { return 0; }
 
@@ -548,7 +548,7 @@ inline su2double CSolver::GetTotal_Sens_Temp() { return 0; }
 
 inline su2double CSolver::GetTotal_Sens_BPress() { return 0; }
 
-inline su2double CSolver::GetDensity_Inf(void) { return 0; }
+inline su2double CSolver::GetDensity_Inf(void)const { return 0; }
 
 inline su2double CSolver::GetDensity_Inf(unsigned short val_var) { return 0; }
 
@@ -560,11 +560,11 @@ inline su2double CSolver::GetDensity_Velocity_Inf(unsigned short val_dim) { retu
 
 inline su2double CSolver::GetDensity_Velocity_Inf(unsigned short val_dim, unsigned short val_var) { return 0; }
 
-inline su2double CSolver::GetVelocity_Inf(unsigned short val_dim) { return 0; }
+inline su2double CSolver::GetVelocity_Inf(unsigned short val_dim)const { return 0; }
 
 inline su2double* CSolver::GetVelocity_Inf(void) { return 0; }
 
-inline su2double CSolver::GetPressure_Inf(void) { return 0; }
+inline su2double CSolver::GetPressure_Inf(void)const { return 0; }
 
 inline su2double CSolver::GetViscosity_Inf(void) { return 0; }
 
@@ -989,7 +989,7 @@ inline void CEulerSolver::Set_NewSolution(CGeometry *geometry) {
     node[iPoint]->SetSolution_New();
 }
 
-inline su2double CEulerSolver::GetDensity_Inf(void) { return Density_Inf; }
+inline su2double CEulerSolver::GetDensity_Inf(void)const { return Density_Inf; }
 
 inline su2double CEulerSolver::GetModVelocity_Inf(void) { 
   su2double Vel2 = 0; 
@@ -1004,11 +1004,11 @@ inline su2double CEulerSolver::GetDensity_Energy_Inf(void) { return Density_Inf*
 
 inline su2double CEulerSolver::GetDensity_Velocity_Inf(unsigned short val_dim) { return Density_Inf*Velocity_Inf[val_dim]; }
 
-inline su2double CEulerSolver::GetVelocity_Inf(unsigned short val_dim) { return Velocity_Inf[val_dim]; }
+inline su2double CEulerSolver::GetVelocity_Inf(unsigned short val_dim)const { return Velocity_Inf[val_dim]; }
 
 inline su2double *CEulerSolver::GetVelocity_Inf(void) { return Velocity_Inf; }
 
-inline su2double CEulerSolver::GetPressure_Inf(void) { return Pressure_Inf; }
+inline su2double CEulerSolver::GetPressure_Inf(void)const { return Pressure_Inf; }
 
 inline su2double CEulerSolver::GetCPressure(unsigned short val_marker, unsigned long val_vertex) { return CPressure[val_marker][val_vertex]; }
 
@@ -1489,15 +1489,15 @@ inline su2double CNSSolver::GetSurface_CMy_Visc(unsigned short val_marker) { ret
 
 inline su2double CNSSolver::GetSurface_CMz_Visc(unsigned short val_marker) { return Surface_CMz_Visc[val_marker]; }
 
-inline su2double CNSSolver::GetCSkinFriction(unsigned short val_marker, unsigned long val_vertex, unsigned short val_dim) { return CSkinFriction[val_marker][val_dim][val_vertex]; }
+inline su2double CNSSolver::GetCSkinFriction(unsigned short val_marker, unsigned long val_vertex, unsigned short val_dim)const { return CSkinFriction[val_marker][val_dim][val_vertex]; }
 
-inline su2double CNSSolver::GetHeatFlux(unsigned short val_marker, unsigned long val_vertex) { return HeatFlux[val_marker][val_vertex]; }
+inline su2double CNSSolver::GetHeatFlux(unsigned short val_marker, unsigned long val_vertex)const { return HeatFlux[val_marker][val_vertex]; }
 
 inline su2double CNSSolver::GetHeatFluxTarget(unsigned short val_marker, unsigned long val_vertex) { return HeatFluxTarget[val_marker][val_vertex]; }
 
 inline void CNSSolver::SetHeatFluxTarget(unsigned short val_marker, unsigned long val_vertex, su2double val_heat) { HeatFluxTarget[val_marker][val_vertex] = val_heat; }
 
-inline su2double CNSSolver::GetYPlus(unsigned short val_marker, unsigned long val_vertex) { return YPlus[val_marker][val_vertex]; }
+inline su2double CNSSolver::GetYPlus(unsigned short val_marker, unsigned long val_vertex)const { return YPlus[val_marker][val_vertex]; }
 
 inline su2double CNSSolver::GetStrainMag_Max(void) { return StrainMag_Max; }
 
@@ -1539,7 +1539,7 @@ inline su2double CAdjEulerSolver::GetDonorAdjVar(unsigned short val_marker, unsi
 
 inline su2double CAdjEulerSolver::GetPhi_Inf(unsigned short val_dim) { return Phi_Inf[val_dim]; }
 
-inline su2double CIncEulerSolver::GetDensity_Inf(void) { return Density_Inf; }
+inline su2double CIncEulerSolver::GetDensity_Inf(void)const { return Density_Inf; }
 
 inline su2double CIncEulerSolver::GetModVelocity_Inf(void) {
   su2double Vel2 = 0;
@@ -1552,11 +1552,11 @@ inline CFluidModel* CIncEulerSolver::GetFluidModel(void) { return FluidModel;}
 
 inline su2double CIncEulerSolver::GetDensity_Velocity_Inf(unsigned short val_dim) { return Density_Inf*Velocity_Inf[val_dim]; }
 
-inline su2double CIncEulerSolver::GetVelocity_Inf(unsigned short val_dim) { return Velocity_Inf[val_dim]; }
+inline su2double CIncEulerSolver::GetVelocity_Inf(unsigned short val_dim)const { return Velocity_Inf[val_dim]; }
 
 inline su2double *CIncEulerSolver::GetVelocity_Inf(void) { return Velocity_Inf; }
 
-inline su2double CIncEulerSolver::GetPressure_Inf(void) { return Pressure_Inf; }
+inline su2double CIncEulerSolver::GetPressure_Inf(void)const { return Pressure_Inf; }
 
 inline su2double CIncEulerSolver::GetCPressure(unsigned short val_marker, unsigned long val_vertex) { return CPressure[val_marker][val_vertex]; }
 
@@ -1814,15 +1814,15 @@ inline su2double CIncNSSolver::GetSurface_CMy_Visc(unsigned short val_marker) { 
 
 inline su2double CIncNSSolver::GetSurface_CMz_Visc(unsigned short val_marker) { return Surface_CMz_Visc[val_marker]; }
 
-inline su2double CIncNSSolver::GetCSkinFriction(unsigned short val_marker, unsigned long val_vertex, unsigned short val_dim) { return CSkinFriction[val_marker][val_dim][val_vertex]; }
+inline su2double CIncNSSolver::GetCSkinFriction(unsigned short val_marker, unsigned long val_vertex, unsigned short val_dim)const { return CSkinFriction[val_marker][val_dim][val_vertex]; }
 
-inline su2double CIncNSSolver::GetHeatFlux(unsigned short val_marker, unsigned long val_vertex) { return HeatFlux[val_marker][val_vertex]; }
+inline su2double CIncNSSolver::GetHeatFlux(unsigned short val_marker, unsigned long val_vertex)const { return HeatFlux[val_marker][val_vertex]; }
 
 inline su2double CIncNSSolver::GetHeatFluxTarget(unsigned short val_marker, unsigned long val_vertex) { return HeatFluxTarget[val_marker][val_vertex]; }
 
 inline void CIncNSSolver::SetHeatFluxTarget(unsigned short val_marker, unsigned long val_vertex, su2double val_heat) { HeatFluxTarget[val_marker][val_vertex] = val_heat; }
 
-inline su2double CIncNSSolver::GetYPlus(unsigned short val_marker, unsigned long val_vertex) { return YPlus[val_marker][val_vertex]; }
+inline su2double CIncNSSolver::GetYPlus(unsigned short val_marker, unsigned long val_vertex)const { return YPlus[val_marker][val_vertex]; }
 
 inline su2double CIncNSSolver::GetStrainMag_Max(void) { return StrainMag_Max; }
 

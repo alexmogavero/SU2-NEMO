@@ -46,13 +46,6 @@
 class CKineticVariable : public CNSVariable {
   su2double knudsenLocal; /*!< Local Knudsen number */
 
-  /*!
-   * \brief Calculates the magnitude of a vector.
-   *
-   * @param[in] v - Vector of size nDim
-   * @return norm of order 2 of v
-   */
-  su2double CalcMagnitude(su2double* v)const;
 public:
   /*!
    * \brief Constructor of the class.
