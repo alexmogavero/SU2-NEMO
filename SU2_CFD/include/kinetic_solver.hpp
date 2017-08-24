@@ -92,6 +92,9 @@ public:
   void BC_Isothermal_Wall(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics,
       CNumerics *visc_numerics, CConfig *config, unsigned short val_marker);
 
+  void BC_HeatFlux_Wall(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics,
+        CNumerics *visc_numerics, CConfig *config, unsigned short val_marker);
+
   void Preprocessing(CGeometry *geometry, CSolver **solver_container, CConfig *config,
       unsigned short iMesh, unsigned short iRKStep, unsigned short RunTime_EqSystem, bool Output);
 };

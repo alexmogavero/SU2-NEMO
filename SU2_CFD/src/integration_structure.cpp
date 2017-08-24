@@ -194,10 +194,18 @@ void CIntegration::Space_Integration(CGeometry *geometry,
   for (iMarker = 0; iMarker < config->GetnMarker_All(); iMarker++)
     switch (config->GetMarker_All_KindBC(iMarker)) {
       case ISOTHERMAL:
-        solver_container[MainSolver]->BC_Isothermal_Wall(geometry, solver_container, numerics[CONV_BOUND_TERM], numerics[VISC_BOUND_TERM], config, iMarker);
+        if(config->GetKind_Centered_Flow() == GKS_BGK){
+          solver_container[MainSolver]->BC_Isothermal_Wall(geometry, solver_container, numerics[CONV_TERM], NULL, config, iMarker);
+        }else{
+          solver_container[MainSolver]->BC_Isothermal_Wall(geometry, solver_container, numerics[CONV_BOUND_TERM], numerics[VISC_BOUND_TERM], config, iMarker);
+        }
         break;
       case HEAT_FLUX:
-        solver_container[MainSolver]->BC_HeatFlux_Wall(geometry, solver_container, numerics[CONV_BOUND_TERM], numerics[VISC_BOUND_TERM], config, iMarker);
+        if(config->GetKind_Centered_Flow() == GKS_BGK){
+          solver_container[MainSolver]->BC_HeatFlux_Wall(geometry, solver_container, numerics[CONV_TERM], NULL, config, iMarker);
+        }else{
+          solver_container[MainSolver]->BC_HeatFlux_Wall(geometry, solver_container, numerics[CONV_BOUND_TERM], numerics[VISC_BOUND_TERM], config, iMarker);
+        }
         break;
       case DIRICHLET:
         solver_container[MainSolver]->BC_Dirichlet(geometry, solver_container, config, iMarker);

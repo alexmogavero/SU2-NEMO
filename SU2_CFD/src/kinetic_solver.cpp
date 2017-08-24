@@ -81,7 +81,11 @@ void CKineticSolver::BC_Kinetic_Wall(CGeometry *geometry, CSolver **solver_conta
 
   /*--- Retrieve the specified wall temperature ---*/
 
-  Twall = config->GetIsothermal_Temperature(Marker_Tag)/config->GetTemperature_Ref();
+  if(accom==0){
+    Twall = 300; //dummy value
+  }else{
+    Twall = config->GetIsothermal_Temperature(Marker_Tag)/config->GetTemperature_Ref();
+  }
 
   CVariable* nodeB = NULL;
 
@@ -157,6 +161,13 @@ void CKineticSolver::BC_Isothermal_Wall(CGeometry *geometry, CSolver **solver_co
     CNumerics *visc_numerics, CConfig *config, unsigned short val_marker) {
   BC_Kinetic_Wall(geometry, solver_container, conv_numerics,
     visc_numerics, config, val_marker, 1);
+}
+
+void CKineticSolver::BC_HeatFlux_Wall(CGeometry *geometry, CSolver **solver_container, CNumerics *conv_numerics,
+        CNumerics *visc_numerics, CConfig *config, unsigned short val_marker){
+  //TODO handle cases where the imposed heat flux is not zero
+  BC_Kinetic_Wall(geometry, solver_container, conv_numerics,
+      visc_numerics, config, val_marker, 0);
 }
 
 void CKineticSolver::Preprocessing(CGeometry *geometry, CSolver **solver_container, CConfig *config,
