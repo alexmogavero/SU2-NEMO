@@ -111,9 +111,9 @@ void CKineticSolver::BC_Kinetic_Wall(CGeometry *geometry, CSolver **solver_conta
       conv_numerics->SetNormal(Normal);
       conv_numerics->SetNodes(node[iPoint], NULL);
 
-      static_cast<CGasKineticSchemeBGK*>(conv_numerics)->GetInviscidProjFlux(Res_Conv, CGasKineticSchemeBGK::POSITIVE);
+      static_cast<CGasKineticSchemeBGK*>(conv_numerics)->GetInviscidProjFlux(Res_Conv, CGasKineticSchemeBGK::NEGATIVE);
 
-      LinSysRes.AddBlock(iPoint, Res_Conv);
+      LinSysRes.SubtractBlock(iPoint, Res_Conv);
 
       // TODO put theta calculation in CKineticVar
       double K = (5.0 - 3.0*Gamma) / (Gamma - 1.0) + (3.0 - nDim);
@@ -144,9 +144,9 @@ void CKineticSolver::BC_Kinetic_Wall(CGeometry *geometry, CSolver **solver_conta
       conv_numerics->SetNormal(Normal);
       conv_numerics->SetNodes(nodeB, NULL);
 
-      static_cast<CGasKineticSchemeBGK*>(conv_numerics)->GetInviscidProjFlux(Res_Conv, CGasKineticSchemeBGK::NEGATIVE);
+      static_cast<CGasKineticSchemeBGK*>(conv_numerics)->GetInviscidProjFlux(Res_Conv, CGasKineticSchemeBGK::POSITIVE);
 
-      LinSysRes.AddBlock(iPoint, Res_Conv);
+      LinSysRes.SubtractBlock(iPoint, Res_Conv);
 
       /*--- Calculate Jacobian for implicit time stepping ---*/
 
