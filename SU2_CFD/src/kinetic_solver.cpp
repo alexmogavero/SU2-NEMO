@@ -1,4 +1,5 @@
 
+#include "../include/solver_structure.hpp"
 #include "../include/kinetic_solver.hpp"
 #include "../include/CKineticVariable.hpp"
 #include "../include/CGasKineticSchemeBGK.hpp"
@@ -69,7 +70,8 @@ void CKineticSolver::BC_Kinetic_Wall(CGeometry *geometry, CSolver **solver_conta
   unsigned short iDim;
   unsigned long iVertex, iPoint;
 
-  su2double *Normal;
+  su2double* Normal;
+  su2double* UnitNormal;
   su2double Twall;
 
   bool implicit = (config->GetKind_TimeIntScheme_Flow() == EULER_IMPLICIT);
@@ -100,6 +102,11 @@ void CKineticSolver::BC_Kinetic_Wall(CGeometry *geometry, CSolver **solver_conta
       /*--- Compute dual-grid area and boundary normal ---*/
 
       Normal = geometry->vertex[val_marker][iVertex]->GetNormal();
+      su2double Area = 0;
+      for(iDim=0; iDim<nDim; iDim++){
+        Area += pow(Normal[iDim], 2);
+      }
+      Area = sqrt(Area);
 
       conv_numerics->SetNormal(Normal);
       conv_numerics->SetNodes(node[iPoint], NULL);
@@ -116,10 +123,10 @@ void CKineticSolver::BC_Kinetic_Wall(CGeometry *geometry, CSolver **solver_conta
       su2double E_w = FluidModel->GetStaticEnergy();
       double l_w = (K+nDim) / (4.0*E_w);
 
-      su2double rho_w = 2*sqrt(M_PI*l_w)*Res_Conv[0];
+      su2double rho_w = 2*sqrt(M_PI*l_w)*Res_Conv[0]/Area;
 
       su2double rho_l_ref = accom*(rho_w/l_w) + 2*(Gamma-1)*(1-accom)*node[iPoint]->GetDensity()*node[iPoint]->GetEnergy();
-      su2double rho_ref = 4*M_PI*Res_Conv[0]/rho_l_ref;
+      su2double rho_ref = 4*M_PI*pow(Res_Conv[0]/Area, 2)/rho_l_ref;
       su2double l_ref = rho_ref/rho_l_ref;
       su2double E_ref = (K+nDim) / (4.0*l_ref);
 
