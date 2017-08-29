@@ -98,7 +98,6 @@ void CKineticSolver::BC_Kinetic_Wall(CGeometry *geometry, CSolver **solver_conta
     iPoint = geometry->vertex[val_marker][iVertex]->GetNode();
 
     if (geometry->node[iPoint]->GetDomain()) {
-
       /*--- Compute dual-grid area and boundary normal ---*/
 
       Normal = geometry->vertex[val_marker][iVertex]->GetNormal();
@@ -111,6 +110,7 @@ void CKineticSolver::BC_Kinetic_Wall(CGeometry *geometry, CSolver **solver_conta
       conv_numerics->SetNormal(Normal);
       conv_numerics->SetNodes(node[iPoint], NULL);
 
+      //NEGATIVE because the normal is directed inside the CFD domain
       static_cast<CGasKineticSchemeBGK*>(conv_numerics)->GetInviscidProjFlux(Res_Conv, CGasKineticSchemeBGK::NEGATIVE);
 
       LinSysRes.SubtractBlock(iPoint, Res_Conv);
@@ -121,14 +121,20 @@ void CKineticSolver::BC_Kinetic_Wall(CGeometry *geometry, CSolver **solver_conta
 
       FluidModel->SetTDState_PT(node[iPoint]->GetPressure(), Twall);
       su2double E_w = FluidModel->GetStaticEnergy();
+      su2double H_w = Gamma*E_w;
       double l_w = (K+nDim) / (4.0*E_w);
 
-      su2double rho_w = 2*sqrt(M_PI*l_w)*Res_Conv[0]/Area;
+      //negative sign because the normal is directed inside the CFD domain
+      su2double rho_w = -2*sqrt(M_PI*l_w)*Res_Conv[0]/Area;
 
-      su2double rho_l_ref = accom*(rho_w/l_w) + 2*(Gamma-1)*(1-accom)*node[iPoint]->GetDensity()*node[iPoint]->GetEnergy();
-      su2double rho_ref = 4*M_PI*pow(Res_Conv[0]/Area, 2)/rho_l_ref;
-      su2double l_ref = rho_ref/rho_l_ref;
-      su2double E_ref = (K+nDim) / (4.0*l_ref);
+//      su2double rho_l_ref = accom*(rho_w/l_w) + 2*(Gamma-1)*(1-accom)*node[iPoint]->GetDensity()*node[iPoint]->GetEnergy();
+//      su2double rho_ref = 4*M_PI*pow(Res_Conv[0]/Area, 2)/rho_l_ref;
+//      su2double l_ref = rho_ref/rho_l_ref;
+//      su2double E_ref = (K+nDim) / (4.0*l_ref);
+      su2double H_ref = accom*H_w + (1-accom)*node[iPoint]->GetEnthalpy();
+      su2double E_ref = H_ref/Gamma;
+      double l_ref = (K+nDim) / (4.0*E_ref);
+      su2double rho_ref = -2*sqrt(M_PI*l_ref)*Res_Conv[0]/Area;
 
       //TODO check wether copying the gradients is ok
       nodeB = node[iPoint]->duplicate();
@@ -140,6 +146,7 @@ void CKineticSolver::BC_Kinetic_Wall(CGeometry *geometry, CSolver **solver_conta
       nodeB->SetNon_Physical(false);
       bool RightSol = nodeB->SetPrimVar(FluidModel);
       if (!RightSol) nodeB->SetNon_Physical(true);
+      //nodeB->SetGradientZero();
 
       conv_numerics->SetNormal(Normal);
       conv_numerics->SetNodes(nodeB, NULL);
