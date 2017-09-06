@@ -4131,8 +4131,8 @@ void CSourceAxisymmetric_Flow::ComputeResidual(su2double *val_residual, su2doubl
       sq_vel += Velocity_i *Velocity_i;
     }
     
-    Pressure_i = (Gamma-1.0)*U_i[0]*(U_i[nDim+1]/U_i[0]-0.5*sq_vel);
-    Enthalpy_i = (U_i[nDim+1] + Pressure_i) / U_i[0];
+    Pressure_i = node_i->GetPressure();
+    Enthalpy_i = node_i->GetEnthalpy();
     
     val_residual[0] = yinv*Volume*U_i[2];
     val_residual[1] = yinv*Volume*U_i[1]*U_i[2]/U_i[0];
