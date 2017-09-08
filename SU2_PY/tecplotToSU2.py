@@ -1,5 +1,8 @@
+#!/usr/bin/env python
+
 import re
 import os
+import sys
 import matplotlib.pyplot as pl
 from mpl_toolkits.mplot3d import Axes3D
 from SU2.mesh import tools
@@ -65,7 +68,7 @@ def readZone(f, plotZone=False):
 
 def convertTecplotSU2(tecData):
     data = {}
-    data['NDIME'] = 3
+    data['NDIME'] = 3 #TODO Add handling of 2D meshes
     
     #internal mesh
     data['NPOIN'] = tecData[0][0]['Nodes']
@@ -129,19 +132,27 @@ def convertTecplotSU2(tecData):
     return data
 
 if __name__=='__main__':
+
+    if len(sys.argv) != 3:
+        raise RuntimeError("2 arguments required\n" +
+                           "Usage:\n\ttecplotToSU2 inputfile outputfile")
     
-    f = open('mesh.dat', 'r')
+    print "Opening file " + sys.argv[1]
+    f = open(sys.argv[1], 'r')
     
+    print "Reading zones:"
     data = []
     for n in range(100):
-        print n
         try:
             data.append(readZone(f))
+            print "\t" + data[-1][0]['T']
         except StopIteration: 
             break
     
+    print "Converting to SU2 format"
     dataSU2 = convertTecplotSU2(data)
     
-    tools.write('htv2.su2', dataSU2)
+    tools.write(sys.argv[2], dataSU2)
+    print "Mesh written to file " + sys.argv[2]
     
         
