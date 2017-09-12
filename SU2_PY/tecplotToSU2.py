@@ -8,6 +8,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from SU2.mesh import tools
 from copy import deepcopy
 from math import sqrt
+from scipy import spatial
 
 def readZone(f, plotZone=False):
     param = {}
@@ -93,28 +94,24 @@ def convertTecplotSU2(tecData):
         i += 1
         
     # Buondary mesh
+    tree = spatial.KDTree([d[0:-1] for d in data['POIN']])
+    
     data['NMARK'] = long(len(tecData) - 1)
     data['MARKS'] = {}
+    points = [pInter[0:-1] for pInter in data['POIN']]
+    values = [pInter[-1] for pInter in data['POIN']]
     for bDatTec in tecData[1:]:
         data['MARKS'][bDatTec[0]['T']] = {'TAG':bDatTec[0]['T'], 'NELEM':bDatTec[0]['Elements'], 'ELEM':[]}
         
         # Find internal point id correspondent to the boundary point
         # In tecplot the boundary point are replicted and a new id is created
-        tol = 1e-9
+        tol = 1e-7
         id = [-1]*len(bDatTec[1])
         j = 0
         for p in bDatTec[1]:
-            for pInter in data['POIN']:
-                d = 0
-                for i in range(data['NDIME']):
-                    d += pow(p[i] - pInter[i], 2)
-                d = sqrt(d)
-                    
-                if d < tol:
-                    id[j] = pInter[-1]
-                    break
-            if id[j] == -1:
-                raise RuntimeError("Error: internal correspondent point not found.")
+            dis, i = tree.query(p)
+            id[j] = data['POIN'][i][-1]
+
             j += 1
                 
         i = long(0)
