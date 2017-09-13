@@ -67,6 +67,53 @@ def readZone(f, plotZone=False):
         
     return param, Coord, elem
 
+def febrickToVTK(elem):
+    elvtk = []
+    prevEl = -1
+    for e in elem:
+        if e != prevEl:
+            elvtk.append(e)
+        prevEl = e
+    
+    return elvtk
+       
+#     el1 = elem[0:4]
+#     el2 = elem[4:]
+#     n1 = len(set(el1))
+#     n2 = len(set(el2))
+#     
+#     if n1 < n2:
+#         eltmp = el1
+#         n1 = n1tmp
+#         el1 = el2
+#         el2 = el1tmp
+#         n1 = n2
+#         n2 = n1tmp
+#     
+#     el1vtk = []
+#     el2vtk = []
+#     if n2 < 4:
+#         if n1 < 4:
+#             ePrev = -1
+#             for e in el1:
+#                 if e != ePrev:
+#                     el1vtk.append(e)
+#                 ePrev = e
+#             
+#         ePrev = -1
+#         for e in el2:
+#             if e != ePrev:
+#                 el2vtk.append(e)
+#             ePrev = e
+#             
+#         elvtk = el1vtk + el2vtk
+#         if len(elvtk) != n1 + n2:
+#             raise RuntimeError('Inconsistency in the element data.')
+#     else:
+#         elvtk = elem
+#         
+#     return elvtk
+
 def convertTecplotSU2(tecData):
     data = {}
     data['NDIME'] = 3 #TODO Add handling of 2D meshes
@@ -79,7 +126,7 @@ def convertTecplotSU2(tecData):
     data['ELEM'] = []
     i = long(0)
     for e in tecData[0][2]:
-        el = list(set([ee-1 for ee in e]))
+        el = febrickToVTK([ee-1 for ee in e]) #list(set([ee-1 for ee in e]))
         if len(el) == 4:
             type = 10
         elif len(el) == 8:
@@ -94,6 +141,7 @@ def convertTecplotSU2(tecData):
         i += 1
         
     # Buondary mesh
+    print '\tCreating KD tree...'
     tree = spatial.KDTree([d[0:-1] for d in data['POIN']])
     
     data['NMARK'] = long(len(tecData) - 1)
@@ -101,22 +149,31 @@ def convertTecplotSU2(tecData):
     points = [pInter[0:-1] for pInter in data['POIN']]
     values = [pInter[-1] for pInter in data['POIN']]
     for bDatTec in tecData[1:]:
+        print '\t' + bDatTec[0]['T']
+        
         data['MARKS'][bDatTec[0]['T']] = {'TAG':bDatTec[0]['T'], 'NELEM':bDatTec[0]['Elements'], 'ELEM':[]}
         
         # Find internal point id correspondent to the boundary point
         # In tecplot the boundary point are replicted and a new id is created
-        tol = 1e-7
         id = [-1]*len(bDatTec[1])
         j = 0
+        maxDis = 0
+        iMaxDis = -1
         for p in bDatTec[1]:
             dis, i = tree.query(p)
             id[j] = data['POIN'][i][-1]
+            if dis > maxDis:
+                maxDis = dis
+                iMaxDis = i
 
             j += 1
+        if iMaxDis != -1:
+            print '\t\tMax error=' + repr(maxDis) + ' on point ' + repr(iMaxDis)
+            print '\t\tof coordinate ' + repr(data['POIN'][iMaxDis][0:-1])
                 
         i = long(0)
         for e in bDatTec[2]:
-            el = list(set([id[ee-1] for ee in e]))
+            el = febrickToVTK([id[ee-1] for ee in e]) #list(set([id[ee-1] for ee in e]))
             if len(el) == 3:
                 type = 5
             elif len(el) == 4:
