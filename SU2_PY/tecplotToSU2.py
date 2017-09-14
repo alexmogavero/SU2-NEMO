@@ -69,50 +69,11 @@ def readZone(f, plotZone=False):
 
 def febrickToVTK(elem):
     elvtk = []
-    prevEl = -1
     for e in elem:
-        if e != prevEl:
+        if e not in elvtk:
             elvtk.append(e)
-        prevEl = e
     
     return elvtk
-       
-#     el1 = elem[0:4]
-#     el2 = elem[4:]
-#     n1 = len(set(el1))
-#     n2 = len(set(el2))
-#     
-#     if n1 < n2:
-#         eltmp = el1
-#         n1 = n1tmp
-#         el1 = el2
-#         el2 = el1tmp
-#         n1 = n2
-#         n2 = n1tmp
-#     
-#     el1vtk = []
-#     el2vtk = []
-#     if n2 < 4:
-#         if n1 < 4:
-#             ePrev = -1
-#             for e in el1:
-#                 if e != ePrev:
-#                     el1vtk.append(e)
-#                 ePrev = e
-#             
-#         ePrev = -1
-#         for e in el2:
-#             if e != ePrev:
-#                 el2vtk.append(e)
-#             ePrev = e
-#             
-#         elvtk = el1vtk + el2vtk
-#         if len(elvtk) != n1 + n2:
-#             raise RuntimeError('Inconsistency in the element data.')
-#     else:
-#         elvtk = elem
-#         
-#     return elvtk
 
 def convertTecplotSU2(tecData):
     data = {}
@@ -125,8 +86,9 @@ def convertTecplotSU2(tecData):
     data['NELEM'] = tecData[0][0]['Elements']
     data['ELEM'] = []
     i = long(0)
+    typeCount = [0]*15
     for e in tecData[0][2]:
-        el = febrickToVTK([ee-1 for ee in e]) #list(set([ee-1 for ee in e]))
+        el = febrickToVTK([ee-1 for ee in e])
         if len(el) == 4:
             type = 10
         elif len(el) == 8:
@@ -137,6 +99,7 @@ def convertTecplotSU2(tecData):
             type = 14
         else:
             raise RuntimeError("Error: number of nodes not consistent with any element type.")
+        typeCount[type] += 1
         data['ELEM'].append([type] + el + [i])
         i += 1
         
@@ -173,15 +136,21 @@ def convertTecplotSU2(tecData):
                 
         i = long(0)
         for e in bDatTec[2]:
-            el = febrickToVTK([id[ee-1] for ee in e]) #list(set([id[ee-1] for ee in e]))
+            el = febrickToVTK([id[ee-1] for ee in e])
             if len(el) == 3:
                 type = 5
             elif len(el) == 4:
                 type = 9
             else:
                 raise RuntimeError("Error: number of nodes not consistent with any element type.")
+            typeCount[type] += 1
             data['MARKS'][bDatTec[0]['T']]['ELEM'].append([type] + el + [i])
             i += 1
+    
+    print 'type ID\tcount'
+    for i in range(len(typeCount)):
+        if typeCount[i] > 0:
+            print repr(i) + '\t' + repr(typeCount[i])
     
     return data
 
