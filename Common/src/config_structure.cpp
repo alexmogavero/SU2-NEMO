@@ -6584,3 +6584,7 @@ string CConfig::GetRestart_FlowFileName(void) {
   string ext = Restart_FlowFileName.substr(iext, Restart_FlowFileName.size());
   return baseName + "-" + to_string(SU2_TYPE::Int(GetExtIter())) + ext;
 }
+
+string CConfig::GetFlow_FileName(void) {
+  return Flow_FileName + "-" + to_string(SU2_TYPE::Int(GetExtIter()));
+}
