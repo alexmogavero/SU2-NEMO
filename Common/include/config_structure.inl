@@ -1124,8 +1124,6 @@ inline string CConfig::GetHeat_FileName(void) { return Heat_FileName; }
 
 inline string CConfig::GetAdjWave_FileName(void) { return AdjWave_FileName; }
 
-inline string CConfig::GetRestart_FlowFileName(void) { return Restart_FlowFileName; }
-
 inline string CConfig::GetRestart_WaveFileName(void) { return Restart_WaveFileName; }
 
 inline string CConfig::GetRestart_HeatFileName(void) { return Restart_HeatFileName; }

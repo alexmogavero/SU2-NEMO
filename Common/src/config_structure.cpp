@@ -6577,3 +6577,10 @@ su2double* CConfig::GetWeight_v()const{
 unsigned short CConfig::GetnVibration_mode()const{
 	return nVibration_mode;
 }
+
+string CConfig::GetRestart_FlowFileName(void) {
+  size_t iext = Restart_FlowFileName.find(".");
+  string baseName = Restart_FlowFileName.substr(0, iext);
+  string ext = Restart_FlowFileName.substr(iext, Restart_FlowFileName.size());
+  return baseName + "-" + to_string(SU2_TYPE::Int(GetExtIter())) + ext;
+}
