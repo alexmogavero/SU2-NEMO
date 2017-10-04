@@ -133,7 +133,7 @@ def read(filename,scale=1.0):
             fileslice = islice(meshfile,npoin)
             
             # the data pattern
-            pattern = tuple( [float]*3 ) # + [long] )
+            pattern = tuple( [float]*3  + [long] )
             
             # scan next lines for element data
             poin = [ 
