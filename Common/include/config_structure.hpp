@@ -642,7 +642,8 @@ private:
   Wrt_SharpEdges,              /*!< \brief Write residuals to solution file */
   Wrt_Halo,                   /*!< \brief Write rind layers in solution files */
   Plot_Section_Forces,       /*!< \brief Write sectional forces for specified markers. */
-  Wrt_1D_Output;                /*!< \brief Write average stagnation pressure specified markers. */
+  Wrt_1D_Output,                /*!< \brief Write average stagnation pressure specified markers. */
+  Store_past;                 /*!< \brief If true it appends the iteration number to the output file. */
   unsigned short Console_Output_Verb;  /*!< \brief Level of verbosity for console output */
   su2double Gamma,			/*!< \brief Ratio of specific heats of the gas. */
   Bulk_Modulus,			/*!< \brief Value of the bulk modulus for incompressible flows. */
@@ -6835,6 +6836,11 @@ public:
    * \brief Get the AD support.
    */
   bool GetAD_Mode(void);
+
+  /*!
+   * \brief Get wether to store past solutions.
+   */
+  bool GetStore_Past(void);
 };
 
 #include "config_structure.inl"

@@ -1299,6 +1299,9 @@ void CConfig::SetConfig_Options(unsigned short val_iZone, unsigned short val_nZo
   /*!\brief CONSOLE_OUTPUT_VERBOSITY
    *  \n DESCRIPTION: Verbosity level for console output  \ingroup Config*/
   addEnumOption("CONSOLE_OUTPUT_VERBOSITY", Console_Output_Verb, Verb_Map, VERB_HIGH);
+  /*!\brief STORE_PAST_SOLUTIONS
+   *  \n If true it appends the iteration number to the output file, so the past solution are not lost. \ingroup Config*/
+  addBoolOption("STORE_PAST_SOLUTIONS", Store_past, false);
 
 
   /*!\par CONFIG_CATEGORY: Dynamic mesh definition \ingroup Config*/
@@ -6579,12 +6582,25 @@ unsigned short CConfig::GetnVibration_mode()const{
 }
 
 string CConfig::GetRestart_FlowFileName(void) {
-  size_t iext = Restart_FlowFileName.find(".");
-  string baseName = Restart_FlowFileName.substr(0, iext);
-  string ext = Restart_FlowFileName.substr(iext, Restart_FlowFileName.size());
-  return baseName + "-" + to_string(SU2_TYPE::Int(GetExtIter())) + ext;
+  if(GetStore_Past()){
+    size_t iext = Restart_FlowFileName.find(".");
+    string baseName = Restart_FlowFileName.substr(0, iext);
+    string ext = Restart_FlowFileName.substr(iext, Restart_FlowFileName.size());
+
+    return baseName + "-" + to_string(SU2_TYPE::Int(GetExtIter())) + ext;
+  }else{
+    return Restart_FlowFileName;
+  }
 }
 
 string CConfig::GetFlow_FileName(void) {
-  return Flow_FileName + "-" + to_string(SU2_TYPE::Int(GetExtIter()));
+  if(GetStore_Past()){
+    return Flow_FileName + "-" + to_string(SU2_TYPE::Int(GetExtIter()));
+  }else{
+    return Flow_FileName;
+  }
+}
+
+bool CConfig::GetStore_Past(void){
+  return Store_past;
 }
