@@ -46,6 +46,7 @@
 #include <cmath>
 #include <time.h>
 #include <fstream>
+#include <list>
 
 #include "solver_structure.hpp"
 #include "integration_structure.hpp"
@@ -128,7 +129,17 @@ class COutput {
   int cgns_base, cgns_zone, cgns_base_results, cgns_zone_results;
   su2double Sum_Total_RadialDistortion, Sum_Total_CircumferentialDistortion; // Add all the distortion to compute a run average.
 
+  list<string> Restart_File_Names; //!<Restart files currently stored
+  list<string> Flow_File_Names; //!<Flow files currently stored
   
+  /*!
+   * \brief Delete too old past files
+   * @param filename the name of the last file being saved
+   * @param config the configuration object
+   * @param past_files record of the files currently stored
+   */
+  static void DeletePastFiles(string filename, CConfig *config, list<string>& past_files);
+
 protected:
 
 public:

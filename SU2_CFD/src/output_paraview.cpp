@@ -1842,6 +1842,11 @@ void COutput::WriteParaViewASCII_Parallel(CConfig *config, CGeometry *geometry, 
 
   strcat(cstr, buffer);
 
+  //Remove old restart files
+  if(!surf_sol){ //TODO implement past saving for surface flow too
+    DeletePastFiles(string(cstr), config, Flow_File_Names);
+  }
+
   /*--- Open Paraview ASCII file and write the header. ---*/
 
     if (rank == MASTER_NODE) {

@@ -1302,7 +1302,9 @@ void CConfig::SetConfig_Options(unsigned short val_iZone, unsigned short val_nZo
   /*!\brief STORE_PAST_SOLUTIONS
    *  \n If true it appends the iteration number to the output file, so the past solution are not lost. \ingroup Config*/
   addBoolOption("STORE_PAST_SOLUTIONS", Store_past, false);
-
+  /*!\brief NUMBER_PAST_SOLUTIONS
+   *  \n Number of past solution to save. If 0 save them all. \ingroup Config*/
+  addUnsignedShortOption("NUMBER_PAST_SOLUTIONS", N_past, 0);
 
   /*!\par CONFIG_CATEGORY: Dynamic mesh definition \ingroup Config*/
   /*--- Options related to dynamic meshes ---*/
@@ -6604,3 +6606,9 @@ string CConfig::GetFlow_FileName(void) {
 bool CConfig::GetStore_Past(void){
   return Store_past;
 }
+
+unsigned short CConfig::GetNumber_Past(void)const{
+  return N_past;
+}
+
+

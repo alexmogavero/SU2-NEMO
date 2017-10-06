@@ -644,6 +644,7 @@ private:
   Plot_Section_Forces,       /*!< \brief Write sectional forces for specified markers. */
   Wrt_1D_Output,                /*!< \brief Write average stagnation pressure specified markers. */
   Store_past;                 /*!< \brief If true it appends the iteration number to the output file. */
+  unsigned short N_past;                 /*!< \brief Number of past solution to save. */
   unsigned short Console_Output_Verb;  /*!< \brief Level of verbosity for console output */
   su2double Gamma,			/*!< \brief Ratio of specific heats of the gas. */
   Bulk_Modulus,			/*!< \brief Value of the bulk modulus for incompressible flows. */
@@ -6841,6 +6842,11 @@ public:
    * \brief Get wether to store past solutions.
    */
   bool GetStore_Past(void);
+
+  /*!
+   * \brief Get the number of past solution to save.
+   */
+  unsigned short GetNumber_Past(void)const;
 };
 
 #include "config_structure.inl"

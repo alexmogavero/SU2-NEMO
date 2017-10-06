@@ -34,6 +34,7 @@
 #include "../include/output_structure.hpp"
 #include "../include/CKineticVariable.hpp"
 #include "../../Common/include/debug_tracking.hpp"
+#include <cstdio>
 
 COutput::COutput(void) {
   
@@ -14781,6 +14782,9 @@ void COutput::WriteRestart_Parallel_ASCII(CConfig *config, CGeometry *geometry, 
     filename = config->GetUnsteady_FileName(filename, SU2_TYPE::Int(iExtIter));
   }
   
+  //Remove old restart files
+  DeletePastFiles(filename, config, Restart_File_Names);
+
   /*--- Only the master node writes the header. ---*/
   
   if (rank == MASTER_NODE) {
@@ -14906,6 +14910,9 @@ void COutput::WriteRestart_Parallel_Binary(CConfig *config, CGeometry *geometry,
   } else if ((fem) && (config->GetWrt_Dynamic())) {
     filename = config->GetUnsteady_FileName(filename, SU2_TYPE::Int(iExtIter));
   }
+
+  //Remove old restart files
+  DeletePastFiles(filename, config, Restart_File_Names);
 
   strcpy(fname, filename.c_str());
 
@@ -15214,4 +15221,16 @@ void COutput::DeallocateSurfaceData_Parallel(CConfig *config, CGeometry *geometr
   }
   if (Parallel_Surf_Data != NULL) delete [] Parallel_Surf_Data;
   
+}
+
+void COutput::DeletePastFiles(string filename, CConfig *config, list<string>& past_files){
+  //Remove old restart files
+  unsigned short numPastFiles = config->GetNumber_Past();
+  if(numPastFiles>0 && config->GetStore_Past()){
+    past_files.push_back(filename);
+    if(past_files.size() > numPastFiles){
+      remove(past_files.front().c_str());
+      past_files.pop_front();
+    }
+  }
 }
