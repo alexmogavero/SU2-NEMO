@@ -58,19 +58,23 @@ if __name__=='__main__':
     # inputs
     rep = False
     outputfile = None
+    axis = None
+    helpMessage = 'checkMesh.py [-r | --repair] [[-o | --ofile] <outputfile>] [[-a | --axis] <marker_tag>] <inputfile>'
     try:
-        opts, args = getopt.getopt(sys.argv[1:-1],"hr:o:",["help", "repair", "ofile="])
+        opts, args = getopt.getopt(sys.argv[1:-1],"hr:o:a:",["help", "repair", "ofile=", "axis="])
     except getopt.GetoptError:
-        print 'checkMesh.py [[-r | --repair] [-o | --ofile] <outputfile>] <inputfile>'
+        print helpMessage
         sys.exit(2)
     for opt, arg in opts:
         if opt in ('-h', '--help'):
-           print 'checkMesh.py [[-r | --repair] [-o | --ofile] <outputfile>] <inputfile>'
+           print helpMessage
            sys.exit()
         elif opt in ("-r", "--repair"):
            rep = True
         elif opt in ("-o", "--ofile"):
            outputfile = arg
+        elif opt in ('-a', '--axis'):
+            axis = arg
 
     inputfile = sys.argv[-1]
     print 'Reading file...'
@@ -100,6 +104,23 @@ if __name__=='__main__':
     for tp in typCnt:
         print typName[tp] + ' ' + str(typCnt[tp])
     print ' '
+    
+    if axis:
+        print 'Checking axis ' + axis
+        if axis in data['MARKS']:
+            for el in data['MARKS'][axis]['ELEM']:
+                for pt in el[1:]:
+                    p = data['POIN'][pt]
+                    if p[-1] != pt:
+                        raise RuntimeError('Point not sorted!')
+                    
+                    if p[1] != 0.0:
+                        print 'Y coordinate of axis point is not zero: Y=' + repr(p[1])
+                        if rep:
+                            p[1] = 0.0
+            print ' '
+        else:
+            raise RuntimeError('Marker ' + axis + ' does not exist.')
      
     if outputfile:
         print 'Writing repaired mesh...'
