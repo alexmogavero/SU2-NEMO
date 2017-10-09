@@ -6589,7 +6589,7 @@ string CConfig::GetRestart_FlowFileName(void) {
     string baseName = Restart_FlowFileName.substr(0, iext);
     string ext = Restart_FlowFileName.substr(iext, Restart_FlowFileName.size());
 
-    return baseName + "-" + to_string(SU2_TYPE::Int(GetExtIter())) + ext;
+    return baseName + "-" + to_string(SU2_TYPE::Int(GetExtIter() + GetExtIter_OffSet())) + ext;
   }else{
     return Restart_FlowFileName;
   }
@@ -6597,7 +6597,7 @@ string CConfig::GetRestart_FlowFileName(void) {
 
 string CConfig::GetFlow_FileName(void) {
   if(GetStore_Past()){
-    return Flow_FileName + "-" + to_string(SU2_TYPE::Int(GetExtIter()));
+    return Flow_FileName + "-" + to_string(SU2_TYPE::Int(GetExtIter() + GetExtIter_OffSet()));
   }else{
     return Flow_FileName;
   }
