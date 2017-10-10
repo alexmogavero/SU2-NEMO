@@ -6443,7 +6443,7 @@ fi
 ##########################
 
 # check for lib
-Mutationpplib=libmutation++.dylib
+Mutationpplib=libmutation++.so
 Mutationppheader=mutation++.h
 have_Mutationpp="no"
 
