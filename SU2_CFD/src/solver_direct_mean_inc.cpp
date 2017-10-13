@@ -33,6 +33,7 @@
 
 #include "../include/solver_structure.hpp"
 #include "../include/CVibrationArmonics.hpp"
+#include "../include/CMutationpp.hpp"
 
 CIncEulerSolver::CIncEulerSolver(void) : CSolver() {
   /*--- Basic array initialization ---*/
@@ -1769,6 +1770,14 @@ void CIncEulerSolver::SetNondimensionalization(CGeometry *geometry, CConfig *con
 					config->GetnVibration_mode(), config->GetTheta_v(), config->GetWeight_v());
 			FluidModel->SetEnergy_Prho(Pressure_FreeStreamND, Density_FreeStreamND);
 			break;
+
+    case MUTATION_PP:
+      vector<double> X(5, 0); //TODO implement reading from config
+      X[3] = 0.7908518489;
+      X[4] = 0.2091481511;
+      FluidModel = new CMutationpp("air5", X);
+      FluidModel->SetEnergy_Prho(Pressure_FreeStreamND, Density_FreeStreamND);
+      break;
 
   }
   

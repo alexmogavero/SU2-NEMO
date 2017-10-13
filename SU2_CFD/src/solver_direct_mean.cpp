@@ -33,6 +33,7 @@
 
 #include "../include/solver_structure.hpp"
 #include "../include/CVibrationArmonics.hpp"
+#include "../include/CMutationpp.hpp"
 
 CEulerSolver::CEulerSolver(void) : CSolver() {
 
@@ -3488,6 +3489,23 @@ void CEulerSolver::SetNondimensionalization(CGeometry *geometry, CConfig *config
 			}
 			break;
 
+    case MUTATION_PP:
+      vector<double> X(5, 0); //TODO implement reading from config
+      X[3] = 0.7908518489;
+      X[4] = 0.2091481511;
+      FluidModel = new CMutationpp("air5", X);
+      if (free_stream_temp) {
+        FluidModel->SetTDState_PT(Pressure_FreeStream, Temperature_FreeStream);
+        Density_FreeStream = FluidModel->GetDensity();
+        config->SetDensity_FreeStream(Density_FreeStream);
+      }
+      else {
+        FluidModel->SetTDState_Prho(Pressure_FreeStream, Density_FreeStream );
+        Temperature_FreeStream = FluidModel->GetTemperature();
+        config->SetTemperature_FreeStream(Temperature_FreeStream);
+      }
+      break;
+
   }
 
   Mach2Vel_FreeStream = FluidModel->GetSoundSpeed();
@@ -3698,6 +3716,14 @@ void CEulerSolver::SetNondimensionalization(CGeometry *geometry, CConfig *config
 			FluidModel->SetEnergy_Prho(Pressure_FreeStreamND, Density_FreeStreamND);
 			break;
 
+    case MUTATION_PP:
+      vector<double> X(5, 0); //TODO implement reading from config
+      X[3] = 0.7908518489;
+      X[4] = 0.2091481511;
+      FluidModel = new CMutationpp("air5", X);
+      FluidModel->SetEnergy_Prho(Pressure_FreeStreamND, Density_FreeStreamND);
+      break;
+
   }
 
   Energy_FreeStreamND = FluidModel->GetStaticEnergy() + 0.5*ModVel_FreeStreamND*ModVel_FreeStreamND;
@@ -3804,6 +3830,19 @@ void CEulerSolver::SetNondimensionalization(CGeometry *geometry, CConfig *config
 				}
 				cout << endl;
 				break;
+
+      case MUTATION_PP:
+        cout << "Fluid Model: MUTATION_PP "<< endl;
+        cout << "Input file: " << "air5" << endl; //TODO implement from config
+        cout << "Composition: ";
+        vector<double> X(5, 0); //TODO implement reading from config
+        X[3] = 0.7908518489;
+        X[4] = 0.2091481511;
+        for(unsigned short i=0; i<X.size(); i++){
+            cout << X[i] << " ";
+        }
+        cout << endl;
+        break;
 
     }
     if (viscous) {

@@ -132,5 +132,9 @@ void CMutationpp::SetTDState_rhoT (su2double rho, su2double T ) {
   UpdateState();
 }
 
+void CMutationpp::SetEnergy_Prho (su2double P, su2double rho ) {
+  SetTDState_Prho(P, rho);
+}
+
 
 

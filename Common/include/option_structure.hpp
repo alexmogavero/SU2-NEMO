@@ -417,7 +417,8 @@ enum ENUM_FLUIDMODEL {
 	IDEAL_GAS = 1, /*!< \brief _____. */
 	VW_GAS = 2,
 	PR_GAS = 3,
-	HARMONIC_VIBR = 4
+	HARMONIC_VIBR = 4,
+	MUTATION_PP = 5
 };
 
 static const map<string, ENUM_FLUIDMODEL> FluidModel_Map = CCreateMap<string, ENUM_FLUIDMODEL>
@@ -425,7 +426,8 @@ static const map<string, ENUM_FLUIDMODEL> FluidModel_Map = CCreateMap<string, EN
 ("IDEAL_GAS", IDEAL_GAS)
 ("VW_GAS", VW_GAS)
 ("PR_GAS", PR_GAS)
-("HARMONIC_VIBRATION", HARMONIC_VIBR);
+("HARMONIC_VIBRATION", HARMONIC_VIBR)
+("MUTATION_PP", MUTATION_PP);
 
 /*!
  * \brief types of initialization option

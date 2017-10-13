@@ -6209,6 +6209,19 @@ void COutput::SetForces_Breakdown(CGeometry ***geometry,
 					Breakdown_file << "Specific gas constant (non-dim): " << config[val_iZone]->GetGas_ConstantND()<< "\n";
 					Breakdown_file << "Specific Heat Ratio: "<< config[val_iZone]->GetGamma() << "\n";
 					break;
+
+        case MUTATION_PP:
+          cout << "Fluid Model: MUTATION_PP "<< endl;
+          cout << "Input file: " << "air5" << endl; //TODO implement from config
+          cout << "Composition: ";
+          vector<double> X(5, 0); //TODO implement reading from config
+          X[3] = 0.7908518489;
+          X[4] = 0.2091481511;
+          for(unsigned short i=0; i<X.size(); i++){
+              cout << X[i] << " ";
+          }
+          cout << endl;
+          break;
       }
       
       if (viscous) {
