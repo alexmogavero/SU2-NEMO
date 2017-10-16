@@ -55,12 +55,12 @@ CMutationpp::CMutationpp(string optFile, vector<double> cmp):
 }
 
 su2double CMutationpp::CalcGasConstant()const{
-  su2double R = 0;
+  su2double M = 0;
   for(size_t i=0; i<comp.size(); i++){
-    R += comp[i]*mix.speciesMw(i);
+    M += comp[i]*mix.speciesMw(i);
   }
 
-  return R;
+  return Mutation::RU/M;
 }
 
 
