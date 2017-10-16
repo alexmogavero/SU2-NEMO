@@ -32,6 +32,7 @@
  */
 
 #include "../include/CMutationpp.hpp"
+#include "../include/fluid_model.hpp"
 #include <functional>
 #include <boost/math/tools/roots.hpp>
 
@@ -49,7 +50,8 @@ CMutationpp::CMutationpp(string optFile, vector<double> cmp):
 	opt(optFile),
 	mix(opt),
 	comp(cmp),
-	Gas_Constant(CalcGasConstant()){
+	Gas_Constant(0){
+  Gas_Constant = CalcGasConstant();
 }
 
 su2double CMutationpp::CalcGasConstant()const{

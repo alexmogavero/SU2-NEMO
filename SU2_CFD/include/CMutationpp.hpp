@@ -11,7 +11,7 @@
  */
 class CMutationpp : public CFluidModel {
 
-  const su2double Gas_Constant; //!<Ideal gas constant of the mixture
+  su2double Gas_Constant; //!<Ideal gas constant of the mixture
 
   su2double CalcGasConstant()const; //!Calculates the ideal gas constant of the mixture.
 
