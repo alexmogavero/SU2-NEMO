@@ -52,6 +52,14 @@ CMutationpp::CMutationpp(string optFile, vector<double> cmp):
 	comp(cmp),
 	Gas_Constant(0){
   Gas_Constant = CalcGasConstant();
+
+  //Necessary to avoid error in mutation++ trying to do log of 0
+  //TODO edit mutation++ to handle this
+  for(size_t i=0; i<comp.size(); i++){
+    if(comp[i]==0){
+      comp[i] = 1e-20;
+    }
+  }
 }
 
 su2double CMutationpp::CalcGasConstant()const{
