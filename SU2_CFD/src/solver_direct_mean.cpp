@@ -16616,22 +16616,22 @@ void CNSSolver::BC_Isothermal_Wall(CGeometry *geometry, CSolver **solver_contain
       /*--- Apply a weak boundary condition for the energy equation.
        Compute the residual due to the prescribed heat flux. ---*/
 
-      if(config->GetStrongBC()){
-        node[iPoint]->SetTemperature_Old(Twall, FluidModel);
-        su2double deltaDens = LinSysRes.GetBlock(iPoint, 0);
-        su2double resEnergy = deltaDens*node[iPoint]->GetSolution_Old(nVar-1)/node[iPoint]->GetDensity();
-        LinSysRes.SetBlock(iPoint, nVar-1, resEnergy);
-        node[iPoint]->SetVal_ResTruncError_Zero(nVar-1);
-      }else{
+//      if(config->GetStrongBC()){
+//        node[iPoint]->SetTemperature_Old(Twall, FluidModel);
+//        su2double deltaDens = LinSysRes.GetBlock(iPoint, 0);
+//        su2double resEnergy = deltaDens*node[iPoint]->GetSolution_Old(nVar-1)/node[iPoint]->GetDensity();
+//        LinSysRes.SetBlock(iPoint, nVar-1, resEnergy);
+//        node[iPoint]->SetVal_ResTruncError_Zero(nVar-1);
+//      }else{
         Res_Visc[nDim+1] = thermal_conductivity * dTdn * Area;
-      }
+//      }
 
       /*--- Calculate Jacobian for implicit time stepping ---*/
 
       if (implicit) {
-        if(config->GetStrongBC()){
-          throw std::logic_error("Error: Strong BC not implemented for implicit formulation.");
-        }
+//        if(config->GetStrongBC()){
+//          throw std::logic_error("Error: Strong BC not implemented for implicit formulation.");
+//        }
 
         for (iVar = 0; iVar < nVar; iVar ++)
           for (jVar = 0; jVar < nVar; jVar ++)
