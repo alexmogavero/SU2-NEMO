@@ -2699,9 +2699,11 @@ void CUpwGeneralRoe_Flow::ComputeResidual(su2double *val_residual, su2double **v
     if (RoeSoundSpeed2 <= 0.0) {
     for (iVar = 0; iVar < nVar; iVar++) {
       val_residual[iVar] = 0.0;
-      for (jVar = 0; jVar < nVar; jVar++) {
-      val_Jacobian_i[iVar][iVar] = 0.0;
-      val_Jacobian_j[iVar][iVar] = 0.0;
+      if(implicit){
+        for (jVar = 0; jVar < nVar; jVar++) {
+          val_Jacobian_i[iVar][iVar] = 0.0;
+          val_Jacobian_j[iVar][iVar] = 0.0;
+        }
       }
     }
       return;
