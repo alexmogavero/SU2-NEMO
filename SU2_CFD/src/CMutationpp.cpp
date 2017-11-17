@@ -77,6 +77,11 @@ CMutationpp::~CMutationpp(void) {
 }
 
 void CMutationpp::SetTDState_rhoe (su2double rho, su2double e ) {
+  if(rho < 0 ){
+    SetWrongState();
+    return;
+  }
+
   vector<double> rhoSpecie = SpecieDensity(rho);
   mix.setState(rhoSpecie.data(), &e, 0);
 
@@ -116,6 +121,24 @@ void CMutationpp::UpdateState(){
   dPde_rho = Pressure/Temperature*dTde_rho;
 }
 
+void CMutationpp::SetWrongState(){
+  Density = -1;
+  StaticEnergy = 0; //Non non-physical but probably ok because the others are bad
+  Temperature = -1;
+  Pressure = -1;
+
+  Cp = -1;
+
+  SoundSpeed2 = -1;
+
+  Entropy = 0; //Non non-physical but probably ok because the others are bad
+
+  dPdrho_e = -1;
+  dTdrho_e = 0.0;
+  dTde_rho = -1;
+  dPde_rho = -1;
+}
+
 void CMutationpp::SetTDState_PT (su2double P, su2double T){
   su2double rho = P/(T*Gas_Constant);
   SetTDState_rhoT(rho, T);
@@ -136,6 +159,11 @@ void CMutationpp::SetTDState_Ps (su2double P, su2double s ) {
 }
 
 void CMutationpp::SetTDState_rhoT (su2double rho, su2double T ) {
+  if(rho < 0 ){
+    SetWrongState();
+    return;
+  }
+
   vector<double> rhoSpecie = SpecieDensity(rho);
   mix.setState(rhoSpecie.data(), &T, 1);
 

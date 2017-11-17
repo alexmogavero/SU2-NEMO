@@ -32,6 +32,11 @@ class CMutationpp : public CFluidModel {
    */
   void UpdateState();
 
+  /*!
+   * \brief Set the state to all non-physical values.
+   */
+  void SetWrongState();
+
 public:
 
      /*!
