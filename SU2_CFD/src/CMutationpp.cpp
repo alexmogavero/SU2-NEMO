@@ -33,15 +33,20 @@
 
 #include "../include/CMutationpp.hpp"
 #include "../include/fluid_model.hpp"
+#include "../include/CPerfectGas.hpp"
 #include <functional>
 #include <boost/math/tools/roots.hpp>
+
+const su2double CMutationpp::Tmin = 55.0; //hard coded as it is hard coded in mutation++ it is 50 + 5 for tolerance
 
 CMutationpp::CMutationpp() :
 	CFluidModel(),
 	opt("air5"),
 	mix(opt),
 	comp(),
-	Gas_Constant(0){
+	Gas_Constant(0),
+	fallBackModel(),
+	e_min(0){
 }
 
 
@@ -52,6 +57,17 @@ CMutationpp::CMutationpp(string optFile, vector<double> cmp):
 	comp(cmp),
 	Gas_Constant(0){
   Gas_Constant = CalcGasConstant();
+
+  vector<double> rhoSpecie = SpecieDensity(1);
+  mix.setState(rhoSpecie.data(), &Tmin, 1);
+  su2double gamma = mix.mixtureFrozenCpMass()/mix.mixtureFrozenCvMass();
+
+  fallBackModel = CPerfectGas(Gas_Constant, gamma);
+
+  e_min = mix.mixtureEnergyMass();
+  fallBackModel.SetTDState_rhoT(1, Tmin);
+  form_e = e_min - fallBackModel.GetStaticEnergy();
+  form_s = mix.mixtureSMass() - fallBackModel.GetEntropy();
 
   //Necessary to avoid error in mutation++ trying to do log of 0
   //TODO edit mutation++ to handle this
@@ -79,6 +95,12 @@ CMutationpp::~CMutationpp(void) {
 void CMutationpp::SetTDState_rhoe (su2double rho, su2double e ) {
   if(rho < 0 ){
     SetWrongState();
+    return;
+  }
+
+  if(e < e_min){
+    fallBackModel.SetTDState_rhoe(rho, e);
+    UpdateFromFallBack();
     return;
   }
 
@@ -140,6 +162,24 @@ void CMutationpp::SetWrongState(){
   dPde_rho = -1;
 }
 
+void CMutationpp::UpdateFromFallBack(){
+  Density = fallBackModel.GetDensity();
+  StaticEnergy = fallBackModel.GetStaticEnergy() + form_e;
+  Temperature = fallBackModel.GetTemperature();
+  Pressure = fallBackModel.GetPressure();
+
+  Cp = fallBackModel.GetCp();
+
+  SoundSpeed2 = fallBackModel.GetSoundSpeed2();
+
+  Entropy = fallBackModel.GetEntropy() + form_s;
+
+  dPdrho_e = fallBackModel.GetdPdrho_e();
+  dTdrho_e = fallBackModel.GetdTdrho_e();
+  dTde_rho = fallBackModel.GetdTde_rho();
+  dPde_rho = fallBackModel.GetdPde_rho();
+}
+
 void CMutationpp::SetTDState_PT (su2double P, su2double T){
   su2double rho = P/(T*Gas_Constant);
   SetTDState_rhoT(rho, T);
@@ -148,7 +188,6 @@ void CMutationpp::SetTDState_PT (su2double P, su2double T){
 void CMutationpp::SetTDState_Prho (su2double P, su2double rho ) {
   su2double T = P/(Gas_Constant*rho);
   SetTDState_rhoT(rho, T);
-
 }
 
 void CMutationpp::SetTDState_hs (su2double h, su2double s ) {
@@ -162,6 +201,12 @@ void CMutationpp::SetTDState_Ps (su2double P, su2double s ) {
 void CMutationpp::SetTDState_rhoT (su2double rho, su2double T ) {
   if(rho < 0 ){
     SetWrongState();
+    return;
+  }
+
+  if(T < Tmin){
+    fallBackModel.SetTDState_rhoT(rho, T);
+    UpdateFromFallBack();
     return;
   }
 
