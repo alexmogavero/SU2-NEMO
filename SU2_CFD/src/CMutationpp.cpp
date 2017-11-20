@@ -83,7 +83,8 @@ void CMutationpp::SetTDState_rhoe (su2double rho, su2double e ) {
   }
 
   vector<double> rhoSpecie = SpecieDensity(rho);
-  mix.setState(rhoSpecie.data(), &e, 0);
+  su2double rhoe = rho*e;
+  mix.setState(rhoSpecie.data(), &rhoe, 0);
 
   UpdateState();
 }
