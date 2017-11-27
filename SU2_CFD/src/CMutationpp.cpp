@@ -175,5 +175,9 @@ void CMutationpp::SetEnergy_Prho (su2double P, su2double rho ) {
   SetTDState_Prho(P, rho);
 }
 
+vector<su2double> CMutationpp::GetMaxwellMoment(unsigned short nDim)const{
+  return mix.mixtureFrozenMaxwellMoment(3 - nDim);
+}
+
 
 
