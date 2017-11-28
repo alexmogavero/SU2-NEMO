@@ -262,6 +262,16 @@ public:
 
     virtual void SetTDState_Ps (su2double P, su2double s );
 
+    /*!
+     * \brief Get the moments of the Maxwellian distribution with respect to the energy invariant
+     * \details It only consider the internal degrees of freedom, so the macroscopic translations are not accounted.
+     * The parameter nDim is used to determine how many translational degrees of freedom have to be considered internal.
+     * It calculates moments of order 2, 4 and 6.
+     * @param nDim number of dimensions of the CFD analysis
+     * @return The wanted moments for each order
+     */
+    virtual vector<su2double> GetMaxwellMoment(unsigned short nDim)const;
+
 };
 
 

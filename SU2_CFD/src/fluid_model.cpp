@@ -86,3 +86,7 @@ void CFluidModel::SetThermalConductivityModel (CConfig *config) {
   
 }
 
+vector<su2double> CFluidModel::GetMaxwellMoment(unsigned short nDim)const{
+  throw logic_error("Error: Method GetMaxwellMoment not implemented.");
+}
+
