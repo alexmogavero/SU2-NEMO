@@ -99,7 +99,7 @@ void CMutationpp::SetTDState_rhoe (su2double rho, su2double e ) {
   }
 
   if(e < e_min){
-    fallBackModel.SetTDState_rhoe(rho, e);
+    fallBackModel.SetTDState_rhoe(rho, e - form_e);
     UpdateFromFallBack();
     return;
   }
