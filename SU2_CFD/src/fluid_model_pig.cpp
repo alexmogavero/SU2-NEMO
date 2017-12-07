@@ -114,7 +114,18 @@ void CIdealGas::SetTDState_rhoT (su2double rho, su2double T ) {
 }
 
 
+vector<su2double> CIdealGas::GetMaxwellMoment(unsigned short nDim)const{
+	vector<su2double> out(7, 0);
 
+	double K = (5.0 - 3.0*Gamma) / (Gamma - 1.0) + (3.0 - nDim);
+	double l = 1 / (2.0*Gas_Constant*Temperature);
+
+	out[2] = 0.5 * K / l;
+	out[4] = 0.5 * out[2] * (K+2)/ l;
+	out[6] = 0.5 * out[4] * (K+4)/ l;
+
+	return out;
+}
 
 
 

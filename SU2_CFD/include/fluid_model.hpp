@@ -363,6 +363,8 @@ public:
      */
 
     void SetTDState_Ps (su2double P, su2double s );
+
+    vector<su2double> GetMaxwellMoment(unsigned short nDim)const;
 };
 
 
