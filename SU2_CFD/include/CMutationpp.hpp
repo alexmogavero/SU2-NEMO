@@ -21,7 +21,7 @@ class CMutationpp : public CFluidModel {
 
   vector<double> comp; //!<Mixture composition in molar fraction
 
-  CPerfectGas fallBackModel; //!<Gas model to be used out of the validity of mutation++
+  CIdealGas fallBackModel; //!<Gas model to be used out of the validity of mutation++
   static const su2double Tmin; //!<Minimum temperature at which mutation++ is valid
   su2double e_min; //!<Static energy relative to Tmin
   su2double form_e; //!<Formation energy to be added to the result of the fallBackModel

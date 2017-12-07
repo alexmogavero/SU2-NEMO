@@ -33,9 +33,6 @@
 
 #include "../include/CMutationpp.hpp"
 #include "../include/fluid_model.hpp"
-#include "../include/CPerfectGas.hpp"
-#include <functional>
-#include <boost/math/tools/roots.hpp>
 
 const su2double CMutationpp::Tmin = 55.0; //hard coded as it is hard coded in mutation++ it is 50 + 5 for tolerance
 
@@ -62,7 +59,7 @@ CMutationpp::CMutationpp(string optFile, vector<double> cmp):
   mix.setState(rhoSpecie.data(), &Tmin, 1);
   su2double gamma = mix.mixtureFrozenCpMass()/mix.mixtureFrozenCvMass();
 
-  fallBackModel = CPerfectGas(Gas_Constant, gamma);
+  fallBackModel = CIdealGas(gamma, Gas_Constant);
 
   e_min = mix.mixtureEnergyMass();
   fallBackModel.SetTDState_rhoT(1, Tmin);
