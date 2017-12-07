@@ -218,6 +218,10 @@ void CMutationpp::SetEnergy_Prho (su2double P, su2double rho ) {
 }
 
 vector<su2double> CMutationpp::GetMaxwellMoment(unsigned short nDim)const{
+	if(Temperature < Tmin){
+		return fallBackModel.GetMaxwellMoment(nDim);
+	}
+
   return mix.mixtureFrozenMaxwellMoment(3 - nDim);
 }
 
