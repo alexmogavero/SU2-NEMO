@@ -566,9 +566,11 @@ void CGasKineticSchemeBGK::ComputeMaxwellianMoments(CVariable* node, moments_str
     }
   }
 
-  moments->xi[2] = 0.5 * K / l;
-  moments->xi[4] = 0.5 * moments->xi[2] * (K+2)/ l;
-  moments->xi[6] = 0.5 * moments->xi[4] * (K+4)/ l;
+  FluidModel->SetTDState_PT(node->GetPressure(), node->GetTemperature());
+  vector<su2double> out = FluidModel->GetMaxwellMoment(nDim);
+  for(unsigned short n=2; n<7; n+=2){
+  	moments->xi[n] = out[n];
+  }
 
   //Add vibrational contribution
   if(config->GetKind_FluidModel()==HARMONIC_VIBR){
