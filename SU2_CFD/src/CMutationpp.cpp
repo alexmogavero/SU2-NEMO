@@ -96,13 +96,13 @@ void CMutationpp::SetTDState_rhoe (su2double rho, su2double e ) {
   }
 
   if(e < e_min){
-    fallBackModel.SetTDState_rhoe(rho, e - form_e);
+    fallBackModel.SetTDState_rhoe(rho, e);
     UpdateFromFallBack();
     return;
   }
 
   vector<double> rhoSpecie = SpecieDensity(rho);
-  su2double rhoe = rho*e;
+  su2double rhoe = rho*(e + form_e);
   mix.setState(rhoSpecie.data(), &rhoe, 0);
 
   UpdateState();
@@ -125,7 +125,7 @@ vector<double> CMutationpp::SpecieDensity(su2double rho)const{
 
 void CMutationpp::UpdateState(){
   Density = mix.density();
-  StaticEnergy = mix.mixtureEnergyMass();
+  StaticEnergy = mix.mixtureEnergyMass() - form_e;
   Temperature = mix.T();
   Pressure = mix.P();
 
@@ -133,7 +133,7 @@ void CMutationpp::UpdateState(){
 
   SoundSpeed2 = pow(mix.frozenSoundSpeed(), 2);
 
-  Entropy = mix.mixtureSMass();
+  Entropy = mix.mixtureSMass() - form_s;
 
   dPdrho_e = Pressure/Density;
   dTdrho_e = 0.0;
@@ -161,7 +161,7 @@ void CMutationpp::SetWrongState(){
 
 void CMutationpp::UpdateFromFallBack(){
   Density = fallBackModel.GetDensity();
-  StaticEnergy = fallBackModel.GetStaticEnergy() + form_e;
+  StaticEnergy = fallBackModel.GetStaticEnergy();
   Temperature = fallBackModel.GetTemperature();
   Pressure = fallBackModel.GetPressure();
 
@@ -169,7 +169,7 @@ void CMutationpp::UpdateFromFallBack(){
 
   SoundSpeed2 = fallBackModel.GetSoundSpeed2();
 
-  Entropy = fallBackModel.GetEntropy() + form_s;
+  Entropy = fallBackModel.GetEntropy();
 
   dPdrho_e = fallBackModel.GetdPdrho_e();
   dTdrho_e = fallBackModel.GetdTdrho_e();
